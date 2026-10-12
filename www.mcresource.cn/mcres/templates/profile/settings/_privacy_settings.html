@@ -1,0 +1,60 @@
+{# 【主站】templates/profile/settings/_privacy_settings.html #}
+{# 位置：mcres/templates/profile/settings/_privacy_settings.html #}
+<h2>隐私设置</h2>
+<div class="subtitle">控制您的个人信息对外的可见性</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">留言板开关</span>
+        <span class="desc">开启后允许其他用户在您的个人主页留言</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if privacy_settings.board else '' }}" data-setting="board"></div>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">显示我的收藏</span>
+        <span class="desc">在个人主页展示您收藏的资源列表</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if privacy_settings.show_favorites else '' }}" data-setting="show_favorites"></div>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">显示我的成就</span>
+        <span class="desc">在个人主页展示您获得的成就徽章</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if privacy_settings.show_achievements else '' }}" data-setting="show_achievements"></div>
+</div>
+
+{# ============================================================
+   隐藏在线状态
+   ============================================================ #}
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">隐藏我的在线状态</span>
+        <span class="desc">开启后，其他用户看到你的状态会显示为「离线」，你自己看自己仍显示真实状态</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if privacy_settings.hide_online_status else '' }}" data-setting="hide_online_status"></div>
+</div>
+
+{# 隐藏「在搜索中显示我的主页」 #}
+{#<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">在搜索中显示我的主页</span>
+        <span class="desc">允许其他用户通过搜索找到您的个人资料</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if privacy_settings.search_visible else '' }}" data-setting="search_visible"></div>
+</div>#}
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">隐藏登录信息</span>
+        <span class="desc">开启后，您的登录操作不会在工坊动态中展示</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if privacy_settings.hide_login else '' }}" data-setting="hide_login"></div>
+</div>
+
+<div class="form-actions" style="margin-top: 28px;">
+    <button class="btn btn-primary" id="savePrivacy">保存隐私设置</button>
+</div>

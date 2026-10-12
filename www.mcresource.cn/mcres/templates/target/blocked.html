@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}链接被阻止 - MCRES 方块工坊{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/target/blocked.css" />
+{% endblock %}
+
+{# 跳转/拦截页不展示导航栏与页脚 #}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="card">
+        <div class="icon-wrapper">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>链接已被阻止</h1>
+        <p class="subtitle">该域名已被管理员列入黑名单</p>
+
+        <div class="domain-box">
+            <div class="domain-label">目标域名</div>
+            <div class="domain-name">{{ domain }}</div>
+        </div>
+
+        <a href="javascript:history.back()" class="btn">
+            <i class="fas fa-chevron-left"></i> 返回上一页
+        </a>
+
+        <div class="footer-hint">
+            <i class="fas fa-info-circle"></i>
+            <span>如果您认为这是误判，请联系管理员</span>
+        </div>
+    </div>
+{% endblock %}

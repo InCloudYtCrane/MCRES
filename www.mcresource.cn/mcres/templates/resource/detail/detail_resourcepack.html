@@ -1,0 +1,518 @@
+{% extends "base.html" %} {% block title %}{{ resource.main_name }} - Minecraft
+资源包 | MCRES 方块工坊{% endblock %} {% block extra_head %}
+<meta
+  name="description"
+  content="{{ resource.summary or resource.main_name }} - {{ resource.authors_display|map(attribute='display')|join(', ') if resource.authors_display else '匿名' }} 制作，支持 {{ resource.platforms|join('、') if resource.platforms else 'Java/Bedrock' }}，适配 {{ resource.versions|join('、') if resource.versions else '主流版本' }}。{{ resource.features[:3]|join('、') if resource.features else '精美材质' }}。立即体验！"
+/>
+
+<meta property="og:title" content="{{ resource.main_name }} - MCRES 方块工坊" />
+<meta
+  property="og:description"
+  content="{{ resource.summary or resource.main_name }}"
+/>
+<meta property="og:image" content="{{ resource.cover }}" />
+<meta property="og:url" content="{{ request.url }}" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="stylesheet" href="/static/css/pages/common/detail-common.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/detail-page.css" />
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "{{ resource.main_name }}",
+    "description": "{{ resource.summary or resource.main_name }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ resource.authors_display[0].display if resource.authors_display else '匿名' }}"
+    },
+    "image": "{{ resource.cover }}",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Minecraft Java/Bedrock",
+    "softwareVersion": "{{ resource.versions | join(', ') if resource.versions else '1.20+' }}",
+    "url": "{{ request.url }}",
+    "datePublished": "{{ resource.date_added }}",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+</script>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": "https://www.mcresource.cn/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "资源包",
+        "item": "https://www.mcresource.cn/resourcepacks"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ resource.main_name }}"
+      }
+    ]
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/css/pages/resource/detail/detail_resourcepack.css" />
+{% endblock %} {# 详情页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="detail-container">
+  <!-- ===== 左侧面板 ===== -->
+  <div class="left-panel">
+    <div class="cover-wrapper">
+      <img
+        src="{{ resource.cover }}"
+        alt="{{ resource.main_name }} 封面"
+        loading="lazy"
+      />
+    </div>
+    <div class="info-content">
+      <div class="name-row">
+        {% if resource.status and resource.status != 'unknown' %}
+        <span class="status-badge {{ resource.status }}">
+          {% if resource.status == 'active' %}活跃 {% elif resource.status ==
+          'semi' %}半弃坑 {% elif resource.status == 'inactive' %}停更 {% else
+          %}{{ resource.status }}{% endif %}
+        </span>
+        {% endif %} {% if resource.abbr %}
+        <span class="name-abbr">{{ resource.abbr }}</span>
+        {% endif %}
+        <span class="name-main">{{ resource.main_name }}</span>
+        {% if resource.sub_name and resource.sub_name != resource.main_name %}
+        <span class="name-sub">{{ resource.sub_name }}</span>
+        {% endif %}
+      </div>
+
+      <!-- ===== PV 数据卡片 ===== -->
+      <div class="stats-mini-card">
+        {% if resource.hot_score %}
+        <div class="hot-score-row">
+          <i
+            class="fas fa-{{ resource.hot_score.icon }}"
+            style="color: {{ resource.hot_score.color }}; font-size: 18px;"
+          ></i>
+          <span
+            class="hot-score-label"
+            style="color: {{ resource.hot_score.color }};"
+          >
+            {{ resource.hot_score.label }}
+          </span>
+          <span
+            class="hot-score-stars"
+            style="color: {{ resource.hot_score.color }};"
+          >
+            {{ resource.hot_score.star_display }}
+          </span>
+          <span
+            class="hot-score-badge"
+            style="background: {{ resource.hot_score.color }};"
+          >
+            {{ resource.hot_score.star_count }} 星
+          </span>
+        </div>
+        <div class="hot-score-detail">
+          <span class="hot-score-ratio"
+            ><i class="fas fa-chart-bar"></i> 相对比值 {{
+            resource.hot_score.score }}x</span
+          >
+          <span class="hot-score-avg"
+            ><i class="fas fa-clipboard-list"></i> 昨日平均 {{
+            resource.hot_score.avg }}</span
+          >
+        </div>
+        {% endif %}
+        <div class="stats-mini-row">
+          <div class="stat-mini-item">
+            <span class="stat-mini-number" style="color: #f5a623"
+              >{{ resource.today_view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-calendar-day"></i> 今日浏览</span
+            >
+          </div>
+          <div class="stat-mini-divider"></div>
+          <div class="stat-mini-item">
+            <span class="stat-mini-number" style="color: #7ab7f0"
+              >{{ resource.yesterday_view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-chart-line"></i> 昨日指数</span
+            >
+          </div>
+          <div class="stat-mini-divider"></div>
+          <div class="stat-mini-item">
+            <span class="stat-mini-number"
+              >{{ resource.view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-eye"></i> 总浏览量</span
+            >
+          </div>
+        </div>
+        <div class="stat-mini-date">
+          <i class="fas fa-calendar-alt"></i> 收录时间：{% if
+          resource.date_added %}{{ resource.date_added }}({{ resource.date_added
+          | timesince}}){% else %}<span class="empty-hint">未知</span>{% endif
+          %}
+        </div>
+      </div>
+
+      <!-- ===== PV 趋势图（左侧，PV数据下方） ===== -->
+      <div class="pv-trend-section">
+        <div class="section-label">
+          <span class="left">
+            <i class="fas fa-chart-line" style="color: #7ab7f0"></i> 浏览趋势
+          </span>
+          <div class="trend-controls">
+            <span
+              id="pvAvgLabel"
+              style="
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.3);
+                font-weight: 400;
+              "
+              >日均 --</span
+            >
+            <select id="pvTrendRange">
+              <option value="7">近7天</option>
+              <option value="30" selected>近30天</option>
+              <option value="90">近90天</option>
+              <option value="all">全部</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="pvTrendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ===== 信息项 ===== -->
+      <div class="info-item">
+        <span class="info-label">作者</span>
+        <div class="info-value">
+          {% if resource.authors_display %}
+          <div class="author-list">
+            {% for item in resource.authors_display %} {% if item.url %}
+            <a href="{{ item.url }}" class="author author-link"
+              >{{ item.display }}</a
+            >
+            {% else %}
+            <span class="author">{{ item.display }}</span>
+            {% endif %} {% endfor %}
+          </div>
+          {% else %}
+          <span class="empty-hint">未提供</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">分类</span>
+        <div class="info-value">
+          {% if resource.category %}
+          <span class="tag category">{{ resource.category }}</span>
+          {% else %}
+          <span class="empty-hint">未分类</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持平台</span>
+        <div class="info-value">
+          {% if resource.platforms %} {% for p in resource.platforms %}
+          <span class="tag platform">
+            {% if p == 'java' %}JAVA版 {% elif p == 'bedrock' %}基岩版 {% else
+            %}{{ p }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持版本</span>
+        <div class="info-value">
+          {% if resource.versions %} {% for v in resource.versions %}
+          <span class="tag version">{{ v }}</span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持特性</span>
+        <div class="info-value">
+          {% if resource.features %} {% for f in resource.features %}
+          <span class="tag feature">
+            {% if f == 'pbr' %}PBR (物理材质) {% elif f == 'emissive' %}发光贴图
+            {% elif f == 'random' %}随机纹理 {% elif f == 'animated' %}动画纹理
+            {% elif f == 'ctm' %}CTM (连接纹理) {% elif f == 'custom_model'
+            %}自定义模型 {% elif f == 'custom_sound' %}自定义音效 {% elif f ==
+            'optifine' %}OptiFine 特性 {% else %}{{ f }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">协议</span>
+        <div class="info-value">
+          {% if resource.license %} {{ resource.license }} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      {% if resource.mcmod_id %}
+      <div class="info-item">
+        <span class="info-label">MC百科</span>
+        <div class="info-value">
+          <a
+            href="https://www.mcmod.cn/class/{{ resource.mcmod_id }}"
+            target="_blank"
+            rel="noopener"
+            style="
+              color: var(--primary-color);
+              text-decoration: none;
+              border-bottom: 1px dashed var(--primary-color);
+            "
+            >查看条目 #{{ resource.mcmod_id }}</a
+          >
+        </div>
+      </div>
+      {% endif %}
+      <div class="info-item" style="border-bottom: none">
+        <span class="info-label">外部链接</span>
+        <div class="info-value">
+          {% if resource.download_links %}
+          <div class="download-links">
+            {% for link in resource.download_links %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener"
+              >{{ link.name }}</a
+            >
+            {% endfor %}
+          </div>
+          {% else %}
+          <span class="empty-hint">暂无外部下载链接</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="download-section-left">
+        {% if resource.auth_image %}
+        <a
+          href="/download/resourcepack/{{ resource.id }}"
+          class="download-btn"
+          target="_blank"
+        >
+          <i class="fas fa-download"></i> 下载此资源包
+        </a>
+        <div class="download-hint">
+          <i class="fas fa-check-circle" style="color: #55d88b"></i>
+          已遵循协议开放下载
+          <a href="{{ resource.auth_image }}" target="_blank" rel="noopener"
+            >（查看协议）</a
+          >
+        </div>
+        {% else %}
+        <div class="download-unavailable">
+          <span
+            ><i class="fas fa-triangle-exclamation"></i>
+            请使用外部链接下载</span
+          >
+          <p class="hint-text">此项目尚未设置授权图片，暂不提供内部下载</p>
+        </div>
+        {% endif %}
+      </div>
+      <div
+        style="
+          margin-top: 16px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        "
+      >
+        <a
+          href="/resourcepack/{{ resource.id }}/diff"
+          class="diff-history-link"
+        >
+          <i class="fas fa-scroll"></i> 编辑历史对比
+          <span class="hint">(查看所有版本)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 右侧面板 ===== -->
+  <div class="right-panel">
+    <div class="screenshots-section">
+      <div class="section-label">
+        <span
+          ><i class="fas fa-camera"></i> 截图
+          <span>{{ (resource.screenshots or [])|length }} 张</span></span
+        >
+        <div class="label-actions">
+          <div class="share-dropdown">
+            <button
+              class="share-btn"
+              data-share-toggle
+              title="分享此页面"
+            >
+              <i class="fas fa-share-alt"></i> 分享
+            </button>
+            <div class="share-dropdown-menu" id="shareDropdownMenu">
+              <a
+                href="#"
+                data-share-action="copy"
+                ><i class="fas fa-link"></i> 复制链接</a
+              >
+              <a
+                href="#"
+                data-share-action="poster"
+                ><i class="fas fa-image"></i> 生成海报</a
+              >
+            </div>
+          </div>
+          <a href="/resourcepack/edit/{{ resource.id }}" class="edit-btn"
+            ><i class="fas fa-pen"></i> 编辑此页面</a
+          >
+        </div>
+      </div>
+      <div class="screenshot-scroll">
+        {% if resource.bilibili_video %}
+        <div
+          class="screenshot-item video-item"
+          data-video="{{ resource.bilibili_video }}"
+          style="background-image: url('{{ resource.cover }}'); background-size: cover; background-position: center;"
+        >
+          <div class="video-play-icon"><i class="fas fa-play-circle"></i></div>
+          <span class="screenshot-index">🎬 视频</span>
+        </div>
+        {% endif %} {% if resource.screenshots %} {% for src in
+        resource.screenshots %}
+        <div class="screenshot-item" data-screenshot="{{ src }}">
+          <img src="{{ src }}" alt="截图 {{ loop.index }}" loading="lazy" />
+          <span class="screenshot-index"
+            >{{ loop.index }} / {{ (resource.screenshots or [])|length }}</span
+          >
+        </div>
+        {% endfor %} {% else %}
+        <div
+          class="empty-placeholder"
+          style="padding: 20px 0; text-align: center"
+        >
+          暂无截图
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ============================================================ 绑定茶室话题
+    ============================================================ #} {% if
+    resource.bound_tea_topic %} {% set tea = resource.bound_tea_topic %}
+    <div class="tea-topic-section">
+      <div class="section-label">
+        <span
+          ><i class="fas fa-mug-hot" style="color: #e8a437"></i> 相关话题</span
+        >
+      </div>
+      <a
+        href="https://tea.mcresource.cn/topic/{{ tea.slug }}"
+        class="tea-topic-card"
+        target="_blank"
+        rel="noopener"
+      >
+        <div class="tea-topic-icon">
+          {% if tea.is_official %}📢{% else %}#{% endif %}
+        </div>
+        <div class="tea-topic-body">
+          <div class="tea-topic-title">
+            <span class="tea-topic-hash">#</span>{{ tea.name }}
+            <span
+              class="tea-topic-level topic-level-{{ tea.level_visual.type }}"
+            >
+              {{ tea.level_visual.label }}
+            </span>
+          </div>
+          {% if tea.description %}
+          <div class="tea-topic-desc">{{ tea.description }}</div>
+          {% endif %}
+          <div class="tea-topic-meta">
+            <span><i class="fas fa-comment"></i> {{ tea.post_count }} 帖</span>
+            <span
+              ><i class="fas fa-users"></i> {{ tea.follower_count }} 关注</span
+            >
+            {% if tea.last_post_at %}
+            <span
+              ><i class="fas fa-clock"></i> {{ tea.last_post_at | timesince
+              }}</span
+            >
+            {% endif %}
+          </div>
+        </div>
+        <div class="tea-topic-arrow">
+          <i class="fas fa-arrow-up-right-from-square"></i>
+        </div>
+      </a>
+    </div>
+    {% endif %} {% if resource.preview_count > 0 %}
+    <div class="preview-entry">
+      <div class="preview-entry-left">
+        <span class="preview-entry-icon"><i class="fas fa-cube"></i></span>
+        <span class="preview-entry-title">资源包预览</span>
+        <span class="preview-entry-count"
+          >{{ resource.preview_count }} 个物品/方块</span
+        >
+      </div>
+      <a
+        href="/preview/resourcepack/{{ resource.id }}"
+        class="preview-entry-btn"
+        target="_blank"
+      >
+        <i class="fas fa-eye"></i> 查看预览
+      </a>
+    </div>
+    {% endif %} {% include 'components/interaction.html' %}
+
+    <div class="description-section">
+      <div class="section-label"><i class="fas fa-book"></i> 资源介绍</div>
+      <div class="description-content">
+        {% if resource.description %} {{ resource.description|safe }} {% else %}
+        <p class="empty-placeholder">暂无介绍</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% include 'components/comment.html' %}
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script>
+  window.RESOURCE_TYPE = 'resourcepack';
+  window.RESOURCE_ID = {{ resource.id }};
+  window.RESOURCE_DATA = {
+      main_name: {{ resource.main_name|tojson|safe }},
+      sub_name: {{ resource.sub_name|tojson|safe }},
+      summary: {{ resource.summary|tojson|safe }},
+      cover: {{ resource.cover|tojson|safe }},
+      screenshots: {{ resource.screenshots|tojson|safe }},
+      description: {{ resource.description|tojson|safe }},
+      url: '{{ request.url }}',
+      authors_display: {{ resource.authors_display|tojson|safe }}
+  };
+</script>
+<script src="/static/js/lib/share/post.js"></script>
+<script src="/static/js/pages/common/detail-common.js"></script>
+{% endblock %}

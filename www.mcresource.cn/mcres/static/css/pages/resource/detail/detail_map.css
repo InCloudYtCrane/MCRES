@@ -1,0 +1,20 @@
+/* mcres/static/css/pages/resource/detail/detail_map.css */
+:root {
+    --primary-color: #4a90d9;
+    --primary-bright: #5ba0e9;
+    --primary-shadow: rgba(74, 144, 217, 0.25);
+    --primary-alpha: rgba(74, 144, 217, 0.1);
+    --primary-alpha-dark: rgba(74, 144, 217, 0.2);
+  }
+  .name-abbr {
+    color: #4a90d9;
+  }
+  .download-links a {
+    color: #4a90d9;
+  }
+  .download-links a:hover {
+    color: #5ba0e9;
+  }
+  .info-value .multiplayer-text {
+    border-left-color: #4a90d9;
+  }

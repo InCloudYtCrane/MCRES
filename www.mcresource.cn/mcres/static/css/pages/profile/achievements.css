@@ -1,0 +1,188 @@
+/* mcres/static/css/pages/profile/achievements.css */
+/* ============================================================
+   成就列表
+   ============================================================ */
+.achievement-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 4px;
+}
+
+.achievement-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    transition: background .2s, border-color .2s, transform .15s;
+}
+
+.achievement-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(2px);
+}
+
+.achievement-row.completed {
+    background: rgba(85, 216, 139, 0.05);
+    border-color: rgba(85, 216, 139, 0.35);
+}
+
+/* ---- 图标 ---- */
+.ach-row-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #55d88b;
+    background: rgba(85, 216, 139, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ach-row-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+}
+
+.achievement-row.completed .ach-row-icon {
+    background: rgba(85, 216, 139, 0.15);
+}
+
+/* ---- 主体 ---- */
+.ach-row-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.ach-row-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e4e4ea;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ach-row-desc {
+    font-size: 13px;
+    color: #8a8a9e;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- 奖励描述 ---- */
+.ach-row-reward {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    padding: 1px 9px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #e8a437;
+    background: rgba(232, 164, 55, 0.08);
+    border: 1px solid rgba(232, 164, 55, 0.18);
+}
+
+.ach-row-reward i {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
+/* ---- 进度条 ---- */
+.ach-row-bar {
+    margin-top: 6px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+}
+
+.ach-row-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #55d88b, #4A90D9);
+    border-radius: 3px;
+    transition: width .4s ease;
+}
+
+/* ---- 右侧一列：徽章 + 时间 ---- */
+.ach-row-right {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.ach-row-badge {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.ach-row-badge.done {
+    color: #55d88b;
+    background: rgba(85, 216, 139, 0.12);
+    border: 1px solid rgba(85, 216, 139, 0.3);
+}
+
+.ach-row-badge.pending {
+    color: #8a929a;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-variant-numeric: tabular-nums;
+}
+
+.ach-row-time {
+    font-size: 12px;
+    color: #6f7780;
+    white-space: nowrap;
+}
+
+/* ---- 稀有度：边框颜色 ---- */
+.rarity-rare       { border-color: rgba(52, 152, 219, .3); }
+.rarity-epic       { border-color: rgba(155, 89, 182, .35); }
+.rarity-legendary  { border-color: rgba(255, 45, 85, .4); }
+.rarity-legendary.completed { box-shadow: 0 0 16px rgba(255, 45, 85, .12); }
+
+/* ---- 移动端适配 ---- */
+@media (max-width: 640px) {
+    .achievement-row {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 14px;
+    }
+    .ach-row-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+    }
+    .ach-row-body {
+        flex: 1 1 calc(100% - 60px);
+    }
+    .ach-row-desc {
+        white-space: normal;
+    }
+    .ach-row-right {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
+        padding-top: 4px;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+}

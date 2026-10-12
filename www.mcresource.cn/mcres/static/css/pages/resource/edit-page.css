@@ -1,0 +1,135 @@
+/* mcres/static/css/pages/resource/edit-page.css
+   三个资源编辑页（resourcepack / shaderpack / map）共用的页面级样式。
+   依赖各页面内联的 :root { --primary ... } 定义。 */
+
+/* ============================================================
+   侧边栏规则列表
+   ============================================================ */
+#rulesSidebarList .rule-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #b0b8c2;
+  text-decoration: none;
+  font-size: 13px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+#rulesSidebarList .rule-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e6edf3;
+}
+#rulesSidebarList .rule-link .rule-icon {
+  font-size: 14px;
+  opacity: 0.6;
+}
+#rulesSidebarList .rule-link .rule-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rulesSidebarList::-webkit-scrollbar {
+  width: 3px;
+}
+#rulesSidebarList::-webkit-scrollbar-thumb {
+  background: #2b313b;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   退回原因提示框
+   ============================================================ */
+.reject-reason-box {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid #f87171;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  color: #f87171;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.reject-reason-box i {
+  font-size: 18px;
+  margin-top: 2px;
+}
+.reject-reason-box .reason-content {
+  flex: 1;
+  color: #e6edf3;
+}
+.reject-reason-box .reason-content strong {
+  color: #f87171;
+}
+
+/* ============================================================
+   防撞车提示（表单内联）
+   ============================================================ */
+.duplicate-hint {
+  margin-top: 6px;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: none;
+}
+.duplicate-hint.warning {
+  display: block;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid #f5a623;
+  color: #f5a623;
+}
+.duplicate-hint.danger {
+  display: block;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid #f87171;
+  color: #f87171;
+}
+.duplicate-hint.success {
+  display: block;
+  background: rgba(85, 216, 139, 0.12);
+  border: 1px solid #55d88b;
+  color: #55d88b;
+}
+.duplicate-hint a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.duplicate-hint a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   防撞车警告（提交模态框内）
+   ============================================================ */
+.duplicate-warning {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.duplicate-warning.warning {
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid #f5a623;
+  color: #f5a623;
+}
+.duplicate-warning.danger {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid #f87171;
+  color: #f87171;
+}
+.duplicate-warning .countdown-timer {
+  margin-top: 8px;
+  color: #e6edf3;
+  font-size: 13px;
+}
+.duplicate-warning .countdown-timer #countdownNum {
+  font-weight: 700;
+  color: #f5a623;
+}
+.duplicate-warning.danger .countdown-timer #countdownNum {
+  color: #f87171;
+}

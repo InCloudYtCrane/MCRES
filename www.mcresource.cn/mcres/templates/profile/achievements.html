@@ -1,0 +1,103 @@
+<!-- profile/achievements.html -->
+<div class="card works-card">
+    <div class="works-layout">
+
+        <!-- 左侧：分类菜单 -->
+        <div class="works-sidebar">
+            <div class="works-sidebar-header">
+                <i class="fas fa-trophy" style="color: var(--role-color);"></i>
+                <span>{% if is_me %}我的成就{% else %}TA的成就{% endif %}</span>
+                <span class="works-total-badge">{{ achievements_completed }}/{{ achievements_total }}</span>
+            </div>
+            <div class="works-submenu" id="ach-category-menu">
+                <button class="works-sub-btn active" data-type="daily">
+                    <i class="fas fa-sun"></i>
+                    <span class="sub-label">每日</span>
+                    <span class="sub-count">{{ achievements_grouped.daily | length }}</span>
+                </button>
+                <button class="works-sub-btn" data-type="limited">
+                    <i class="fas fa-clock"></i>
+                    <span class="sub-label">限时</span>
+                    <span class="sub-count">{{ achievements_grouped.limited | length }}</span>
+                </button>
+                <button class="works-sub-btn" data-type="permanent">
+                    <i class="fas fa-infinity"></i>
+                    <span class="sub-label">常驻</span>
+                    <span class="sub-count">{{ achievements_grouped.permanent | length }}</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 右侧：列表 -->
+        <div class="works-content">
+
+            {% for cat_key in ['daily', 'limited', 'permanent'] %}
+            <div id="ach-{{ cat_key }}" class="works-sub-content {% if cat_key == 'daily' %}active{% endif %}">
+
+                {% if achievements_grouped[cat_key] %}
+                <div class="achievement-list">
+                    {% for a in achievements_grouped[cat_key] %}
+                    <div class="achievement-row {% if a.completed %}completed{% endif %} rarity-{{ a.rarity }}">
+
+                        <!-- 图标 -->
+                        <div class="ach-row-icon">
+                            {% if a.icon_url %}
+                                <img src="{{ a.icon_url }}" alt="{{ a.name }}">
+                            {% else %}
+                                <i class="fas {{ a.icon }}"></i>
+                            {% endif %}
+                        </div>
+
+                        <!-- 主体：名字 + 描述 + 奖励 + 进度条 -->
+                        <div class="ach-row-body">
+                            <div class="ach-row-name">{{ a.name }}</div>
+                            <div class="ach-row-desc">{{ a.desc }}</div>
+
+                            {% if a.reward_text %}
+                            <div class="ach-row-reward">
+                                <i class="fas fa-gift"></i> {{ a.reward_text }}
+                            </div>
+                            {% endif %}
+
+                            {% if not a.completed %}
+                            <div class="ach-row-bar">
+                                <div class="ach-row-bar-fill"
+                                     style="width: {{ (a.progress / a.target * 100) if a.target > 0 else 0 }}%;"></div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 右侧一列：徽章 + 时间 -->
+                        <div class="ach-row-right">
+                            {% if a.completed %}
+                            <span class="ach-row-badge done">
+                                <i class="fas fa-check-circle"></i> 已达成
+                            </span>
+                            {% if a.completed_at %}
+                            <div class="ach-row-time">{{ a.completed_at | timesince }}</div>
+                            {% endif %}
+                            {% else %}
+                            <span class="ach-row-badge pending">
+                                {{ a.progress }} / {{ a.target }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-trophy" style="color: var(--role-color); opacity:0.3;"></i>
+                    <p>该分类下暂无成就</p>
+                </div>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+

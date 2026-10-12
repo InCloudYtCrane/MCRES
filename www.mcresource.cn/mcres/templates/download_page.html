@@ -1,0 +1,187 @@
+{% extends "base.html" %} {% block title %}下载 {{ resource_name }} - MCRES{%
+endblock %} {% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/download_page.css" />
+<link rel="stylesheet" href="/static/css/pages/common/detail-common.css" />
+{% endblock %} {# 本页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="download-page-container">
+  <div class="download-header">
+    <h1>{{ resource_name }}</h1>
+    {% if authors %}
+    <p class="authors">作者：{{ authors | join('、') }}</p>
+    {% endif %}
+    <div class="security-banner">
+      <span
+        ><i class="fas fa-lock"></i> 本站保证文件内容未经篡改，请放心下载</span
+      >
+      <span
+        ><i class="fas fa-shield-alt"></i>
+        所有文件均提供哈希校验，确保完整性</span
+      >
+    </div>
+    {% if auth_image %}
+    <div class="auth-image-container">
+      <img src="{{ auth_image }}" alt="授权图片" class="auth-image" />
+      <p class="auth-hint">
+        <i class="fas fa-check-circle"></i> 已获授权，可下载
+      </p>
+    </div>
+    {% else %}
+    <div class="auth-missing">
+      <i class="fas fa-exclamation-triangle"></i>
+      此项目尚未设置授权图片，下载可能受限，请联系管理员。
+    </div>
+    {% endif %}
+  </div>
+  {% if auth_image and files %}
+  <div class="filter-container">
+    <div class="filter-group">
+      <label for="filterVersion">文件版本</label>
+      <select id="filterVersion">
+        <option value="all">全部</option>
+        {% set versions = files | map(attribute='version') | unique | sort %} {%
+        for v in versions %} {% if v %}
+        <option value="{{ v }}">{{ v }}</option>
+        {% endif %} {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="filterGameVersion">游戏版本</label>
+      <select id="filterGameVersion">
+        <option value="all">全部</option>
+        {% set game_versions = files | map(attribute='game_version') | unique |
+        sort %} {% for gv in game_versions %} {% if gv %}
+        <option value="{{ gv }}">{{ gv }}</option>
+        {% endif %} {% endfor %}
+      </select>
+    </div>
+    <button id="clearFilters" class="clear-filters-btn">清除筛选</button>
+    <span id="filterResultCount" class="filter-count"></span>
+  </div>
+
+  <!-- ===== 游客剩余下载次数提示条 ===== -->
+  {% if not is_logged_in and guest_remaining is not none %}
+  <div class="guest-tip" id="guestTip">
+    <i class="fas fa-info-circle"></i>
+    游客今日剩余下载次数：<strong id="guestRemainingDisplay"
+      >{{ guest_remaining }}</strong
+    >
+    次 · <a href="/login" target="_blank">登录</a> 后不限次免费下载
+  </div>
+  {% endif %}
+
+  <div class="file-list">
+    <table class="file-table" id="fileTable">
+      <thead>
+        <tr>
+          <th>文件名</th>
+          <th>版本</th>
+          <th>游戏版本</th>
+          <th>下载次数</th>
+          <th>修改时间</th>
+          <th>文件大小</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="fileTableBody">
+        {% for file in files %}
+        <tr
+          data-filename="{{ file.filename }}"
+          data-version="{{ file.version or '' }}"
+          data-gameversion="{{ file.game_version or '' }}"
+        >
+          <td class="file-name">{{ file.original_name or file.filename }}</td>
+          <td class="file-version">{{ file.version or '—' }}</td>
+          <td class="file-gamever">{{ file.game_version or '—' }}</td>
+          <td class="download-count">{{ file.download_count or 0 }}</td>
+          <td class="file-date">{{ file.upload_time_display }}</td>
+          <td class="file-size">{{ file.size_display }}</td>
+          <td class="file-download">
+            <button class="download-btn" data-filename="{{ file.filename }}">
+              下载
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% elif not auth_image %}
+  <div class="no-auth-message">
+    <div class="no-auth-icon"><i class="fas fa-lock"></i></div>
+    <h2>该项目尚未获得授权</h2>
+    <p>项目负责人尚未设置授权图片，暂时无法提供内部下载服务。</p>
+    <p>如有疑问，请联系项目作者或管理员。</p>
+  </div>
+  {% else %}
+  <div class="no-files-message">
+    <p><i class="fas fa-inbox"></i> 该项目暂无上传的文件，请耐心等待。</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ===== 验证码模态框 ===== -->
+<div class="modal-overlay" id="checksumModal">
+  <div class="modal-box checksum-modal">
+    <button class="modal-close" id="modalCloseBtn">
+      <i class="fas fa-times"></i>
+    </button>
+    <h3><i class="fas fa-box"></i> 文件校验信息</h3>
+    <div class="checksum-details">
+      <p><strong>MD5：</strong><span id="checksum_md5"></span></p>
+      <p><strong>CRC32：</strong><span id="checksum_crc32"></span></p>
+      <p><strong>SHA256：</strong><span id="checksum_sha256"></span></p>
+    </div>
+    <div class="captcha-section">
+      <p class="captcha-hint">请输入下方验证码以继续下载</p>
+      <div class="captcha-row">
+        <input
+          type="text"
+          id="captchaInput"
+          placeholder="验证码"
+          maxlength="4"
+        />
+        <img
+          src="/captcha"
+          id="captchaImg"
+          title="点击刷新"
+        />
+      </div>
+      <button id="confirmDownloadBtn" class="confirm-download-btn">
+        确认下载
+      </button>
+    </div>
+    <div class="modal-errors" id="modalErrors"></div>
+  </div>
+</div>
+
+<!-- ===== 注册引导模态框（游客超限时弹出） ===== -->
+<div class="modal-overlay" id="registerGuideModal">
+  <div class="modal-box register-guide-modal">
+    <button class="modal-close" id="registerGuideCloseBtn">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="register-guide-content">
+      <div class="register-guide-icon"><i class="fas fa-gift"></i></div>
+      <h3>今日下载次数已用完 🎯</h3>
+      <p>注册后立即解锁全部权益：</p>
+      <ul>
+        <li><i class="fas fa-check-circle"></i> 无限次下载</li>
+        <li><i class="fas fa-check-circle"></i> 收藏资源</li>
+        <li><i class="fas fa-check-circle"></i> 获取更新通知</li>
+        <li><i class="fas fa-check-circle"></i> 参与社区互动</li>
+      </ul>
+      <div class="register-guide-actions">
+        <a href="/login/qq" class="btn-qq" target="_blank"
+          ><i class="fab fa-qq"></i> QQ一键登录</a
+        >
+        <a href="/register" class="btn-register" target="_blank">邮箱注册</a>
+        <a href="/login" class="btn-login" target="_blank">登录已有账号</a>
+      </div>
+      <p class="register-guide-footer">永久免费 · 无需付费</p>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/pages/download_page.js"></script>
+{% endblock %}

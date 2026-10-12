@@ -1,0 +1,553 @@
+{% extends "base.html" %} {% block title %}{{ shader.main_name }} - Minecraft
+光影包 | MCRES 方块工坊{% endblock %} {% block extra_head %}
+<meta
+  name="description"
+  content="{{ shader.summary or shader.main_name }} - {{ shader.authors_display|map(attribute='display')|join(', ') if shader.authors_display else '匿名' }} 制作，支持 {{ shader.platforms|join('、') if shader.platforms else 'Java' }}，适配 {{ shader.versions|join('、') if shader.versions else '主流版本' }}。{{ shader.features[:3]|join('、') if shader.features else '高品质光影' }}。立即体验！"
+/>
+
+<meta property="og:title" content="{{ shader.main_name }} - MCRES 方块工坊" />
+<meta
+  property="og:description"
+  content="{{ shader.summary or shader.main_name }}"
+/>
+<meta property="og:image" content="{{ shader.cover }}" />
+<meta property="og:url" content="{{ request.url }}" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="stylesheet" href="/static/css/pages/common/detail-common.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/detail-page.css" />
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "{{ shader.main_name }}",
+    "description": "{{ shader.summary or shader.main_name }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ shader.authors_display[0].display if shader.authors_display else '匿名' }}"
+    },
+    "image": "{{ shader.cover }}",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Minecraft Java Edition",
+    "softwareVersion": "{{ shader.versions | join(', ') if shader.versions else '1.20+' }}",
+    "url": "{{ request.url }}",
+    "datePublished": "{{ shader.date_added }}",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    }
+  }
+</script>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": "https://www.mcresource.cn/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "光影包",
+        "item": "https://www.mcresource.cn/shaderpacks"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ shader.main_name }}"
+      }
+    ]
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/css/pages/resource/detail/detail_shaderpack.css" />
+{% endblock %} {# 详情页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="detail-container">
+  <!-- ========== 左侧面板 ========== -->
+  <div class="left-panel">
+    <div class="cover-wrapper">
+      <img
+        src="{{ shader.cover }}"
+        alt="{{ shader.main_name }} 封面"
+        loading="lazy"
+      />
+    </div>
+    <div class="info-content">
+      <div class="name-row">
+        {% if shader.status and shader.status != 'unknown' %}
+        <span class="status-badge {{ shader.status }}">
+          {% if shader.status == 'active' %}活跃 {% elif shader.status == 'semi'
+          %}半弃坑 {% elif shader.status == 'inactive' %}停更 {% else %}{{
+          shader.status }}{% endif %}
+        </span>
+        {% endif %} {% if shader.abbr %}
+        <span class="name-abbr">{{ shader.abbr }}</span>
+        {% endif %}
+        <span class="name-main">{{ shader.main_name }}</span>
+        {% if shader.sub_name and shader.sub_name != shader.main_name %}
+        <span class="name-sub">{{ shader.sub_name }}</span>
+        {% endif %}
+      </div>
+
+      <!-- ===== PV 数据卡片 ===== -->
+      <div class="stats-mini-card">
+        {% if shader.hot_score %}
+        <div class="hot-score-row">
+          <i
+            class="fas fa-{{ shader.hot_score.icon }}"
+            style="color: {{ shader.hot_score.color }}; font-size: 18px;"
+          ></i>
+          <span
+            class="hot-score-label"
+            style="color: {{ shader.hot_score.color }};"
+          >
+            {{ shader.hot_score.label }}
+          </span>
+          <span
+            class="hot-score-stars"
+            style="color: {{ shader.hot_score.color }};"
+          >
+            {{ shader.hot_score.star_display }}
+          </span>
+          <span
+            class="hot-score-badge"
+            style="background: {{ shader.hot_score.color }};"
+          >
+            {{ shader.hot_score.star_count }} 星
+          </span>
+        </div>
+        <div class="hot-score-detail">
+          <span class="hot-score-ratio"
+            ><i class="fas fa-chart-bar"></i> 相对比值 {{ shader.hot_score.score
+            }}x</span
+          >
+          <span class="hot-score-avg"
+            ><i class="fas fa-clipboard-list"></i> 昨日平均 {{
+            shader.hot_score.avg }}</span
+          >
+        </div>
+        {% endif %}
+        <div class="stats-mini-row">
+          <div class="stat-mini-item">
+            <span class="stat-mini-number" style="color: #f5a623"
+              >{{ shader.today_view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-calendar-day"></i> 今日浏览</span
+            >
+          </div>
+          <div class="stat-mini-divider"></div>
+          <div class="stat-mini-item">
+            <span class="stat-mini-number" style="color: #7ab7f0"
+              >{{ shader.yesterday_view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-chart-line"></i> 昨日指数</span
+            >
+          </div>
+          <div class="stat-mini-divider"></div>
+          <div class="stat-mini-item">
+            <span class="stat-mini-number"
+              >{{ shader.view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-eye"></i> 总浏览量</span
+            >
+          </div>
+        </div>
+        <div class="stat-mini-date">
+          <i class="fas fa-calendar-alt"></i> 收录时间：{% if shader.date_added
+          %}{{ shader.date_added }}({{ shader.date_added | timesince}}){% else
+          %}<span class="empty-hint">未知</span>{% endif %}
+        </div>
+      </div>
+
+      <!-- ===== PV 趋势图（左侧，PV数据下方） ===== -->
+      <div class="pv-trend-section">
+        <div class="section-label">
+          <span class="left">
+            <i class="fas fa-chart-line" style="color: #7ab7f0"></i> 浏览趋势
+          </span>
+          <div class="trend-controls">
+            <span
+              id="pvAvgLabel"
+              style="
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.3);
+                font-weight: 400;
+              "
+              >日均 --</span
+            >
+            <select id="pvTrendRange">
+              <option value="7">近7天</option>
+              <option value="30" selected>近30天</option>
+              <option value="90">近90天</option>
+              <option value="all">全部</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="pvTrendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ===== 信息项 ===== -->
+      <div class="info-item">
+        <span class="info-label">作者</span>
+        <div class="info-value">
+          {% if shader.authors_display %}
+          <div class="author-list">
+            {% for item in shader.authors_display %} {% if item.url %}
+            <a href="{{ item.url }}" class="author author-link"
+              >{{ item.display }}</a
+            >
+            {% else %}
+            <span class="author">{{ item.display }}</span>
+            {% endif %} {% endfor %}
+          </div>
+          {% else %}
+          <span class="empty-hint">未提供</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">风格</span>
+        <div class="info-value">
+          {% if shader.style %}
+          <span class="tag style">{{ shader.style }}</span>
+          {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">性能等级</span>
+        <div class="info-value">
+          {% if shader.performance %}
+          <span class="tag performance">
+            {% if shader.performance == 'low' %}<i class="fas fa-turtle"></i>
+            低配 {% elif shader.performance == 'medium' %}<i
+              class="fas fa-bolt"
+            ></i>
+            中配 {% elif shader.performance == 'high' %}<i
+              class="fas fa-rocket"
+            ></i>
+            高配 {% elif shader.performance == 'extreme' %}<i
+              class="fas fa-fire"
+            ></i>
+            极致 {% else %}{{ shader.performance }}{% endif %}
+          </span>
+          {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持平台</span>
+        <div class="info-value">
+          {% if shader.platforms %} {% for p in shader.platforms %}
+          <span class="tag platform">
+            {% if p == 'java' %}JAVA版 {% elif p == 'bedrock' %}基岩版 {% else
+            %}{{ p }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持版本</span>
+        <div class="info-value">
+          {% if shader.versions %} {% for v in shader.versions %}
+          <span class="tag version">{{ v }}</span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">光影引擎</span>
+        <div class="info-value">
+          {% if shader.engines %} {% for e in shader.engines %}
+          <span class="tag engine">
+            {% if e == 'optifine' %}OptiFine {% elif e == 'iris' %}Iris {% elif
+            e == 'sodium' %}Sodium (with Iris) {% elif e == 'fabric' %}Fabric {%
+            elif e == 'forge' %}Forge {% elif e == 'canvas' %}Canvas {% else
+            %}{{ e }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持特性</span>
+        <div class="info-value">
+          {% if shader.features %} {% for f in shader.features %}
+          <span class="tag feature">
+            {% if f == 'pbr' %}PBR (物理材质) {% elif f == 'normal_map'
+            %}法线贴图 {% elif f == 'parallax' %}视差贴图 {% elif f ==
+            'emissive' %}发光贴图 {% elif f == 'specular' %}高光反射 {% elif f
+            == 'volumetric' %}体积云 {% elif f == 'godrays' %}丁达尔光 {% elif f
+            == 'ssao' %}SSAO (环境光遮蔽) {% elif f == 'bloom' %}Bloom (泛光) {%
+            elif f == 'water' %}高级水体渲染 {% elif f == 'shadow' %}动态阴影 {%
+            elif f == 'custom_sky' %}自定义天空盒 {% else %}{{ f }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">协议</span>
+        <div class="info-value">
+          {% if shader.license %} {{ shader.license }} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      {% if shader.mcmod_id %}
+      <div class="info-item">
+        <span class="info-label">MC百科</span>
+        <div class="info-value">
+          <a
+            href="https://www.mcmod.cn/class/{{ shader.mcmod_id }}"
+            target="_blank"
+            rel="noopener"
+            style="
+              color: var(--primary-color);
+              text-decoration: none;
+              border-bottom: 1px dashed var(--primary-color);
+            "
+            >查看条目 #{{ shader.mcmod_id }}</a
+          >
+        </div>
+      </div>
+      {% endif %}
+      <div class="info-item" style="border-bottom: none">
+        <span class="info-label">外部链接</span>
+        <div class="info-value">
+          {% if shader.download_links %}
+          <div class="download-links">
+            {% for link in shader.download_links %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener"
+              >{{ link.name }}</a
+            >
+            {% endfor %}
+          </div>
+          {% else %}
+          <span class="empty-hint">暂无外部下载链接</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="download-section-left">
+        {% if shader.auth_image %}
+        <a
+          href="/download/shaderpack/{{ shader.id }}"
+          class="download-btn"
+          target="_blank"
+        >
+          <i class="fas fa-download"></i> 下载此光影包
+        </a>
+        <div class="download-hint">
+          <i class="fas fa-check-circle" style="color: #55d88b"></i>
+          已遵循协议开放下载
+          <a href="{{ shader.auth_image }}" target="_blank" rel="noopener"
+            >（查看协议）</a
+          >
+        </div>
+        {% else %}
+        <div class="download-unavailable">
+          <span
+            ><i class="fas fa-triangle-exclamation"></i>
+            请使用外部链接下载</span
+          >
+          <p class="hint-text">此项目尚未设置授权图片，暂不提供内部下载</p>
+        </div>
+        {% endif %}
+      </div>
+      <div
+        style="
+          margin-top: 16px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        "
+      >
+        <a href="/shaderpack/{{ shader.id }}/diff" class="diff-history-link">
+          <i class="fas fa-scroll"></i> 编辑历史对比
+          <span class="hint">(查看所有版本)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 右侧面板 ========== -->
+  <div class="right-panel">
+    <div class="screenshots-section">
+      <div class="section-label">
+        <span
+          ><i class="fas fa-camera"></i> 截图
+          <span>{{ (shader.screenshots or [])|length }} 张</span></span
+        >
+        <div class="label-actions">
+          <div class="share-dropdown">
+            <button
+              class="share-btn"
+              data-share-toggle
+              title="分享此页面"
+            >
+              <i class="fas fa-share-alt"></i> 分享
+            </button>
+            <div class="share-dropdown-menu" id="shareDropdownMenu">
+              <a
+                href="#"
+                data-share-action="copy"
+                ><i class="fas fa-link"></i> 复制链接</a
+              >
+              <a
+                href="#"
+                data-share-action="poster"
+                ><i class="fas fa-image"></i> 生成海报</a
+              >
+            </div>
+          </div>
+          <a href="/shaderpack/edit/{{ shader.id }}" class="edit-btn"
+            ><i class="fas fa-pen"></i> 编辑此页面</a
+          >
+        </div>
+      </div>
+      <div class="screenshot-scroll">
+        {% if shader.bilibili_video %}
+        <div
+          class="screenshot-item video-item"
+          data-video="{{ shader.bilibili_video }}"
+          style="background-image: url('{{ shader.cover }}'); background-size: cover; background-position: center;"
+        >
+          <div class="video-play-icon"><i class="fas fa-play-circle"></i></div>
+          <span class="screenshot-index">🎬 视频</span>
+        </div>
+        {% endif %} {% if shader.screenshots %} {% for src in shader.screenshots
+        %}
+        <div class="screenshot-item" data-screenshot="{{ src }}">
+          <img src="{{ src }}" alt="截图 {{ loop.index }}" loading="lazy" />
+          <span class="screenshot-index"
+            >{{ loop.index }} / {{ (shader.screenshots or [])|length }}</span
+          >
+        </div>
+        {% endfor %} {% else %}
+        <div
+          class="empty-placeholder"
+          style="padding: 20px 0; text-align: center"
+        >
+          暂无截图
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ============================================================ 绑定茶室话题
+    ============================================================ #} {% if
+    shader.bound_tea_topic %} {% set tea = shader.bound_tea_topic %}
+    <div class="tea-topic-section">
+      <div class="section-label">
+        <span
+          ><i class="fas fa-mug-hot" style="color: #e8a437"></i> 相关话题</span
+        >
+      </div>
+      <a
+        href="https://tea.mcresource.cn/topic/{{ tea.slug }}"
+        class="tea-topic-card"
+        target="_blank"
+        rel="noopener"
+      >
+        <div class="tea-topic-icon">
+          {% if tea.is_official %}📢{% else %}#{% endif %}
+        </div>
+        <div class="tea-topic-body">
+          <div class="tea-topic-title">
+            <span class="tea-topic-hash">#</span>{{ tea.name }}
+            <span
+              class="tea-topic-level topic-level-{{ tea.level_visual.type }}"
+            >
+              {{ tea.level_visual.label }}
+            </span>
+          </div>
+          {% if tea.description %}
+          <div class="tea-topic-desc">{{ tea.description }}</div>
+          {% endif %}
+          <div class="tea-topic-meta">
+            <span><i class="fas fa-comment"></i> {{ tea.post_count }} 帖</span>
+            <span
+              ><i class="fas fa-users"></i> {{ tea.follower_count }} 关注</span
+            >
+            {% if tea.last_post_at %}
+            <span
+              ><i class="fas fa-clock"></i> {{ tea.last_post_at | timesince
+              }}</span
+            >
+            {% endif %}
+          </div>
+        </div>
+        <div class="tea-topic-arrow">
+          <i class="fas fa-arrow-up-right-from-square"></i>
+        </div>
+      </a>
+    </div>
+    {% endif %}
+
+    <div class="preset-entry">
+      <div class="preset-entry-left">
+        <span class="preset-entry-icon"><i class="fas fa-palette"></i></span>
+        <span class="preset-entry-title">光影包预设</span>
+        <span class="preset-entry-count">可选用配置</span>
+      </div>
+      <a
+        href="/shaderpack/{{ shader.id }}/presets"
+        class="preset-entry-btn"
+        target="_blank"
+      >
+        <i class="fas fa-eye"></i> 查看预设
+      </a>
+    </div>
+
+    {% include 'components/interaction.html' %}
+
+    <div class="description-section">
+      <div class="section-label"><i class="fas fa-book"></i> 光影介绍</div>
+      <div class="description-content">
+        {% if shader.description %} {{ shader.description|safe }} {% else %}
+        <p class="empty-placeholder">暂无介绍</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% include 'components/comment.html' %}
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script>
+  window.RESOURCE_TYPE = 'shaderpack';
+  window.RESOURCE_ID = {{ shader.id }};
+  window.RESOURCE_DATA = {
+      main_name: {{ shader.main_name|tojson|safe }},
+      sub_name: {{ shader.sub_name|tojson|safe }},
+      summary: {{ shader.summary|tojson|safe }},
+      cover: {{ shader.cover|tojson|safe }},
+      screenshots: {{ shader.screenshots|tojson|safe }},
+      description: {{ shader.description|tojson|safe }},
+      url: '{{ request.url }}',
+      authors_display: {{ shader.authors_display|tojson|safe }}
+  };
+</script>
+<script src="/static/js/lib/share/post.js"></script>
+<script src="/static/js/pages/common/detail-common.js"></script>
+{% endblock %}

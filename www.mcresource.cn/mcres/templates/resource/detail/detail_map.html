@@ -1,0 +1,506 @@
+{% extends "base.html" %} {% block title %}{{ map.main_name }} - Minecraft 地图
+| MCRES 方块工坊{% endblock %} {% block extra_head %}
+<meta
+  name="description"
+  content="{{ map.summary or map.main_name }} - {{ map.authors_display|map(attribute='display')|join(', ') if map.authors_display else '匿名' }} 制作，{{ map.map_type or '冒险' }}类型，支持 {{ map.platforms|join('、') if map.platforms else 'Java/Bedrock' }}，适配 {{ map.versions|join('、') if map.versions else '主流版本' }}。{{ map.authors_display|map(attribute='display')|join(', ') if map.authors_display else '' }} 精心打造，立即探索！"
+/>
+
+<meta property="og:title" content="{{ map.main_name }} - MCRES 方块工坊" />
+<meta property="og:description" content="{{ map.summary or map.main_name }}" />
+<meta property="og:image" content="{{ map.cover }}" />
+<meta property="og:url" content="{{ request.url }}" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="stylesheet" href="/static/css/pages/common/detail-common.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/detail-page.css" />
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Map",
+    "name": "{{ map.main_name }}",
+    "description": "{{ map.summary or map.main_name }}",
+    "author": {
+      "@type": "Person",
+      "name": "{{ map.authors_display[0].display if map.authors_display else '匿名' }}"
+    },
+    "image": "{{ map.cover }}",
+    "mapType": "{{ map.map_type or '冒险' }}",
+    "url": "{{ request.url }}",
+    "datePublished": "{{ map.date_added }}"
+  }
+</script>
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": "https://www.mcresource.cn/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "地图",
+        "item": "https://www.mcresource.cn/maps"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "{{ map.main_name }}"
+      }
+    ]
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/css/pages/resource/detail/detail_map.css" />
+{% endblock %} {# 详情页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="detail-container">
+  <div class="left-panel">
+    <div class="cover-wrapper">
+      <img
+        src="{{ map.cover }}"
+        alt="{{ map.main_name }} 封面"
+        loading="lazy"
+      />
+    </div>
+    <div class="info-content">
+      <div class="name-row">
+        {% if map.status and map.status != 'unknown' %}
+        <span class="status-badge {{ map.status }}">
+          {% if map.status == 'active' %}活跃 {% elif map.status == 'semi'
+          %}半弃坑 {% elif map.status == 'inactive' %}停更 {% else %}{{
+          map.status }}{% endif %}
+        </span>
+        {% endif %} {% if map.abbr %}
+        <span class="name-abbr">{{ map.abbr }}</span>
+        {% endif %}
+        <span class="name-main">{{ map.main_name }}</span>
+        {% if map.sub_name and map.sub_name != map.main_name %}
+        <span class="name-sub">{{ map.sub_name }}</span>
+        {% endif %}
+      </div>
+
+      <!-- ===== PV 数据卡片 ===== -->
+      <div class="stats-mini-card">
+        {% if map.hot_score %}
+        <div class="hot-score-row">
+          <i
+            class="fas fa-{{ map.hot_score.icon }}"
+            style="color: {{ map.hot_score.color }}; font-size: 18px;"
+          ></i>
+          <span
+            class="hot-score-label"
+            style="color: {{ map.hot_score.color }};"
+          >
+            {{ map.hot_score.label }}
+          </span>
+          <span
+            class="hot-score-stars"
+            style="color: {{ map.hot_score.color }};"
+          >
+            {{ map.hot_score.star_display }}
+          </span>
+          <span
+            class="hot-score-badge"
+            style="background: {{ map.hot_score.color }};"
+          >
+            {{ map.hot_score.star_count }} 星
+          </span>
+        </div>
+        <div class="hot-score-detail">
+          <span class="hot-score-ratio"
+            ><i class="fas fa-chart-bar"></i> 相对比值 {{ map.hot_score.score
+            }}x</span
+          >
+          <span class="hot-score-avg"
+            ><i class="fas fa-clipboard-list"></i> 昨日平均 {{ map.hot_score.avg
+            }}</span
+          >
+        </div>
+        {% endif %}
+        <div class="stats-mini-row">
+          <div class="stat-mini-item">
+            <span class="stat-mini-number" style="color: #f5a623"
+              >{{ map.today_view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-calendar-day"></i> 今日浏览</span
+            >
+          </div>
+          <div class="stat-mini-divider"></div>
+          <div class="stat-mini-item">
+            <span class="stat-mini-number" style="color: #7ab7f0"
+              >{{ map.yesterday_view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-chart-line"></i> 昨日指数</span
+            >
+          </div>
+          <div class="stat-mini-divider"></div>
+          <div class="stat-mini-item">
+            <span class="stat-mini-number"
+              >{{ map.view_count|default(0) }}</span
+            >
+            <span class="stat-mini-label"
+              ><i class="fas fa-eye"></i> 总浏览量</span
+            >
+          </div>
+        </div>
+        <div class="stat-mini-date">
+          <i class="fas fa-calendar-alt"></i> 收录时间：{% if map.date_added
+          %}{{ map.date_added }}({{ map.date_added | timesince}}){% else %}<span
+            class="empty-hint"
+            >未知</span
+          >{% endif %}
+        </div>
+      </div>
+
+      <!-- ===== PV 趋势图（左侧，PV数据下方） ===== -->
+      <div class="pv-trend-section">
+        <div class="section-label">
+          <span class="left">
+            <i class="fas fa-chart-line" style="color: #7ab7f0"></i> 浏览趋势
+          </span>
+          <div class="trend-controls">
+            <span
+              id="pvAvgLabel"
+              style="
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.3);
+                font-weight: 400;
+              "
+              >日均 --</span
+            >
+            <select id="pvTrendRange">
+              <option value="7">近7天</option>
+              <option value="30" selected>近30天</option>
+              <option value="90">近90天</option>
+              <option value="all">全部</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="pvTrendChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ===== 信息项 ===== -->
+      <div class="info-item">
+        <span class="info-label">作者</span>
+        <div class="info-value">
+          {% if map.authors_display %}
+          <div class="author-list">
+            {% for item in map.authors_display %} {% if item.url %}
+            <a href="{{ item.url }}" class="author author-link"
+              >{{ item.display }}</a
+            >
+            {% else %}
+            <span class="author">{{ item.display }}</span>
+            {% endif %} {% endfor %}
+          </div>
+          {% else %}
+          <span class="empty-hint">未提供</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">地图类型</span>
+        <div class="info-value">
+          {% if map.map_type %}
+          <span class="tag map-type">{{ map.map_type }}</span>
+          {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">适用玩家</span>
+        <div class="info-value">
+          {% if map.player_count %}
+          <span class="tag player-count">
+            {% if map.player_count == 'single' %}单人 {% elif map.player_count
+            == 'multi' %}多人 {% elif map.player_count == 'both' %}均可 {% else
+            %}{{ map.player_count }}{% endif %}
+          </span>
+          {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持平台</span>
+        <div class="info-value">
+          {% if map.platforms %} {% for p in map.platforms %}
+          <span class="tag platform">
+            {% if p == 'java' %}JAVA版 {% elif p == 'bedrock' %}基岩版 {% else
+            %}{{ p }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">支持版本</span>
+        <div class="info-value">
+          {% if map.versions %} {% for v in map.versions %}
+          <span class="tag version">{{ v }}</span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      {% if map.multiplayer_details %}
+      <div class="info-item">
+        <span class="info-label">多人详情</span>
+        <div class="info-value">
+          <div class="multiplayer-text">{{ map.multiplayer_details }}</div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="info-item">
+        <span class="info-label">所需模组/插件</span>
+        <div class="info-value">
+          {% if map.mods %} {% for mod in map.mods %}
+          <span class="tag mod">
+            {% if mod == 'optifine' %}OptiFine {% elif mod == 'fabric' %}Fabric
+            API {% elif mod == 'forge' %}Forge {% elif mod == 'worldedit'
+            %}WorldEdit {% elif mod == 'command_block' %}命令方块 (内置) {% elif
+            mod == 'resourcepack' %}配套资源包 {% else %}{{ mod }}{% endif %}
+          </span>
+          {% endfor %} {% else %}
+          <span class="empty-hint">无特殊要求</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="info-item">
+        <span class="info-label">协议</span>
+        <div class="info-value">
+          {% if map.license %} {{ map.license }} {% else %}
+          <span class="empty-hint">未指定</span>
+          {% endif %}
+        </div>
+      </div>
+      {% if map.mcmod_id %}
+      <div class="info-item">
+        <span class="info-label">MC百科</span>
+        <div class="info-value">
+          <a
+            href="https://www.mcmod.cn/class/{{ map.mcmod_id }}"
+            target="_blank"
+            rel="noopener"
+            style="
+              color: var(--primary-color);
+              text-decoration: none;
+              border-bottom: 1px dashed var(--primary-color);
+            "
+            >查看条目 #{{ map.mcmod_id }}</a
+          >
+        </div>
+      </div>
+      {% endif %}
+      <div class="info-item" style="border-bottom: none">
+        <span class="info-label">外部链接</span>
+        <div class="info-value">
+          {% if map.download_links %}
+          <div class="download-links">
+            {% for link in map.download_links %}
+            <a href="{{ link.url }}" target="_blank" rel="noopener"
+              >{{ link.name }}</a
+            >
+            {% endfor %}
+          </div>
+          {% else %}
+          <span class="empty-hint">暂无外部下载链接</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="download-section-left">
+        {% if map.auth_image %}
+        <a
+          href="/download/map/{{ map.id }}"
+          class="download-btn"
+          target="_blank"
+        >
+          <i class="fas fa-download"></i> 下载此地图
+        </a>
+        <div class="download-hint">
+          <i class="fas fa-check-circle" style="color: #55d88b"></i>
+          已遵循协议开放下载
+          <a href="{{ map.auth_image }}" target="_blank" rel="noopener"
+            >（查看协议）</a
+          >
+        </div>
+        {% else %}
+        <div class="download-unavailable">
+          <span
+            ><i class="fas fa-triangle-exclamation"></i>
+            请使用外部链接下载</span
+          >
+          <p class="hint-text">此项目尚未设置授权图片，暂不提供内部下载</p>
+        </div>
+        {% endif %}
+      </div>
+      <div
+        style="
+          margin-top: 16px;
+          padding-top: 12px;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+        "
+      >
+        <a href="/map/{{ map.id }}/diff" class="diff-history-link">
+          <i class="fas fa-scroll"></i> 编辑历史对比
+          <span class="hint">(查看所有版本)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="right-panel">
+    <div class="screenshots-section">
+      <div class="section-label">
+        <span
+          ><i class="fas fa-camera"></i> 截图
+          <span>{{ (map.screenshots or [])|length }} 张</span></span
+        >
+        <div class="label-actions">
+          <div class="share-dropdown">
+            <button
+              class="share-btn"
+              data-share-toggle
+              title="分享此页面"
+            >
+              <i class="fas fa-share-alt"></i> 分享
+            </button>
+            <div class="share-dropdown-menu" id="shareDropdownMenu">
+              <a
+                href="#"
+                data-share-action="copy"
+                ><i class="fas fa-link"></i> 复制链接</a
+              >
+              <a
+                href="#"
+                data-share-action="poster"
+                ><i class="fas fa-image"></i> 生成海报</a
+              >
+            </div>
+          </div>
+          <a href="/map/edit/{{ map.id }}" class="edit-btn"
+            ><i class="fas fa-pen"></i> 编辑此页面</a
+          >
+        </div>
+      </div>
+      <div class="screenshot-scroll">
+        {% if map.bilibili_video %}
+        <div
+          class="screenshot-item video-item"
+          data-video="{{ map.bilibili_video }}"
+          style="background-image: url('{{ map.cover }}'); background-size: cover; background-position: center;"
+        >
+          <div class="video-play-icon"><i class="fas fa-play-circle"></i></div>
+          <span class="screenshot-index">🎬 视频</span>
+        </div>
+        {% endif %} {% if map.screenshots %} {% for src in map.screenshots %}
+        <div class="screenshot-item" data-screenshot="{{ src }}">
+          <img src="{{ src }}" alt="截图 {{ loop.index }}" loading="lazy" />
+          <span class="screenshot-index"
+            >{{ loop.index }} / {{ (map.screenshots or [])|length }}</span
+          >
+        </div>
+        {% endfor %} {% else %}
+        <div
+          class="empty-placeholder"
+          style="padding: 20px 0; text-align: center"
+        >
+          暂无截图
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ============================================================ 绑定茶室话题
+    ============================================================ #} {% if
+    map.bound_tea_topic %} {% set tea = map.bound_tea_topic %}
+    <div class="tea-topic-section">
+      <div class="section-label">
+        <span
+          ><i class="fas fa-mug-hot" style="color: #e8a437"></i> 相关话题</span
+        >
+      </div>
+      <a
+        href="https://tea.mcresource.cn/topic/{{ tea.slug }}"
+        class="tea-topic-card"
+        target="_blank"
+        rel="noopener"
+      >
+        <div class="tea-topic-icon">
+          {% if tea.is_official %}📢{% else %}#{% endif %}
+        </div>
+        <div class="tea-topic-body">
+          <div class="tea-topic-title">
+            <span class="tea-topic-hash">#</span>{{ tea.name }}
+            <span
+              class="tea-topic-level topic-level-{{ tea.level_visual.type }}"
+            >
+              {{ tea.level_visual.label }}
+            </span>
+          </div>
+          {% if tea.description %}
+          <div class="tea-topic-desc">{{ tea.description }}</div>
+          {% endif %}
+          <div class="tea-topic-meta">
+            <span><i class="fas fa-comment"></i> {{ tea.post_count }} 帖</span>
+            <span
+              ><i class="fas fa-users"></i> {{ tea.follower_count }} 关注</span
+            >
+            {% if tea.last_post_at %}
+            <span
+              ><i class="fas fa-clock"></i> {{ tea.last_post_at | timesince
+              }}</span
+            >
+            {% endif %}
+          </div>
+        </div>
+        <div class="tea-topic-arrow">
+          <i class="fas fa-arrow-up-right-from-square"></i>
+        </div>
+      </a>
+    </div>
+    {% endif %} {% include 'components/interaction.html' %}
+
+    <div class="description-section">
+      <div class="section-label"><i class="fas fa-book"></i> 地图介绍</div>
+      <div class="description-content">
+        {% if map.description %} {{ map.description|safe }} {% else %}
+        <p class="empty-placeholder">暂无介绍</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% include 'components/comment.html' %}
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script>
+  window.RESOURCE_TYPE = 'map';
+  window.RESOURCE_ID = {{ map.id }};
+  window.RESOURCE_DATA = {
+      main_name: {{ map.main_name|tojson|safe }},
+      sub_name: {{ map.sub_name|tojson|safe }},
+      summary: {{ map.summary|tojson|safe }},
+      cover: {{ map.cover|tojson|safe }},
+      screenshots: {{ map.screenshots|tojson|safe }},
+      description: {{ map.description|tojson|safe }},
+      url: '{{ request.url }}',
+      authors_display: {{ map.authors_display|tojson|safe }}
+  };
+</script>
+<script src="/static/js/lib/share/post.js"></script>
+<script src="/static/js/pages/common/detail-common.js"></script>
+{% endblock %}

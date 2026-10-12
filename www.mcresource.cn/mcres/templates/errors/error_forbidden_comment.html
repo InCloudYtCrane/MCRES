@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block title %}评论被拦截 - MCRES{% endblock %} {%
+block extra_head %}
+<meta http-equiv="refresh" content="10;url={{ redirect_url }}" />
+<link rel="stylesheet" href="/static/css/pages/errors/error_forbidden_comment.css" />
+{% endblock %} {% block content %}
+<div class="error-container">
+  <span class="icon">
+    {% if level == 'BAN_PERMANENT' %}<i
+      class="fas fa-ban"
+      style="color: #ff6b6b"
+    ></i>
+    {% elif level == 'BAN_TEMPORARY' %}<i
+      class="fas fa-lock"
+      style="color: #ff6b6b"
+    ></i>
+    {% elif level == 'MUTE' %}<i
+      class="fas fa-volume-mute"
+      style="color: #f5a623"
+    ></i>
+    {% else %}<i class="fas fa-triangle-exclamation" style="color: #f5a623"></i>
+    {% endif %}
+  </span>
+  <div
+    class="title {% if level in ['BAN_PERMANENT', 'BAN_TEMPORARY'] %}danger {% elif level == 'MUTE' %}warning {% else %}info {% endif %}"
+  >
+    评论已被拦截
+  </div>
+  <p class="subtitle">{{ message }}</p>
+  <div class="detail-box">
+    <div class="label">处罚等级</div>
+    <div class="value">
+      {% if level == 'BAN_PERMANENT' %}<i
+        class="fas fa-ban"
+        style="color: #ff6b6b"
+      ></i>
+      严重违规 - 信誉-100 {% elif level == 'BAN_TEMPORARY' %}<i
+        class="fas fa-lock"
+        style="color: #ff6b6b"
+      ></i>
+      重度违规 - 信誉-25 {% elif level == 'MUTE' %}<i
+        class="fas fa-volume-mute"
+        style="color: #f5a623"
+      ></i>
+      中度违规 - 信誉-12 {% else %}<i
+        class="fas fa-triangle-exclamation"
+        style="color: #f5a623"
+      ></i>
+      轻度违规 - 信誉-5 {% endif %}
+    </div>
+    {% if matched_keywords %}
+    <div style="margin-top: 10px">
+      <div class="label">触发词</div>
+      <div class="value">
+        <span class="highlight">{{ matched_keywords }}</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="countdown">
+    页面将在 <span id="countdownNum">10</span> 秒后自动刷新
+  </div>
+  <a href="{{ redirect_url }}" class="btn-manual">立即返回</a>
+</div>
+{% endblock %} {% block extra_script %}
+
+<script>
+  window.ERROR_PAGE = { redirectUrl: {{ redirect_url|tojson }} };
+</script>
+<script src="/static/js/pages/errors/error_forbidden_comment.js"></script>
+{% endblock %}

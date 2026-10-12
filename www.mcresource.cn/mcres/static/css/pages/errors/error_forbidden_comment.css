@@ -1,0 +1,98 @@
+/* mcres/static/css/pages/errors/error_forbidden_comment.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .error-container {
+    max-width: 520px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 48px 40px 40px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  .icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .title.danger {
+    color: #ff6b6b;
+  }
+  .title.warning {
+    color: #f5a623;
+  }
+  .title.info {
+    color: #55d88b;
+  }
+  .subtitle {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .detail-box {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 16px 0 24px;
+    border-left: 4px solid #ff6b6b;
+    text-align: left;
+  }
+  .detail-box .label {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .detail-box .value {
+    font-size: 15px;
+    margin-top: 4px;
+    word-break: break-all;
+  }
+  .detail-box .value .highlight {
+    color: #f5a623;
+    font-weight: 600;
+  }
+  .countdown {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .countdown span {
+    color: #55d88b;
+    font-weight: 600;
+  }
+  .btn-manual {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 32px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .btn-manual:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }

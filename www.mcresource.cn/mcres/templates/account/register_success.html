@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block title %}注册成功 - MCRES{% endblock %} {%
+block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/auth/register_success.css" />
+{% endblock %} {# 本页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="card">
+  <div class="icon">
+    <i class="fas fa-check"></i>
+  </div>
+  <h1>注册成功</h1>
+  <div class="desc">
+    欢迎入驻 <span class="nickname">MCRES</span>！<br />
+    现在你可以开始探索、收藏并分享优秀的 Minecraft 资源了。
+  </div>
+  <div class="btn-group">
+    <a href="/login" class="btn primary">
+      <i class="fas fa-sign-in-alt"></i> 立即登录
+    </a>
+    <a href="/static" class="btn secondary">
+      <i class="fas fa-home"></i> 返回首页
+    </a>
+  </div>
+  <div class="tips">
+    <i class="fas fa-info-circle"></i>
+    提示：登录后即可上传资源、发表评论以及收藏资源。
+  </div>
+</div>
+{% endblock %}

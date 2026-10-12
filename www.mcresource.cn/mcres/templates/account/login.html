@@ -1,0 +1,154 @@
+{% extends "base.html" %} {% block title %}登录 - MCRES{% endblock %} {% block
+extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="/static/css/pages/auth/login.css" />
+{% endblock %} {# 该页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="wrapper">
+  <div class="left">
+    <div class="logo">MC<span>RES</span></div>
+    <div class="slogan">
+      探索、分享并收藏优秀的 Minecraft 资源。<br />在这里发现材质包、光影、地图与更多精彩内容。
+    </div>
+    <div class="features">
+      <div class="feature"><i class="fas fa-box"></i> 海量 Minecraft 资源</div>
+      <div class="feature">
+        <i class="fas fa-star"></i> 收藏并关注喜爱的作品
+      </div>
+      <div class="feature"><i class="fas fa-users"></i> 与创作者交流互动</div>
+      <div class="feature">
+        <i class="fas fa-rocket"></i> 上传并分享你的作品
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="login-card">
+      <div class="login-content">
+        <div class="login-qr" id="qrLoginSection">
+          <div class="qr-label"><i class="fas fa-qrcode"></i> 扫码快捷登录</div>
+          <div class="qr-code-wrapper">
+            <div id="qrCodeImg">加载中...</div>
+            <div class="qr-overlay" id="qrOverlay">
+              <div class="icon"><i class="fas fa-check-circle"></i></div>
+              <div class="title">已扫描</div>
+              <div class="sub">请在手机上确认登录</div>
+            </div>
+          </div>
+          <div id="qrStatusText">请用手机扫码</div>
+          <div class="qr-hint">
+            <i class="fas fa-info-circle"></i> 手机端个人主页 → 扫一扫
+          </div>
+        </div>
+        <div class="login-form">
+          <h2>欢迎回来</h2>
+          <div class="sub">登录 MCRES 账号继续探索</div>
+
+          {% if error %}
+          <div class="error-msg">{{ error }}</div>
+          {% endif %}
+
+          <form action="/login" method="post">
+            <div class="form-group">
+              <label><i class="fas fa-envelope"></i> 邮箱</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="请输入邮箱"
+                value="{{ email if email else '' }}"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-lock"></i> 密码</label>
+              <input
+                type="password"
+                name="pwd"
+                placeholder="请输入密码"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-shield-alt"></i> 验证码</label>
+              <div class="captcha-row">
+                {# 不回显旧的 captcha 输入，出错后要求重新输入 #}
+                <input
+                  type="text"
+                  name="captcha"
+                  placeholder="请输入验证码"
+                  required
+                  autocomplete="off"
+                  autocapitalize="characters"
+                  spellcheck="false"
+                />
+                {# 不在此处写 src="/captcha"，由 JS 统一加载 #}
+                <img
+                  id="captchaImg"
+                  class="captcha-img"
+                  alt="点击刷新"
+                  title="点击刷新"
+                />
+              </div>
+              <div class="captcha-refresh">
+                <aclass="captcha-refresh-link">看不清？换一张</a>
+              </div>
+            </div>
+            <div class="remember-row">
+              <input type="checkbox" name="remember" id="remember" value="1" />
+              <label for="remember">30天内保持登录</label>
+            </div>
+
+            {# ===== 协议复选框 ===== #}
+            <div class="agree-row">
+              <input
+                type="checkbox"
+                name="agree"
+                id="agreeLogin"
+                value="1"
+                required
+              />
+              <label for="agreeLogin">
+                我已阅读并同意
+                <a href="/terms" target="_blank">《用户协议》</a>
+                及
+                <a href="/privacy" target="_blank">《隐私政策》</a>
+              </label>
+            </div>
+
+            <button type="submit" class="login-btn">
+              <i class="fas fa-sign-in-alt"></i> 登录
+            </button>
+          </form>
+
+          <div class="social-login">
+            <div class="divider"><span>或使用以下方式快速登录</span></div>
+            <div class="social-icons">
+              <span
+                class="social-icon social-qq"
+                data-href="{{ qq_login_url }}"
+                title="使用QQ登录"
+              >
+                <i class="fab fa-qq"></i>
+              </span>
+              <a
+                href="/login/github"
+                class="social-icon social-github"
+                data-href="/login/github"
+                title="使用GitHub登录"
+              >
+                <i class="fab fa-github"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="register">
+            <span>没有账号？<a href="/register">立即注册</a></span>
+            <a href="/forgot_password">忘记密码？</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/pages/auth/login.js"></script>
+{% endblock %}

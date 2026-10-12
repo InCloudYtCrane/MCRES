@@ -1,0 +1,166 @@
+{% extends "base.html" %} {% block title %}注册 - MCRES{% endblock %} {% block
+extra_head %}
+<link rel="stylesheet" href="/static/css/pages/auth/register.css" />
+{% endblock %} {# 该页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="wrapper">
+  <div class="left">
+    <div class="logo">MC<span>RES</span></div>
+    <div class="slogan">
+      加入 MCRES，与全球 Minecraft 玩家一起分享、发现与创造。
+    </div>
+    <div class="features">
+      <div class="feature">
+        <i class="fas fa-palette"></i> 上传并分享你的作品
+      </div>
+      <div class="feature"><i class="fas fa-star"></i> 收藏喜欢的资源</div>
+      <div class="feature"><i class="fas fa-comment"></i> 与创作者交流互动</div>
+      <div class="feature">
+        <i class="fas fa-rocket"></i> 建立属于你的创作者主页
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="register-card">
+      <h2>创建账号</h2>
+      <div class="sub">注册 MCRES，开启你的创作之旅</div>
+      <div class="step-indicator">
+        <span id="stepDot1" class="active">1</span>
+        <span id="stepDot2">2</span>
+        <span id="stepDot3">3</span>
+      </div>
+      <div id="generalError" class="error-msg"></div>
+      <div id="step1">
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> 邮箱</label>
+          <input
+            type="email"
+            id="emailInput"
+            placeholder="请输入你的邮箱（如 example@qq.com）"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-shield-alt"></i> 图形验证码</label>
+          <div class="captcha-row">
+            <input
+              type="text"
+              id="captchaInput"
+              placeholder="请输入图形验证码"
+              required
+            />
+            <img
+              src="/captcha"
+              id="captchaImg"
+              class="captcha-img"
+              title="点击刷新"
+            />
+          </div>
+          <div class="captcha-refresh">
+            <a
+              >看不清？换一张</a
+            >
+          </div>
+        </div>
+        <button type="button" class="register-btn" id="nextStep1Btn">
+          <i class="fas fa-arrow-right"></i> 下一步
+        </button>
+      </div>
+      <div id="step2" style="display: none">
+        <p style="color: #55d88b; margin-bottom: 15px">
+          <i class="fas fa-check-circle"></i> 验证码已发送至您的邮箱
+        </p>
+        <p style="font-size: 14px; color: #b8c0c8; margin-bottom: 20px">
+          若未收到邮件，请检查垃圾箱或使用
+          <a href="https://mail.qq.com" target="_blank" style="color: #55d88b"
+            >QQ邮箱网页版</a
+          >
+          （或其他邮箱的网页版）
+        </p>
+        <div class="form-group">
+          <label><i class="fas fa-envelope-open-text"></i> 邮箱验证码</label>
+          <div class="email-code-row">
+            <input
+              type="text"
+              id="emailCodeInput"
+              placeholder="请输入邮箱验证码"
+              required
+            />
+            <button type="button" class="email-code-btn" id="verifyCodeBtn">
+              <i class="fas fa-check"></i> 验证
+            </button>
+          </div>
+        </div>
+        <div style="text-align: right; margin-top: 8px">
+          <a id="resendCodeLink" class="resend-link">重新发送验证码</a>
+          <span
+            id="resendTimer"
+            style="font-size: 13px; color: #9ba5af; margin-left: 10px"
+          ></span>
+        </div>
+      </div>
+      <div id="step3" style="display: none">
+        <form action="/register" method="post" id="registerForm">
+          <input type="hidden" name="email" id="hiddenEmail" />
+          <div class="form-group">
+            <label for="nicknameInput"><i class="fas fa-user"></i> 昵称</label>
+            <input
+              type="text"
+              name="nickname"
+              id="nicknameInput"
+              placeholder="请输入昵称（2-20字符）"
+              required
+              maxlength="20"
+            />
+            <span class="nickname-hint"
+              >2–20 个字符，可包含中文、英文、数字、下划线</span
+            >
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> 密码</label>
+            <input
+              type="password"
+              id="pwd"
+              name="pwd"
+              placeholder="请输入密码（至少8位）"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> 确认密码</label>
+            <input
+              type="password"
+              id="confirmPwd"
+              name="confirm_pwd"
+              placeholder="请再次输入密码"
+              required
+            />
+          </div>
+          <div class="form-group" style="margin-bottom: 20px">
+            <label class="agree-label">
+              <input type="checkbox" name="agree" id="agreeCheck" required />
+              <span>
+                我已阅读并同意
+                <a href="/terms" target="_blank">《用户协议》</a>
+                及
+                <a href="/privacy" target="_blank">《隐私政策》</a>
+              </span>
+            </label>
+          </div>
+          {% if error %}
+          <div class="backend-error">{{ error }}</div>
+          {% endif %}
+          <button type="submit" class="register-btn">
+            <i class="fas fa-user-plus"></i> 注册账号
+          </button>
+        </form>
+      </div>
+      <div class="login-link">
+        <i class="fas fa-arrow-left"></i> <a href="/login">返回登录</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/pages/auth/register.js"></script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %} {% block title %}{{ current_rule.title if current_rule
+else '站内规则' }} - MCRES{% endblock %} {% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/rule.css" />
+{% endblock %} {% block footer %}
+<footer>{% include "components/footer.html" %}</footer>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1><i class="fas fa-scroll"></i> 站内规则</h1>
+    <div class="sub">MCRES 社区行为规范与资源发布准则</div>
+  </div>
+  <div class="rules-layout">
+    <aside class="rules-sidebar">
+      <div class="sidebar-title">
+        <i class="fas fa-clipboard-list"></i> 规则目录
+      </div>
+      {% if rules %}
+      <ul class="rule-list">
+        {% for r in rules %}
+        <li>
+          <a
+            href="/rule/{{ r.rule_key }}"
+            class="rule-list-item {% if current_rule and r.rule_key == current_rule.rule_key %}active{% endif %}"
+          >
+            {{ r.title }}
+            <span class="rule-date"
+              >{{ r.updated_at.strftime('%Y-%m-%d') if r.updated_at else ''
+              }}</span
+            >
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="no-rules">暂无规则</div>
+      {% endif %}
+    </aside>
+    <main class="rules-content">
+      {% if error %}
+      <div class="error-msg">
+        <span class="icon"><i class="fas fa-inbox"></i></span>
+        {{ error }}
+      </div>
+      {% elif current_rule %}
+      <div class="rule-version-bar">
+        <label for="versionSelect"><i class="fas fa-folder"></i> 版本：</label>
+        <select id="versionSelect">
+          <option value="">加载中...</option>
+        </select>
+        <span class="version-info" id="versionInfo"></span>
+      </div>
+      <h1 class="rule-title" id="ruleTitle">{{ current_rule.title }}</h1>
+      <div class="rule-meta" id="ruleMeta">
+        <span
+          ><i class="fas fa-clock"></i> 更新于
+          <span id="updateTime"
+            >{{ current_rule.updated_at.strftime('%Y年%m月%d日 %H:%M') if
+            current_rule.updated_at else '未知' }}</span
+          ></span
+        >
+        <span
+          ><i class="fas fa-user"></i> 维护者：{{ current_rule.updated_by_nick
+          or '系统' }}</span
+        >
+      </div>
+      <div class="rule-body" id="ruleBody">{{ current_rule.content|safe }}</div>
+      {% else %}
+      <div class="error-msg">
+        <span class="icon"><i class="fas fa-inbox"></i></span>
+        未找到规则
+      </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %} {% block extra_script %} {% if current_rule %}
+<script>
+  window.RULE_KEY = "{{ current_rule.rule_key }}";
+</script>
+<script src="/static/js/pages/rule.js"></script>
+{% endif %} {% endblock %}

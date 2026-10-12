@@ -1,0 +1,542 @@
+/* mcres/static/css/pages/profile/settings.css
+   账号设置页样式。 */
+
+/* ========== 全局 ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  color: #e0e4e8;
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+}
+.bg-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-image: url("/background");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.bg-layer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== 主卡片 ========== */
+.settings-card {
+  background: rgba(28, 33, 40, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  min-height: 500px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+/* ========== 侧边栏 ========== */
+.settings-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 24px 0;
+}
+.settings-sidebar .brand {
+  padding: 0 24px 20px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0f4f8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  margin-bottom: 16px;
+}
+.settings-sidebar .brand i {
+  color: #55d88b;
+  margin-right: 10px;
+}
+.settings-nav {
+  list-style: none;
+  padding: 0 12px;
+}
+.settings-nav li {
+  margin-bottom: 4px;
+}
+.settings-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  color: #b0b8c0;
+  font-size: 15px;
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  cursor: pointer;
+}
+.settings-nav li a i {
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+.settings-nav li a:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e8ecf0;
+}
+.settings-nav li a.active {
+  background: rgba(85, 216, 139, 0.12);
+  color: #55d88b;
+  font-weight: 600;
+}
+
+/* ========== 内容区 ========== */
+.settings-content {
+  flex: 1;
+  padding: 32px 40px 40px 40px;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+}
+.settings-panel {
+  display: none;
+}
+.settings-panel.active {
+  display: block;
+}
+.settings-panel h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f0f4f8;
+  margin-bottom: 6px;
+}
+.settings-panel .subtitle {
+  color: #8a929a;
+  font-size: 15px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 16px;
+}
+
+/* ========== 表单 ========== */
+.form-group {
+  margin-bottom: 24px;
+}
+.form-group label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #d0d8e0;
+  margin-bottom: 6px;
+}
+.form-group .hint {
+  font-size: 13px;
+  color: #6a7a8a;
+  margin-top: 4px;
+}
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #e8ecf0;
+  font-size: 15px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  outline: none;
+  font-family: inherit;
+}
+.form-control:focus {
+  border-color: #55d88b;
+  box-shadow: 0 0 0 3px rgba(85, 216, 139, 0.15);
+}
+.form-control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.15);
+}
+.form-control::placeholder {
+  color: #5a6a7a;
+}
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ========== 字段状态提示 ========== */
+.field-status {
+  font-size: 13px;
+  margin-top: 4px;
+  transition: opacity 0.3s;
+}
+.field-status.saving {
+  color: #8a929a;
+}
+.field-status.saved {
+  color: #55d88b;
+}
+.field-status.error {
+  color: #e74c3c;
+}
+
+/* ========== 头像 ========== */
+.avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.avatar-upload .current-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: #2a3139;
+  position: relative;
+}
+.avatar-upload .current-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.avatar-upload .current-avatar .avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+}
+.avatar-upload .current-avatar:hover .avatar-overlay {
+  display: flex;
+}
+.avatar-upload .upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.avatar-upload .upload-controls .file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+.avatar-upload .upload-controls .file-input-wrapper input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* ========== 密码链接按钮 ========== */
+.pwd-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #d0d8e0;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+  cursor: pointer;
+}
+.pwd-link-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.pwd-link-btn i {
+  color: #55d88b;
+}
+
+/* ========== 按钮 ========== */
+.btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+  font-family: inherit;
+}
+.btn-primary {
+  background: #55d88b;
+  color: #111;
+}
+.btn-primary:hover {
+  background: #4ac47d;
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #d0d8e0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* ========== 开关 (Toggle) ========== */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.toggle-wrapper:last-child {
+  border-bottom: none;
+}
+.toggle-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.toggle-label .title {
+  font-weight: 500;
+  color: #e8ecf0;
+}
+.toggle-label .desc {
+  font-size: 14px;
+  color: #8a929a;
+}
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+  background: #3a3f48;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.25s;
+  margin-left: 16px;
+}
+.toggle-switch.active {
+  background: #55d88b;
+}
+.toggle-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.toggle-switch.active::after {
+  transform: translateX(20px);
+}
+
+/* ========== 通知设置：茶室分组分隔线 ========== */
+.notification-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 6px;
+}
+.notification-section-divider .line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.notification-section-divider .label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8a437;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.notification-section-divider .label i {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* ========== 通知设置提示 ========== */
+.notification-hint {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #8a929a;
+  font-size: 14px;
+}
+.notification-hint i {
+  color: #55d88b;
+  margin-right: 8px;
+}
+
+/* ========== Toast 消息 ========== */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: rgba(28, 33, 40, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e8ecf0;
+  font-size: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideIn 0.3s ease;
+  min-width: 200px;
+  max-width: 400px;
+}
+.toast.success {
+  border-color: rgba(85, 216, 139, 0.3);
+}
+.toast.success i {
+  color: #55d88b;
+}
+.toast.error {
+  border-color: rgba(231, 76, 60, 0.3);
+}
+.toast.error i {
+  color: #e74c3c;
+}
+.toast.info {
+  border-color: rgba(52, 152, 219, 0.3);
+}
+.toast.info i {
+  color: #5dade2;
+}
+.toast i {
+  margin-right: 10px;
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .settings-card {
+    flex-direction: column;
+  }
+  .settings-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 16px 0;
+  }
+  .settings-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0 12px;
+  }
+  .settings-nav li {
+    flex: 1 0 auto;
+    margin-bottom: 0;
+  }
+  .settings-nav li a {
+    padding: 8px 14px;
+    font-size: 14px;
+    justify-content: center;
+  }
+  .settings-content {
+    padding: 24px 20px;
+    max-height: none;
+  }
+}
+@media (max-width: 500px) {
+  .settings-sidebar .brand {
+    font-size: 16px;
+    padding: 0 16px 14px 16px;
+  }
+  .settings-nav li a {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+  .toast-container {
+    right: 10px;
+    left: 10px;
+  }
+  .toast {
+    max-width: 100%;
+  }
+  .avatar-upload {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.footer {
+  margin-top: 28px;
+  padding: 20px 0 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  text-align: center;
+  font-size: 14px;
+  color: #6a7a8a;
+}

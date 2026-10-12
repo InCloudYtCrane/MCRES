@@ -1,0 +1,157 @@
+<div class="comments-section" id="commentsApp">
+    <div class="comments-header">
+        <span class="comments-title"><i class="fas fa-comment"></i> 看法</span>
+        <span class="comments-count" id="commentsCount">0</span>
+    </div>
+
+    <!-- 评论表单 -->
+    <div class="comment-form" id="commentForm">
+        <div class="comment-form-inner">
+            <textarea id="commentInput" rows="3" placeholder="写下你的看法… (纯文本，支持换行)" maxlength="500"></textarea>
+            <div class="comment-form-actions">
+                <span class="char-counter" id="charCounter">0 / 500</span>
+                <div class="form-actions-right">
+                    <button type="button" class="btn-emoji" id="emojiToggleBtn"
+                            title="插入表情" disabled>
+                        <i class="fas fa-face-smile"></i>
+                    </button>
+                    <button class="btn-submit" id="submitCommentBtn" disabled>发表看法</button>
+                </div>
+            </div>
+        </div>
+        <!-- ★ 表情选择面板 -->
+        <div class="emoji-panel" id="emojiPanel" hidden>
+            <div class="emoji-panel-grid" id="emojiPanelGrid">
+                <div class="emoji-panel-empty"><i class="fas fa-spinner fa-spin"></i> 加载中…</div>
+            </div>
+        </div>
+        <div class="login-prompt" id="loginPrompt">
+            <span><i class="fas fa-lock"></i> 请 <a href="/login">登录</a> 后发表看法</span>
+        </div>
+    </div>
+
+    <!-- 上方分页 -->
+    <div class="comments-pagination" id="paginationTop"></div>
+
+    <!-- 评论列表 -->
+    <div class="comments-list" id="commentsList"></div>
+
+    <!-- 下方分页 -->
+    <div class="comments-pagination" id="paginationBottom"></div>
+
+    <!-- 状态占位 -->
+    <div class="comments-loading" id="commentsLoading">
+        <span class="loader"></span> 加载中…
+    </div>
+    <div class="comments-empty" id="commentsEmpty">
+        <span class="empty-icon"><i class="fas fa-comment-dots"></i></span>
+        <span>还没有看法，来发表第一条吧！</span>
+    </div>
+    <div class="comments-error" id="commentsError" style="display:none;">
+        <span><i class="fas fa-triangle-exclamation"></i> 加载失败，请 <a href="javascript:void(0)" id="reloadCommentsLink">重试</a></span>
+    </div>
+</div>
+
+<!-- ===== 举报模态框（桌面端） ===== -->
+<div class="modal-overlay" id="reportModal">
+    <div class="modal-box">
+        <button class="modal-close" id="reportModalCloseBtn"><i class="fas fa-xmark"></i></button>
+        <div class="modal-title"><i class="fas fa-flag"></i> 举报评论</div>
+        <div style="margin-bottom:12px;color:rgba(255,255,255,0.4);font-size:14px;">
+            请说明举报理由，我们将尽快审核处理。
+        </div>
+        <textarea id="reportReason" rows="4" placeholder="请详细描述举报原因…" style="width:100%;padding:12px 16px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;background:rgba(255,255,255,0.04);color:#e6edf3;font-size:14px;line-height:1.7;resize:vertical;min-height:100px;max-height:200px;outline:none;font-family:inherit;"></textarea>
+        <div class="modal-footer-actions">
+            <button class="btn btn-cancel" id="reportCancelBtn">取消</button>
+            <button class="btn btn-submit" id="reportSubmitBtn">提交举报</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 移动端底部抽屉（仅在移动端显示） -->
+<!-- ============================================================ -->
+
+<!-- 表态选择器抽屉 -->
+<div class="bottom-drawer" id="reactionDrawer">
+    <div class="drawer-mask" data-drawer="reaction"></div>
+    <div class="drawer-content">
+        <div class="drawer-header">
+            <span>表态</span>
+            <button class="drawer-close" data-drawer="reaction"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body" id="reactionOptions"></div>
+    </div>
+</div>
+
+<!-- 更多操作抽屉 -->
+<div class="bottom-drawer" id="actionDrawer">
+    <div class="drawer-mask" data-drawer="action"></div>
+    <div class="drawer-content">
+        <div class="drawer-header">
+            <span>操作</span>
+            <button class="drawer-close" data-drawer="action"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body" id="actionOptions"></div>
+    </div>
+</div>
+
+<!-- 子评论会话抽屉 -->
+<div class="bottom-drawer" id="threadDrawer">
+    <div class="drawer-mask" data-drawer="thread"></div>
+    <div class="drawer-content" style="max-height: 70vh;">
+        <div class="drawer-header">
+            <span id="threadDrawerTitle">会话</span>
+            <button class="drawer-close" data-drawer="thread"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body" id="threadDrawerBody">
+            <div id="threadList"></div>
+            <div class="thread-reply-box">
+                <textarea id="threadReplyInput" rows="1" placeholder="回复…" maxlength="500"></textarea>
+                <button id="threadReplyBtn" disabled>发送</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 举报抽屉（移动端） -->
+<div class="bottom-drawer" id="reportDrawer">
+    <div class="drawer-mask" data-drawer="report"></div>
+    <div class="drawer-content">
+        <div class="drawer-header">
+            <span><i class="fas fa-flag" style="color:#f5a623;"></i> 举报</span>
+            <button class="drawer-close" data-drawer="report"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="drawer-body">
+            <p style="color:rgba(255,255,255,0.5); font-size:14px; margin-bottom:12px;">请说明举报理由，我们将尽快审核。</p>
+            <textarea id="reportReasonMobile" rows="4" placeholder="详细描述举报原因…" style="width:100%;padding:12px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:rgba(255,255,255,0.04);color:#e6edf3;font-size:14px;resize:vertical;min-height:80px;outline:none;font-family:inherit;"></textarea>
+            <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:16px;">
+                <button class="drawer-btn-cancel" data-drawer="report">取消</button>
+                <button class="drawer-btn-submit" id="reportSubmitBtnMobile">提交举报</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+
+<link rel="stylesheet" href="/static/css/components/comment.css" />
+
+<!-- 全局变量（必须在所有 JS 之前） -->
+<script>
+    window.USER_INFO = {{ user_info | tojson | safe if user_info else 'null' }};
+    window.IS_LOGGED_IN = {{ (user_info is not none) | tojson }};
+    window.CURRENT_USER_ID = {{ user_info.id if user_info else 'null' }};
+</script>
+
+<!-- ★ 拆解后的评论模块（按依赖顺序加载，不能调换） -->
+<script src="/static/js/components/comment/config.js"></script>
+<script src="/static/js/components/comment/utils.js"></script>
+<script src="/static/js/components/comment/pagination.js"></script>
+<script src="/static/js/components/comment/scroll.js"></script>
+<script src="/static/js/components/comment/render.js"></script>
+<script src="/static/js/components/comment/data.js"></script>
+<script src="/static/js/components/comment/actions.js"></script>
+<script src="/static/js/components/comment/drawer.js"></script>
+<script src="/static/js/components/comment/events.js"></script>
+<script src="/static/js/components/comment/main.js"></script>

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}系统维护中 · MCRES{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/stop.css" />
+{% endblock %}
+
+{# 维护页不展示导航栏与页脚 #}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="card">
+        <!-- ===== 头部 ===== -->
+        <div class="header">
+            <div class="icon"><i class="fas fa-hard-hat"></i></div>
+            <h1>MC<span>RES</span></h1>
+            <div class="badge"><i class="fas fa-cog fa-spin"></i> 系统维护中</div>
+        </div>
+
+        <!-- ===== 公告列表 ===== -->
+        <div class="announce-section">
+            <div class="label"><i class="fas fa-bullhorn"></i> 工坊公告</div>
+            <div class="announce-list">
+                {% if announcements %}
+                    {% for item in announcements|reverse %}
+                    <div class="announce-item">
+                        {% if item.title %}
+                            <span class="title">{{ item.title }}</span>
+                            <span class="time">·</span>
+                            <span>{{ item.content if item.content else '' }}</span>
+                        {% else %}
+                            {{ item.content if item.content else item }}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="announce-empty">
+                        <i class="fas fa-info-circle"></i> 暂无公告，请稍后查看
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== 主管登录入口 ===== -->
+        <div class="login-prompt">
+            <div class="text">
+                <i class="fas fa-user-shield"></i>
+                工坊主管请 <a href="/login">点击登录</a> 进行管理
+            </div>
+        </div>
+
+        <!-- ===== 页脚 ===== -->
+        <div class="footer">
+            ©2026 MCRES · <a href="mailto:1399885823@qq.com">联系站长</a>
+        </div>
+    </div>
+{% endblock %}

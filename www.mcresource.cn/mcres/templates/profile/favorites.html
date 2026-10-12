@@ -1,0 +1,71 @@
+<!-- profile/favorites.html -->
+<div class="card works-card">
+    <div class="works-layout">
+        <!-- 左侧侧边栏：收藏夹列表 -->
+        <div class="works-sidebar">
+            <div class="works-sidebar-header">
+                <i class="fas fa-star" style="color: var(--role-color);"></i>
+                <span>{% if is_me %}我的收藏夹{% else %}TA的收藏夹{% endif %}</span>
+                <span class="works-total-badge" id="folders-total">0</span>
+                {% if is_me %}
+                <button id="add-folder-btn" class="btn-icon" title="新建收藏夹" style="background:transparent;border:none;color:var(--role-color);cursor:pointer;font-size:18px;margin-left:auto;">
+                    <i class="fas fa-plus-circle"></i>
+                </button>
+                {% endif %}
+            </div>
+            <div class="works-submenu" id="folder-list">
+                <!-- 由 JavaScript 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 右侧内容区：当前收藏夹的资源 -->
+        <div class="works-content">
+            <div id="favorites-resources" class="works-sub-content active">
+                <div class="works-grid" id="favorites-resource-list">
+                    <div class="empty-state">
+                        <i class="fas fa-star" style="color: var(--role-color); opacity:0.3;"></i>
+                        <p>请选择一个收藏夹</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 右键菜单（隐藏） -->
+<div id="folder-context-menu" style="display:none;position:fixed;background:#1a1e26;border:1px solid #2a2e3a;border-radius:8px;padding:4px 0;z-index:9999;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+    <div class="context-item" data-action="rename" style="padding:8px 16px;cursor:pointer;color:#e4e4ea;display:flex;align-items:center;gap:8px;transition:background 0.15s;">
+        <i class="fas fa-pen" style="width:18px;"></i> 重命名
+    </div>
+    <div class="context-item" data-action="delete" style="padding:8px 16px;cursor:pointer;color:#f97583;display:flex;align-items:center;gap:8px;transition:background 0.15s;">
+        <i class="fas fa-trash" style="width:18px;"></i> 删除
+    </div>
+</div>
+
+<!-- 模态框 -->
+<div id="folder-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:#1a1e26;border:1px solid #2a2e3a;border-radius:12px;padding:32px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+        <h3 id="modal-title" style="color:#e4e4ea;margin-bottom:16px;font-weight:600;">新建收藏夹</h3>
+        <input id="modal-input" type="text" placeholder="请输入名称" style="width:100%;padding:10px 14px;background:#0b0f14;border:1px solid #2a2e3a;border-radius:6px;color:#e4e4ea;font-size:14px;outline:none;transition:border-color 0.2s;">
+        <p id="modal-hint" style="color:#f97583;font-size:13px;margin-top:8px;display:none;"></p>
+        <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end;">
+            <button id="modal-cancel-btn" style="padding:8px 24px;background:transparent;border:1px solid #2a2e3a;border-radius:6px;color:#8a8a9e;cursor:pointer;font-size:14px;transition:all 0.2s;">取消</button>
+            <button id="modal-confirm-btn" style="padding:8px 24px;background:var(--role-color);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;">确认</button>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div id="delete-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:10001;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+    <div style="background:#1a1e26;border:1px solid #2a2e3a;border-radius:12px;padding:32px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+        <i class="fas fa-exclamation-triangle" style="color:#f97583;font-size:40px;display:block;text-align:center;margin-bottom:12px;"></i>
+        <h3 style="color:#e4e4ea;text-align:center;margin-bottom:8px;font-weight:600;">确认删除</h3>
+        <p style="color:#8a8a9e;text-align:center;font-size:14px;margin-bottom:20px;">确定要删除该收藏夹及其中的所有资源收藏吗？<br>此操作不可恢复。</p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+            <button id="delete-cancel-btn" style="padding:8px 24px;background:transparent;border:1px solid #2a2e3a;border-radius:6px;color:#8a8a9e;cursor:pointer;font-size:14px;transition:all 0.2s;">取消</button>
+            <button id="delete-confirm-btn" style="padding:8px 24px;background:#f97583;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;">确认删除</button>
+        </div>
+    </div>
+</div>
+
+<!-- 嵌入后端数据 -->

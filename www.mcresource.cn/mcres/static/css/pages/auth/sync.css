@@ -1,0 +1,230 @@
+/* mcres/static/css/pages/auth/sync.css
+   QQ / GitHub 首次登录的资料同步页共用样式。 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Microsoft YaHei", sans-serif;
+}
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, rgba(19, 23, 29, 0.95), rgba(26, 32, 44, 0.95)),
+    url("/background");
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 16px;
+}
+.card {
+  width: 520px;
+  max-width: 100%;
+  backdrop-filter: blur(25px);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 38px 36px 30px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+h2 {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+.sub {
+  color: #b8c0c8;
+  font-size: 14px;
+  margin-bottom: 26px;
+  line-height: 1.6;
+}
+.sub i {
+  color: #55d88b;
+  margin-right: 6px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  transition: 0.2s;
+}
+.item.disabled {
+  opacity: 0.45;
+}
+.item .thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.item .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.item .thumb i {
+  font-size: 26px;
+  color: #55d88b;
+}
+.item .body {
+  flex: 1;
+  min-width: 0;
+}
+.item .body .label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.item .body .value {
+  font-size: 13px;
+  color: #b8c0c8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item input[type="text"] {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  margin-top: 6px;
+  outline: none;
+  transition: 0.2s;
+}
+.item input[type="text"]:focus {
+  border-color: #55d88b;
+}
+.item input[type="text"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 自定义开关 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 26px;
+  transition: 0.3s;
+}
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+input:checked + .slider {
+  background: #55d88b;
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(85, 216, 139, 0.18);
+  color: #55d88b;
+  margin-left: 8px;
+}
+.badge.muted {
+  background: rgba(255, 255, 255, 0.08);
+  color: #9ba5af;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.btn {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary {
+  background: #55d88b;
+  color: #111;
+}
+.btn-primary:hover {
+  background: #6df19f;
+  transform: translateY(-2px);
+}
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d9e0e7;
+  flex: 0 0 100px;
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.tip {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #9ba5af;
+  text-align: center;
+  line-height: 1.7;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 26px 20px 22px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+  .item {
+    padding: 14px;
+    gap: 12px;
+  }
+  .item .thumb {
+    width: 54px;
+    height: 54px;
+  }
+}

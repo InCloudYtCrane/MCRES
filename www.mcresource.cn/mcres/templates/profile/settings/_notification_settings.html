@@ -1,0 +1,83 @@
+{# 【主站】templates/profile/settings/_notification_settings.html #}
+{# 位置：mcres/templates/profile/settings/_notification_settings.html #}
+<h2>通知设置</h2>
+<div class="subtitle">选择您希望接收的通知类型</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">评论回复通知</span>
+        <span class="desc">当有人回复您的评论时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.reply else '' }}" data-setting="reply"></div>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">表态通知</span>
+        <span class="desc">当有人对您的评论表态时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.reaction else '' }}" data-setting="reaction"></div>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">留言板通知</span>
+        <span class="desc">当有人在您的个人主页留言时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.board else '' }}" data-setting="board"></div>
+</div>
+
+{# ============================================================
+   成就通知
+   ============================================================ #}
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">成就通知</span>
+        <span class="desc">当您达成一个新成就时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.achievement else '' }}" data-setting="achievement"></div>
+</div>
+
+{# ============================================================
+   茶室通知
+   ============================================================ #}
+<div class="notification-section-divider">
+    <span class="line"></span>
+    <span class="label">
+        <i class="fas fa-mug-hot"></i> 茶室通知
+    </span>
+    <span class="line"></span>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">茶室回复通知</span>
+        <span class="desc">当有人回复你在方块茶室的帖子时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.tea_reply else '' }}" data-setting="tea_reply"></div>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">茶室点赞通知</span>
+        <span class="desc">当有人点赞你在方块茶室的帖子或回复时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.tea_like else '' }}" data-setting="tea_like"></div>
+</div>
+
+<div class="toggle-wrapper">
+    <div class="toggle-label">
+        <span class="title">关注话题新帖</span>
+        <span class="desc">当你在方块茶室关注的话题有新帖发布时发送通知</span>
+    </div>
+    <div class="toggle-switch {{ 'active' if notification_settings.tea_topic else '' }}" data-setting="tea_topic"></div>
+</div>
+
+<div class="notification-hint">
+    <i class="fas fa-info-circle"></i>
+    系统消息（审核结果、违规处罚等）将始终发送，无法关闭
+</div>
+
+<div class="form-actions" style="margin-top: 28px;">
+    <button class="btn btn-primary" id="saveNotifications">保存通知设置</button>
+</div>

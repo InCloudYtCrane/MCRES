@@ -1,0 +1,92 @@
+{% extends "base.html" %} {% block title %}更新日志 - MCRES{% endblock %} {%
+block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/index/changelog.css" />
+{% endblock %} {% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %} {% block footer %}
+<div class="footer">{% include 'components/footer.html' %}</div>
+{% endblock %} {% block content %}
+<div class="container">
+  {# ===== 顶部信息条 ===== #}
+  <div class="top-info">
+    <div class="top-info-item">
+      <i class="fas fa-calendar-day"></i>
+      <span>今天是：<strong id="todayDate">加载中…</strong></span>
+    </div>
+    <div class="top-info-item">
+      <i class="fas fa-rocket"></i>
+      <span
+        >距离 MCRES 项目启动，已走过
+        <strong class="days" id="daysSince">—</strong> 天</span
+      >
+    </div>
+  </div>
+
+  {# ===== 里程碑横向滚动 ===== #} {% if data.milestone and
+  data.milestone|length > 0 %}
+  <div class="milestone-scroller" id="milestoneScroller">
+    <div class="milestone-track" id="milestoneTrack">
+      {% for m in data.milestone %}
+      <div
+        class="milestone-pill"
+        style="--ms-color: {{ m.color }}; --ms-color-15: {{ m.color }}26;"
+        title="{{ m.title }}{% if m.desc %} · {{ m.desc }}{% endif %}"
+      >
+        <i class="fas {{ m.icon }}"></i>
+        <span class="ms-pill-title">{{ m.title }}</span>
+        <span class="ms-pill-date">{{ m.date }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %} {# ===== 日历总览（折叠区，放在上方） ===== #}
+  <section class="calendar-section" id="calendarSection">
+    <div class="calendar-toggle" id="calendarToggle">
+      <div class="ct-title">
+        <i class="fas fa-calendar-alt"></i>
+        日历总览
+        <span class="badge" id="calendarBadge">点击展开</span>
+      </div>
+      <i class="fas fa-chevron-down ct-arrow"></i>
+    </div>
+    <div class="calendar-body">
+      <div class="calendar-inner">
+        <div id="calendarContainer"></div>
+      </div>
+    </div>
+  </section>
+
+  {# ===== 更新流（主视图，放在下方） ===== #}
+  <section class="stream-section">
+    <h2 class="stream-title">
+      <i class="fas fa-stream"></i>
+      最新更新
+      <span class="badge" id="streamBadge">加载中…</span>
+    </h2>
+    <div class="stream-list" id="streamList"></div>
+  </section>
+</div>
+
+{# ===== 大展开框 ===== #}
+<div class="detail-popup" id="detailPopup">
+  <div class="popup-header">
+    <div class="popup-date" id="popupDate"></div>
+    <div class="popup-count" id="popupCount"></div>
+    <button class="popup-close" id="popupClose" title="关闭">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="popup-body" id="popupBody"></div>
+</div>
+
+<button class="back-to-top" id="backToTop" title="回到顶部">
+  <i class="fas fa-arrow-up"></i>
+</button>
+{% endblock %} {% block extra_script %} {# ===== 数据注入（必须保留，且在 JS
+之前） ===== #}
+<script id="changelogData" type="application/json">
+  {{ data|tojson }}
+</script>
+
+<script src="/static/js/pages/index/changelog.js"></script>
+{% endblock %}

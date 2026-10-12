@@ -1,0 +1,672 @@
+/* ============================================================
+   勉励工坊 · 爱发电风格 · 高密度布局
+   路径：static/css/pages/index/support.css
+   ============================================================ */
+
+:root {
+    /* 背景 */
+    --sup-bg:        #17171a;
+    --sup-card:      #1e1e22;
+    --sup-card-hi:   #232328;
+    --sup-border:    #2e2e34;
+    --sup-border-2:  #38383f;
+
+    /* 文字 */
+    --sup-text:      #e8e8ec;
+    --sup-text-2:    #b8b8c0;
+    --sup-muted:     #7a7a85;
+
+    /* 爱发电紫 */
+    --sup-accent:    #946ce6;
+    --sup-accent-2:  #7c5cff;
+    --sup-accent-hi: #a882ec;
+    --sup-accent-bg: rgba(148, 108, 230, 0.10);
+    --sup-accent-bd: rgba(148, 108, 230, 0.35);
+
+    /* 状态色 */
+    --sup-warm:      #e6a23c;
+    --sup-danger:    #e74c5e;
+
+    /* 圆角：几乎直角 */
+    --sup-radius:    2px;
+}
+
+/* ============================================================
+   背景层
+   ============================================================ */
+.sup-bg-layer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    /* 暗色遮罩 + 你的图片 */
+    background:
+        linear-gradient(rgba(23, 23, 26, 0.88), rgba(23, 23, 26, 0.92)),
+        url('https://www.mcresource.cn/background?type=tea') center / cover no-repeat,
+        var(--sup-bg);
+}
+
+/* ============================================================
+   容器
+   ============================================================ */
+.sup-wrap {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 88px 24px 60px;
+    color: var(--sup-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   Hero：紧凑横条
+   ============================================================ */
+.sup-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 26px;
+    margin-bottom: 20px;
+    background: var(--sup-card);
+    border: 1px solid var(--sup-border);
+    border-left: 3px solid var(--sup-accent);
+    border-radius: var(--sup-radius);
+}
+
+.sup-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    flex: 1;
+}
+
+.sup-hero-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--sup-radius);
+    background: var(--sup-accent-bg);
+    border: 1px solid var(--sup-accent-bd);
+    overflow: hidden;
+}
+.sup-hero-icon img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    display: block;
+}
+
+.sup-hero-text {
+    min-width: 0;
+}
+.sup-hero-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+.sup-hero-text p {
+    color: var(--sup-muted);
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sup-hero-right {
+    flex-shrink: 0;
+}
+
+/* ============================================================
+   通用按钮
+   ============================================================ */
+.sup-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 26px;
+    background: var(--sup-accent);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+    border-radius: var(--sup-radius);
+    text-decoration: none;
+    border: 1px solid var(--sup-accent);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+.sup-btn:hover {
+    background: var(--sup-accent-hi);
+    border-color: var(--sup-accent-hi);
+}
+.sup-btn:active {
+    transform: translateY(1px);
+}
+.sup-btn i { font-size: 13px; }
+
+/* ============================================================
+   网格布局
+   ============================================================ */
+.sup-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.sup-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+/* ============================================================
+   通用卡片
+   ============================================================ */
+.sup-card {
+    background: var(--sup-card);
+    border: 1px solid var(--sup-border);
+    border-radius: var(--sup-radius);
+    padding: 20px 22px;
+    transition: border-color 0.15s;
+}
+.sup-card:hover {
+    border-color: var(--sup-border-2);
+}
+
+.sup-table-card {
+    margin-bottom: 16px;
+    padding: 20px 22px 22px;
+}
+
+.sup-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    padding-left: 10px;
+    position: relative;
+    letter-spacing: 0.2px;
+}
+.sup-card-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 14px;
+    background: var(--sup-accent);
+}
+.sup-card-title i {
+    color: var(--sup-accent-hi);
+    font-size: 13px;
+}
+.sup-card-title .badge {
+    margin-left: 4px;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: var(--sup-accent-hi);
+    background: var(--sup-accent-bg);
+    border: 1px solid var(--sup-accent-bd);
+    border-radius: var(--sup-radius);
+}
+
+/* ============================================================
+   本月收支
+   ============================================================ */
+.sup-month .sup-card-title {
+    color: #fff;
+}
+.sup-month-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--sup-border);
+}
+.sup-month-row:last-of-type {
+    border-bottom: none;
+    padding-bottom: 2px;
+}
+.sup-month-row .k {
+    color: var(--sup-muted);
+    font-size: 13px;
+}
+.sup-month-row .v {
+    font-size: 20px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+}
+.sup-month-row .v.income  { color: var(--sup-accent-hi); }
+.sup-month-row .v.expense { color: var(--sup-danger); }
+.sup-month-row .v.balance { color: var(--sup-warm); }
+.sup-month-row .v.negative{ color: var(--sup-danger); }
+
+.sup-month-note {
+    font-size: 12px;
+    color: var(--sup-muted);
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--sup-border);
+    line-height: 1.7;
+}
+.sup-month-note i {
+    color: var(--sup-accent-hi);
+    margin-right: 4px;
+}
+.sup-month-date {
+    font-size: 11.5px;
+    color: var(--sup-muted);
+    opacity: 0.65;
+    margin-top: 4px;
+}
+
+/* ============================================================
+   收款去向（紧凑）
+   ============================================================ */
+.sup-alloc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.sup-alloc-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 42px;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+.sup-alloc-row .label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--sup-text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+.sup-alloc-row .label .icon {
+    flex-shrink: 0;
+    font-size: 13px;
+}
+.sup-alloc-row .bar {
+    position: relative;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0;
+    overflow: hidden;
+}
+.sup-alloc-row .bar-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--sup-accent);
+}
+.sup-alloc-row .amount {
+    color: var(--sup-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   勉励方式（三步紧凑）
+   ============================================================ */
+.sup-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--sup-border);
+    border: 1px solid var(--sup-border);
+    border-radius: var(--sup-radius);
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+.sup-step {
+    padding: 14px 8px;
+    background: var(--sup-card);
+    text-align: center;
+    transition: background 0.15s;
+}
+.sup-step:hover {
+    background: var(--sup-accent-bg);
+}
+.sup-step .num {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--sup-accent-hi);
+    margin-bottom: 6px;
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+}
+.sup-step .t {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.sup-step .d {
+    font-size: 11.5px;
+    color: var(--sup-muted);
+    line-height: 1.5;
+}
+.sup-step-tip {
+    font-size: 12px;
+    color: var(--sup-muted);
+    line-height: 1.7;
+    padding-top: 12px;
+    border-top: 1px solid var(--sup-border);
+}
+.sup-step-tip i {
+    color: var(--sup-accent-hi);
+    margin-right: 4px;
+}
+
+/* ============================================================
+   列表（表格）
+   ============================================================ */
+.sup-list-wrap {
+    overflow-x: auto;
+    margin: 0 -8px;
+}
+.sup-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    min-width: 700px;
+}
+.sup-table th {
+    text-align: left;
+    color: var(--sup-muted);
+    font-weight: 600;
+    font-size: 11.5px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--sup-border);
+    background: rgba(255, 255, 255, 0.015);
+    white-space: nowrap;
+}
+.sup-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--sup-border);
+    color: var(--sup-text-2);
+    vertical-align: top;
+    line-height: 1.6;
+}
+.sup-table tbody tr {
+    transition: background 0.12s;
+}
+.sup-table tbody tr:hover td {
+    background: rgba(148, 108, 230, 0.04);
+}
+.sup-table tbody tr:last-child td {
+    border-bottom: none;
+}
+.sup-table .amount {
+    color: var(--sup-accent-hi);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.sup-table .amount.out {
+    color: var(--sup-danger);
+}
+.sup-table .muted {
+    color: var(--sup-muted);
+    font-size: 12.5px;
+}
+.sup-table .remark {
+    max-width: 380px;
+    word-break: break-word;
+}
+.sup-table .nickname {
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   分页
+   ============================================================ */
+.sup-pager {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--sup-border);
+}
+.sup-pager a,
+.sup-pager span {
+    min-width: 32px;
+    padding: 5px 10px;
+    text-align: center;
+    border-radius: var(--sup-radius);
+    font-size: 12.5px;
+    color: var(--sup-muted);
+    border: 1px solid var(--sup-border);
+    background: transparent;
+    text-decoration: none;
+    transition: 0.15s;
+    cursor: pointer;
+}
+.sup-pager a:hover {
+    color: var(--sup-accent-hi);
+    border-color: var(--sup-accent-bd);
+    background: var(--sup-accent-bg);
+}
+.sup-pager .active {
+    background: var(--sup-accent);
+    color: #fff;
+    border-color: var(--sup-accent);
+    font-weight: 600;
+    cursor: default;
+}
+.sup-pager .disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.sup-pager .info {
+    color: var(--sup-muted);
+    font-size: 12px;
+    border: none;
+    padding: 0 6px;
+    background: transparent;
+}
+
+/* 空状态 */
+.sup-empty {
+    text-align: center;
+    padding: 44px 20px;
+    color: var(--sup-muted);
+    font-size: 13.5px;
+}
+.sup-empty i {
+    display: block;
+    font-size: 28px;
+    opacity: 0.3;
+    margin-bottom: 10px;
+}
+.sup-empty-sm {
+    text-align: center;
+    padding: 24px 10px;
+    color: var(--sup-muted);
+    font-size: 13px;
+}
+
+/* ============================================================
+   底部说明卡片
+   ============================================================ */
+.sup-info {
+    padding: 22px 24px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--sup-text-2);
+}
+.sup-info p {
+    margin-bottom: 12px;
+}
+.sup-info p:last-child {
+    margin-bottom: 0;
+}
+.sup-info strong {
+    color: var(--sup-accent-hi);
+    font-weight: 600;
+}
+.sup-info em {
+    font-style: normal;
+    color: var(--sup-warm);
+    font-weight: 600;
+}
+
+.sup-info .sup-code {
+    display: block;
+    text-align: left;
+    background: #101014;
+    border: 1px solid var(--sup-accent-bd);
+    border-left: 3px solid var(--sup-accent);
+    color: var(--sup-accent-hi);
+    padding: 12px 20px;
+    border-radius: var(--sup-radius);
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    margin: 12px 0 14px;
+}
+.sup-info .sup-code .gray {
+    color: var(--sup-muted);
+    user-select: none;
+}
+
+.sup-note {
+    font-size: 12.5px;
+    color: var(--sup-muted);
+    line-height: 1.8;
+}
+.sup-note strong {
+    color: var(--sup-accent-hi);
+    font-weight: 600;
+}
+
+/* ============================================================
+   响应式
+   ============================================================ */
+@media (max-width: 1000px) {
+    .sup-grid-3 { grid-template-columns: 1fr 1fr; }
+    .sup-grid-3 > .sup-card:last-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 760px) {
+    .sup-wrap { padding: 80px 14px 40px; }
+    .sup-hero {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px 18px;
+        gap: 14px;
+    }
+    .sup-hero-left { gap: 12px; }
+    .sup-hero-icon { width: 40px; height: 40px; }
+    .sup-hero-icon img { width: 24px; height: 24px; }
+    .sup-hero-text h1 { font-size: 19px; }
+    .sup-hero-text p {
+        white-space: normal;
+        font-size: 12.5px;
+    }
+    .sup-hero-right { width: 100%; }
+    .sup-btn { width: 100%; justify-content: center; }
+
+    .sup-grid-3,
+    .sup-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .sup-grid-3 > .sup-card:last-child { grid-column: auto; }
+
+    .sup-card { padding: 18px 18px; }
+    .sup-table-card { padding: 18px 16px 18px; }
+
+    .sup-month-row .v { font-size: 18px; }
+
+    .sup-table { min-width: 600px; font-size: 13px; }
+    .sup-table th,
+    .sup-table td { padding: 10px 10px; }
+    .sup-table .remark { max-width: 180px; }
+
+    .sup-info { padding: 18px 18px; font-size: 13.5px; }
+}
+
+@media (max-width: 480px) {
+    .sup-step { padding: 12px 6px; }
+    .sup-step .num { font-size: 14px; margin-bottom: 4px; }
+    .sup-step .t { font-size: 12px; }
+    .sup-step .d { font-size: 11px; }
+}
+/* ============================================================
+   月份选择器
+   ============================================================ */
+.sup-month-title {
+    justify-content: space-between;
+    gap: 12px;
+}
+.sup-month-title-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sup-month-picker {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--sup-border);
+    color: var(--sup-text-2);
+    padding: 3px 8px;
+    border-radius: var(--sup-radius);
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    color-scheme: dark;
+    transition: border-color 0.15s, color 0.15s;
+}
+.sup-month-picker:hover {
+    border-color: var(--sup-accent-bd);
+    color: var(--sup-accent-hi);
+}
+.sup-month-picker:focus {
+    border-color: var(--sup-accent);
+}
+
+.sup-month-back {
+    color: var(--sup-accent-hi);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--sup-accent-bd);
+}
+.sup-month-back:hover {
+    color: #fff;
+    border-bottom-color: var(--sup-accent-hi);
+}

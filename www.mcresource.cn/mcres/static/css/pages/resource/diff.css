@@ -1,0 +1,233 @@
+/* mcres/static/css/pages/resource/diff.css
+   资源版本列表页（diff_versions / preset_diff_versions）共用样式。
+   依赖各页面内联的 :root {
+       --primary-color: ...
+       --primary-bright: ...
+   } 定义。 */
+
+body {
+  background: #14181d;
+  color: #e6edf3;
+  padding-top: 80px;
+}
+
+.diff-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.diff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 24px;
+}
+.diff-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.diff-header h1 i {
+  color: var(--primary-color, #55d88b);
+  font-size: 26px;
+}
+.diff-header h1 small {
+  font-size: 16px;
+  font-weight: 400;
+  color: #8b949e;
+}
+
+.diff-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-compare {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary-color, #55d88b);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-compare i {
+  font-size: 14px;
+}
+.btn-compare:hover {
+  background: var(--primary-bright, #6ae09c);
+  transform: scale(1.02);
+}
+.btn-compare:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-back {
+  padding: 8px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: transparent;
+  color: #8b949e;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.2s;
+}
+.btn-back i {
+  margin-right: 6px;
+}
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+}
+
+.diff-table-wrap {
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.diff-table th {
+  text-align: left;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-weight: 600;
+  color: #8b949e;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.diff-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+.diff-table tr:last-child td {
+  border-bottom: none;
+}
+.diff-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+.diff-table .checkbox-col {
+  width: 40px;
+  text-align: center;
+}
+.diff-table .checkbox-col input[type="checkbox"] {
+  accent-color: var(--primary-color, #55d88b);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.diff-table .checkbox-col input[type="checkbox"]:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.diff-table .author-col a {
+  color: #e6edf3;
+  text-decoration: none;
+  transition: 0.2s;
+}
+.diff-table .author-col a:hover {
+  color: var(--primary-color, #55d88b);
+  text-decoration: underline;
+}
+.diff-table .time-col {
+  color: #8b949e;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.diff-table .summary-col {
+  color: #c0c8d0;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.diff-table .badge-current {
+  font-size: 11px;
+  background: var(--primary-color, #55d88b);
+  color: #fff;
+  padding: 1px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.diff-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: #4d5663;
+  font-size: 16px;
+}
+
+.selection-hint {
+  font-size: 13px;
+  color: #6b7480;
+  margin-top: 12px;
+  padding: 8px 0;
+}
+.selection-hint i {
+  margin-right: 6px;
+}
+
+@media (max-width: 768px) {
+  .diff-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .diff-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .diff-table .summary-col {
+    max-width: 120px;
+  }
+  .diff-table th,
+  .diff-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+@media (max-width: 480px) {
+  .diff-table .summary-col {
+    max-width: 80px;
+  }
+  .diff-table .checkbox-col {
+    width: 30px;
+  }
+  .diff-table th,
+  .diff-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .diff-header h1 {
+    font-size: 20px;
+  }
+  .diff-header h1 small {
+    font-size: 14px;
+    display: block;
+    margin-left: 0;
+  }
+}

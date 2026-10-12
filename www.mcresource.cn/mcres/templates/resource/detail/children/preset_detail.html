@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ preset.name }} - {{ shaderpack.main_name }} - Minecraft光影包预设 | 方块工坊MCRES{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/resource/detail/children/preset_detail.css" />
+{% endblock %}
+
+{% block content %}
+<div class="container">
+        <div class="top-bar">
+            <a href="/shaderpack/{{ shaderpack.id }}/presets" class="back-link">
+                <i class="fas fa-arrow-left"></i> 返回预设列表
+            </a>
+            <div class="actions">
+                <!-- 新增分享按钮 -->
+                <button class="btn-share" id="btn-share" title="分享此页面">
+                    <i class="fas fa-share-alt"></i> 分享
+                </button>
+                <a href="/shaderpack/{{ shaderpack.id }}/preset/{{ preset.id }}/diff" class="btn-history" target="_blank">
+                    <i class="fas fa-code-compare"></i> 编辑历史对比
+                </a>
+                {% if can_edit %}
+                <a href="/shaderpack/{{ shaderpack.id }}/preset/edit/{{ preset.id }}" class="btn-edit" target="_blank">
+                    <i class="fas fa-pen"></i> 编辑此页面
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="preset-header">
+            <div class="title">
+                <h1>
+                    {{ preset.name }}
+                    <span class="version">{{ preset.shader_version }}</span>
+                </h1>
+                <div class="meta">
+                    <span><i class="fas fa-tag"></i> MC {{ preset.mc_version }}</span>
+                    <span><i class="far fa-calendar-alt"></i> {{ preset.date_added }}</span>
+                </div>
+            </div>
+            <div class="sub-info">
+                <span class="time"><i class="far fa-clock"></i> {{ preset.submit_time or preset.date_added }}</span>
+            </div>
+        </div>
+
+        {% if preset.screenshots and preset.screenshots|length > 0 %}
+        <div class="screenshots">
+            {% for src in preset.screenshots %}
+                <img src="{{ src }}" alt="截图" loading="lazy" />
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <h2><i class="fas fa-book"></i> 预设介绍</h2>
+            <div class="desc-content">
+                {{ preset.description|safe if preset.description else '暂无介绍' }}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><i class="fas fa-code"></i> 配置文件</h2>
+            <div class="code-toolbar">
+                <span class="label"><i class="fas fa-file-code"></i> 配置代码</span>
+                <div class="btn-group">
+                    <button class="btn-code" id="copyBtn">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                    <button class="btn-code" id="btn-download">
+                        <i class="fas fa-download"></i> 下载
+                    </button>
+                </div>
+            </div>
+            <pre class="config-code" id="configCode">{{ preset.config_code }}</pre>
+        </div>
+
+        {% if preset.config_notes %}
+        <div class="section">
+            <h2><i class="fas fa-comment"></i> 配置说明</h2>
+            <div class="config-note">{{ preset.config_notes }}</div>
+        </div>
+        {% endif %}
+        
+        <div class="section">
+            {% include 'components/comment.html' %}
+        </div>
+    </div>
+
+    <!-- 灯箱 -->
+    <div class="lightbox" id="lightbox">
+        <button class="close">&times;</button>
+        <img id="lightboxImg" src="" alt="截图预览" />
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  window.PRESET_DETAIL = { name: {{ preset.name|tojson }} };
+</script>
+<script src="/static/js/pages/resource/detail/children/preset_detail.js"></script>
+{% endblock %}

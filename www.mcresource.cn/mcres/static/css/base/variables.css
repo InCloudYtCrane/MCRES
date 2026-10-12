@@ -1,0 +1,42 @@
+/* mcres/static/css/base/variables.css
+   ------------------------------------------------------------
+   全站共享的 CSS 变量。
+   放在 @layer base 里，优先级低于未分层样式，
+   因此页面自己的 :root 定义会覆盖这里的值，不会冲突。
+   新页面请直接使用这些变量，不必再复制 :root。
+   ------------------------------------------------------------ */
+
+@layer base {
+  :root {
+    /* ===== 背景 ===== */
+    --bg-body: #11161c;
+    --bg-card: #1a2028;
+    --bg-card-hover: #232b36;
+    --bg-panel: #1d2229;
+
+    /* ===== 边框 ===== */
+    --border-light: #2a313b;
+    --border-medium: #3b434d;
+
+    /* ===== 文字 ===== */
+    --text-primary: #e8edf2;
+    --text-secondary: #b0b8c2;
+    --text-muted: #6a7a8a;
+    --text-dim: #4d5663;
+
+    /* ===== 动效 ===== */
+    --transition: 0.2s ease;
+
+    /* ===== 语义色（跨页面统一） ===== */
+    --color-success: #55d88b;
+    --color-warning: #f5a623;
+    --color-danger: #ff6b6b;
+    --color-info: #4a90d9;
+
+    /* ===== 资源类型色（跨页面统一） ===== */
+    --color-resourcepack: #55d88b;
+    --color-shaderpack: #f5a623;
+    --color-map: #4a90d9;
+    --color-user: #c084fc;
+  }
+}

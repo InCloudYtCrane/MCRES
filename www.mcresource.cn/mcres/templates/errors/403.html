@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block title %}403 Forbidden | 禁止访问{% endblock
+%} {% block extra_head %}
+<link rel="stylesheet" href="/static/css/components/error-page.css" />
+<meta name="robots" content="noindex, nofollow" />
+{% endblock %} {# 错误页不含 navbar 和 footer #} {% block navbar %}{% endblock
+%} {% block footer %}{% endblock %} {% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="error-card">
+    <img
+      src="https://img.mcresource.cn/icon/logo/logo.png"
+      alt="MCRES Logo"
+      class="error-logo"
+    />
+    <div class="error-code">403</div>
+    <h1 class="error-title">禁止访问</h1>
+    <p class="error-desc">
+      这一页翻不开...<br />
+      或许你该先登录，或许你还没拿到这把钥匙
+    </p>
+  </div>
+</div>
+{% endblock %}

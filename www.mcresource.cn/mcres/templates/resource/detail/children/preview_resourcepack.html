@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}资源包预览 · {{ main_name }} · MCRES{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js"></script>
+<link rel="stylesheet" href="/static/css/pages/resource/detail/children/preview_resourcepack.css" />
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="top-bar">
+        <div class="title">
+            {{ main_name }}
+            <span class="count">（{{ total_items }} 个物品/方块）</span>
+        </div>
+        <a href="/resourcepack/{{ resource_id }}" class="back-link"><i class="fas fa-arrow-left"></i> 返回详情页</a>
+    </div>
+    <div class="copyright-notice">
+        <div>
+            <strong>版权说明：</strong>本页面展示的资源包预览内容仅供浏览参考，所有图片及资源版权归原作者所有。
+            请勿用于商业用途或未经授权的分发。
+        </div>
+    </div>
+    <div class="search-bar">
+        <div class="search-input-wrap">
+            <span class="icon"><i class="fas fa-search"></i></span>
+            <input type="text" id="searchInput" placeholder="搜索中文名或注册名..." />
+        </div>
+        <div class="mode-toggle" id="modeToggle">
+            <button class="active" data-mode="first" title="按注册名中第一个 '_' 前的部分分类（如 minecraft:black_wool → black）">按首段分类</button>
+            <button data-mode="last" title="按注册名中最后一个 '_' 后的部分分类（如 minecraft:black_wool → wool）">按末段分类</button>
+        </div>
+        <span class="search-stats" id="searchStats">共 {{ total_items }} 项</span>
+        <button class="clear-btn" id="clearSearchBtn"><i class="fas fa-times"></i> 清空</button>
+    </div>
+    <div id="categoriesContainer">
+        {% for cat_name, cat_items in categories %}
+        <div class="category-section" data-category="{{ cat_name }}">
+            <div class="category-title">
+                {{ cat_name }}
+                <span class="item-count">（{{ cat_items|length }} 个）</span>
+            </div>
+            <div class="item-list-grid">
+                {% for item in cat_items %}
+                <div class="item-list-card" data-registry="{{ item.registry }}" data-category="{{ cat_name }}">
+                    <div class="item-icon">
+                        {% if item.texture_url and item.texture_url.startswith('https://img.mcresource.cn/') %}
+                            <img src="{{ item.texture_url }}" alt="{{ item.name }}" loading="lazy" />
+                            <div class="placeholder" style="display:none;"><i class="fas fa-image"></i></div>
+                        {% else %}
+                            <div class="placeholder"><i class="fas fa-image"></i></div>
+                        {% endif %}
+                        <div class="loader"><i class="fas fa-circle-notch"></i></div>
+                    </div>
+                    <span class="item-name" title="{{ item.registry }}">{{ item.name }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- 预览容器 -->
+            <div class="detail-preview-container" data-category="{{ cat_name }}">
+                <div class="comparison-slider">
+                    <div class="comparison-wrapper">
+                        <!-- 修复点：不写 src=""，避免浏览器把空串当页面 URL 反复请求 -->
+                        <img class="vanilla-image" alt="原版"
+                             />
+                        <img class="pack-image" alt="资源包"
+                             />
+                        <input type="range" class="slider-input" min="0" max="100" value="50" />
+                        <div class="slider-handle">
+                            <div class="handle-arrow"><i class="fas fa-arrows-left-right"></i></div>
+                        </div>
+                        <!-- 左右标签 -->
+                        <div class="comparison-labels">
+                            <span class="label-pack">⚡ 资源包</span>
+                            <span class="label-vanilla">📦 原版</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-info">
+                    <strong class="preview-name"></strong>
+                    <span class="preview-registry"></span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 加载 / 到底 提示 -->
+    <div id="loadMoreIndicator" class="load-more-indicator" style="display:none;">
+        <i class="fas fa-circle-notch fa-spin"></i> 正在加载更多...
+    </div>
+    <div id="noMoreIndicator" class="no-more-indicator" style="display:none;">
+        —— 已经到底啦 ——
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  window.PREVIEW_RESOURCEPACK = {
+      resourceId: {{ resource_id|tojson }},
+      mode: {{ mode|tojson }},
+      totalItems: {{ total_items|tojson }}
+  };
+</script>
+<script src="/static/js/pages/resource/detail/children/preview_resourcepack.js"></script>
+{% endblock %}

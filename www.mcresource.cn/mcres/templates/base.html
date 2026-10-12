@@ -1,0 +1,39 @@
+{# mcres/templates/base.html #}
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}MCRES 方块工坊{% endblock %}</title>
+
+    {# ===== 全站通用依赖 ===== #}
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/static/css/base/variables.css" />
+    <link rel="stylesheet" href="/static/css/components/toast.css" />
+
+    {# ===== 页面专属：SEO meta、第三方库、页面 CSS ===== #} {% block extra_head
+    %}{% endblock %}
+  </head>
+  <body
+    class="{% block body_class %}{% endblock %}"
+    {%
+    block
+    body_attrs
+    %}{%
+    endblock
+    %}
+  >
+    {# ===== 背景层（可选） ===== #} {% block bg_layer %}{% endblock %} {# =====
+    导航栏（默认包含；特殊页面可覆盖为空） ===== #} {% block navbar %}{% include
+    "components/navbar.html" %}{% endblock %} {# ===== 页面主体 ===== #} {%
+    block content %}{% endblock %} {# ===== 页脚（默认包含；可覆盖为空或自定义）
+    ===== #} {% block footer %}{% include "components/footer.html" %}{% endblock
+    %} {# ===== 全站共享 JS ===== #}
+    <script src="/static/js/components/toast.js"></script>
+
+    {# ===== 页面专属 JS ===== #} {% block extra_script %}{% endblock %}
+  </body>
+</html>

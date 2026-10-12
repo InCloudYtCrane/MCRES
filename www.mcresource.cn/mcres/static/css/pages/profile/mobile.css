@@ -1,0 +1,335 @@
+/* mcres/static/css/pages/profile/mobile.css
+   移动端个人主页样式。 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #11161c;
+  color: #e8edf2;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.mobile-main {
+  padding: 60px 16px 0;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+.avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 0;
+}
+.nickname-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.nickname {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e8edf2;
+}
+.role-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+}
+
+.sel-role-badge {
+  display: inline-flex !important;
+  align-items: center;
+}
+
+.title-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: 20px;
+  color: #fff;
+  margin-top: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  background-color: #55d88b;
+}
+.signature {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  word-break: break-word;
+  font-style: italic;
+  max-width: 100%;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+}
+.action-btn img {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+.action-btn:active {
+  transform: scale(0.88);
+  opacity: 0.6;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.stat-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+  transition: background 0.2s;
+}
+.stat-card:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+.stat-number {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e8edf2;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.stat-number i {
+  font-size: 16px;
+  opacity: 0.6;
+}
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+
+.comment-section-wrapper {
+  margin-top: 24px;
+}
+.comment-section-wrapper .comments-section {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  padding: 16px 0 !important;
+  margin-top: 0 !important;
+  backdrop-filter: none !important;
+}
+.comment-section-wrapper .comments-header {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+.comment-section-wrapper .comment-form {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.no-board-message {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 15px;
+  padding: 40px 0;
+}
+.no-board-message i {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.bottom-nav {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 18px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.25);
+}
+.bottom-nav a {
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.2s;
+}
+.bottom-nav a:active {
+  color: #55d88b;
+}
+.bottom-nav .sep {
+  color: rgba(255, 255, 255, 0.06);
+}
+
+/* ===== 扫码确认页面 ===== */
+#qr-confirm-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  backdrop-filter: blur(12px);
+}
+#qr-confirm-page.active {
+  display: flex;
+}
+.confirm-box {
+  background: #1a2028;
+  border-radius: 24px;
+  padding: 36px 32px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+.confirm-box .confirm-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 12px;
+  border: 2px solid #55d88b;
+}
+.confirm-box .confirm-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.confirm-box .confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e8edf2;
+  margin-bottom: 4px;
+}
+.confirm-box .confirm-sub {
+  font-size: 14px;
+  color: #b0b8c0;
+  margin-bottom: 20px;
+}
+.confirm-box .confirm-device {
+  font-size: 13px;
+  color: #9ba5af;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.confirm-box .confirm-device i {
+  margin-right: 6px;
+}
+.confirm-box .confirm-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+  background: #55d88b;
+  color: #111;
+  opacity: 0.4;
+  pointer-events: none;
+}
+.confirm-box .confirm-btn.enabled {
+  opacity: 1;
+  pointer-events: auto;
+}
+.confirm-box .confirm-btn.enabled:active {
+  transform: scale(0.96);
+}
+.confirm-box .confirm-btn .countdown {
+  display: inline-block;
+  min-width: 20px;
+}
+.confirm-box .confirm-close {
+  margin-top: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 16px;
+}
+.confirm-box .confirm-close:active {
+  color: rgba(255, 255, 255, 0.6);
+}
+.confirm-box .confirm-success {
+  display: none;
+  color: #55d88b;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 10px 0;
+}
+.confirm-box .confirm-success i {
+  margin-right: 8px;
+}

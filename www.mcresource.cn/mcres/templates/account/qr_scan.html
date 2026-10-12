@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block title %}扫码登录确认{% endblock %} {% block
+extra_head %}
+<link rel="stylesheet" href="/static/css/pages/auth/qr_scan.css" />
+{% endblock %} {# 本页不使用 navbar / footer #} {% block navbar %}{% endblock %}
+{% block footer %}{% endblock %} {% block content %}
+<div class="container">
+  <div id="statusIcon" class="spinner"></div>
+  <div id="statusText" class="message">正在确认登录...</div>
+</div>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/pages/auth/qr_scan.js"></script>
+{% endblock %}

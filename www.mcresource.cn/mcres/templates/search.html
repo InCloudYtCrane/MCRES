@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}{{ q }}搜索结果 - MCRES 方块工坊{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/common/list-common.css" />
+<link rel="stylesheet" href="/static/css/pages/search.css" />
+{% endblock %}
+
+{% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer">{% include 'components/footer.html' %}</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+      <div class="search-brand">
+        <img
+          src="https://img.mcresource.cn/icon/logo/logo.png"
+          alt="MCRES Logo"
+        />
+        <h1>方块<span>工坊</span><span class="sub">· 搜索</span></h1>
+      </div>
+
+      <!-- 主搜索表单 -->
+      <form
+        id="searchForm"
+        action="/search"
+        method="get"
+        class="search-section"
+      >
+        <div class="search-box-large">
+          <div class="search-input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              name="q"
+              value="{{ q }}"
+              placeholder="搜索用户、资源包、光影、地图…"
+              autofocus
+              data-search-suggest
+            />
+          </div>
+          <button type="submit"><i class="fas fa-search"></i> 搜索</button>
+        </div>
+
+        <!-- 高级参数折叠面板 -->
+        <div class="advanced-panel" id="advancedPanel">
+          <div class="panel-toggle" id="advancedToggle">
+            <span><i class="fas fa-sliders-h"></i> 高级参数</span>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </div>
+          <div class="panel-body">
+            <div class="param-controls">
+              <div class="param-group">
+                <label>
+                  <i class="fas fa-ruler-horizontal"></i> 相似度阈值
+                  <span class="value-display" id="thresholdDisplay"
+                    >{{ "%.2f"|format(threshold) }}</span
+                  >
+                </label>
+                <input
+                  type="range"
+                  name="threshold"
+                  id="thresholdSlider"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value="{{ threshold }}"
+                />
+                <div class="param-hint">
+                  <strong>越高越严格</strong
+                  >，只有拼写非常相似的结果才被算作模糊匹配。 推荐
+                  <strong>0.70 ~ 0.85</strong>。
+                </div>
+              </div>
+              <div class="param-group">
+                <label>
+                  <i class="fas fa-weight-hanging"></i> 模糊权重
+                  <span class="value-display" id="fuzzyWeightDisplay"
+                    >{{ "%.2f"|format(fuzzy_weight) }}</span
+                  >
+                </label>
+                <input
+                  type="range"
+                  name="fuzzy_weight"
+                  id="fuzzyWeightSlider"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value="{{ fuzzy_weight }}"
+                />
+                <div class="param-hint">
+                  <strong>越高，模糊匹配的得分越高</strong
+                  >，越容易让拼写近似的结果排在前列。 推荐
+                  <strong>0.30 ~ 0.70</strong>。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- 筛选标签 -->
+      <div class="filter-tabs">
+        <a
+          href="?q={{ q }}&type=all&threshold={{ threshold }}&fuzzy_weight={{ fuzzy_weight }}"
+          class="{% if type == 'all' %}active{% endif %}"
+          >全部</a
+        >
+        <a
+          href="?q={{ q }}&type=user&threshold={{ threshold }}&fuzzy_weight={{ fuzzy_weight }}"
+          class="{% if type == 'user' %}active{% endif %}"
+          ><i class="fas fa-user"></i> 用户</a
+        >
+        <a
+          href="?q={{ q }}&type=resourcepack&threshold={{ threshold }}&fuzzy_weight={{ fuzzy_weight }}"
+          class="{% if type == 'resourcepack' %}active{% endif %}"
+          ><i class="fas fa-box"></i> 资源包</a
+        >
+        <a
+          href="?q={{ q }}&type=shaderpack&threshold={{ threshold }}&fuzzy_weight={{ fuzzy_weight }}"
+          class="{% if type == 'shaderpack' %}active{% endif %}"
+          ><i class="fas fa-sun"></i> 光影</a
+        >
+        <a
+          href="?q={{ q }}&type=map&threshold={{ threshold }}&fuzzy_weight={{ fuzzy_weight }}"
+          class="{% if type == 'map' %}active{% endif %}"
+          ><i class="fas fa-map"></i> 地图</a
+        >
+      </div>
+
+      <!-- 结果统计 -->
+      <div class="result-meta">
+        {% if q %} 共找到 <strong>{{ total }}</strong> 个结果
+        <span class="param-info">
+          阈值 {{ "%.2f"|format(threshold) }} · 模糊权重 {{
+          "%.2f"|format(fuzzy_weight) }}
+        </span>
+        {% else %} 请输入关键词进行搜索 {% endif %}
+      </div>
+
+      <!-- 结果列表 -->
+      <div class="result-list">
+        {% if results %} {% for item in results %} {% if item.nickname is
+        defined %}
+        <!-- 用户卡片 -->
+        <a
+          href="{{ item.profile_url }}"
+          class="result-item user-item"
+          target="_blank"
+        >
+          <div class="avatar">
+            {% if item.avatar %}
+            <img src="{{ item.avatar }}" alt="{{ item.nickname }}" />
+            {% else %}
+            <div class="placeholder">无</div>
+            {% endif %}
+          </div>
+          <div class="info">
+            <div class="top-row">
+              <span class="type-badge user"
+                ><i class="fas fa-user"></i> 用户</span
+              >
+              <span class="main-name">{{ item.nickname }}</span>
+            </div>
+            {% if item.signature %}
+            <div class="summary">{{ item.signature }}</div>
+            {% endif %}
+            <div class="keywords">
+              <strong>角色：</strong>
+              {% if item.role == 0 %}已封禁 {% elif item.role == 1 %}工坊成员 {%
+              elif item.role == 2 %}工坊工匠 {% elif item.role == 3 %}精英工匠
+              {% elif item.role == 4 %}工坊主管 {% else %}未知{% endif %}
+            </div>
+          </div>
+        </a>
+        {% else %}
+        <!-- 资源卡片 -->
+        <a
+          href="{{ item.detail_url }}"
+          class="result-item resource-item type-{{ item.type }}"
+          target="_blank"
+        >
+          <div class="cover">
+            {% if item.cover %}
+            <img src="{{ item.cover }}" alt="{{ item.name }}" loading="lazy" />
+            {% else %}
+            <div class="placeholder"><i class="fas fa-image"></i> 无封面</div>
+            {% endif %}
+          </div>
+          <div class="info">
+            {% if item.screenshots %}
+            <div class="screenshots-scroll">
+              {% for scr in item.screenshots %}
+              <div class="thumb-item">
+                <img src="{{ scr }}" alt="截图" loading="lazy" />
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-screenshot">
+              <i class="fas fa-camera"></i> 暂无截图
+            </div>
+            {% endif %}
+            <div class="top-row">
+              <span class="type-badge {{ item.type }}">
+                {% if item.type == 'resourcepack' %}<i class="fas fa-box"></i>
+                资源包 {% elif item.type == 'shaderpack' %}<i
+                  class="fas fa-sun"
+                ></i>
+                光影包 {% elif item.type == 'map' %}<i class="fas fa-map"></i>
+                地图 {% else %}{{ item.type }}{% endif %}
+              </span>
+              {% if item.abbr %}<span class="abbr">{{ item.abbr }}</span>{%
+              endif %}
+              <span class="main-name">{{ item.name }}</span>
+              {% if item.sub_name and item.sub_name != item.name %}
+              <span class="sub-name">({{ item.sub_name }})</span>
+              {% endif %}
+              <span class="category-tag">{{ item.category }}</span>
+            </div>
+            {% if item.summary %}
+            <div class="summary">{{ item.summary }}</div>
+            {% endif %} {% if item.description_preview %}
+            <div class="description-preview">
+              {{ item.description_preview }}
+            </div>
+            {% endif %} {% if item.keywords %}
+            <div class="keywords">
+              <strong>辅助关键词：</strong>{{ item.keywords }}
+            </div>
+            {% endif %}
+          </div>
+        </a>
+        {% endif %} {% endfor %} {% else %}
+        <div class="empty-state">
+          <div class="icon"><i class="fas fa-search"></i></div>
+          <div class="desc">
+            {% if q %}没有找到与 “<strong>{{ q }}</strong>” 相关的内容{% else
+            %}输入关键词开始搜索{% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- 分页（使用智能分页，由 list_common.js 生成） -->
+      {% if results and total_pages > 1 %}
+      <div
+        class="pagination"
+        data-total="{{ total_pages }}"
+        data-current="{{ page }}"
+      ></div>
+      {% endif %}
+    </div>
+
+{# ===== 搜索补全组件 ===== #}
+{% include 'components/search_suggest.html' %}
+{% endblock %}
+
+{% block extra_script %}
+<script>
+      window.SEARCH_DATA = {
+          q: {{ q|tojson }},
+          threshold: {{ threshold|default(0.8)|tojson }},
+          fuzzy_weight: {{ fuzzy_weight|default(0.5)|tojson }}
+      };
+    </script>
+<script src="/static/js/pages/search.js"></script>
+<script src="/static/js/pages/common/list-common.js"></script>
+{% endblock %}

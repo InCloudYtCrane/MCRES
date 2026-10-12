@@ -1,0 +1,86 @@
+/* mcres/static/css/pages/resource/list.css
+   三个列表页（resourcepacks / shaderpacks / maps）共用的页面级样式。
+   依赖各页面内联的 :root { --accent / --accent-bright / --accent-text } 定义。 */
+
+/* ===== 页面头部主按钮 ===== */
+.page-header .actions .btn-primary {
+  background: var(--accent);
+  color: var(--accent-text, #111);
+  border-color: var(--accent);
+}
+.page-header .actions .btn-primary:hover {
+  background: var(--accent-bright);
+  border-color: var(--accent-bright);
+}
+
+/* ===== 搜索按钮 ===== */
+.search-bar button[type="submit"] {
+  background: var(--accent);
+  color: var(--accent-text, #111);
+}
+.search-bar button[type="submit"]:hover {
+  background: var(--accent-bright);
+}
+
+/* ===== 筛选标签 active ===== */
+.search-bar .filter-tabs a.active {
+  background: var(--accent);
+  color: var(--accent-text, #111);
+  border-color: var(--accent);
+}
+
+/* ===== 应用筛选按钮 ===== */
+.apply-btn {
+  background: var(--accent);
+  color: var(--accent-text, #111);
+}
+.apply-btn:hover {
+  background: var(--accent-bright);
+}
+
+/* ===== 排序按钮 active ===== */
+.sort-btn.active {
+  background: var(--accent);
+  color: var(--accent-text, #111);
+  border-color: var(--accent);
+}
+
+/* ===== 分页当前页 ===== */
+.pagination .current {
+  background: var(--accent);
+  color: var(--accent-text, #111);
+  border-color: var(--accent);
+}
+
+/* ===== 复选框强调色 ===== */
+.filter-group .filter-item input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+/* ===== 顶部筛选按钮组 ===== */
+.filter-actions-top {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.filter-actions-top .apply-btn,
+.filter-actions-top .reset-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.filter-actions-top .reset-btn {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.filter-actions-top .reset-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}

@@ -1,0 +1,177 @@
+/* ============================================================
+   三连组件样式（纯图标风格，数量显示在图标下方）
+   ============================================================ */
+
+.interaction-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px 0 10px 0;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.interaction-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.interact-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    color: #8b949e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-family: inherit;
+    position: relative;
+    min-width: 56px;
+}
+
+.interact-btn:hover {
+    color: #e6edf3;
+    transform: translateY(-2px);
+}
+
+.interact-btn:active {
+    transform: scale(0.94);
+}
+
+.interact-btn .icon {
+    font-size: 28px;
+    line-height: 1;
+    transition: transform 0.2s;
+}
+
+.interact-btn .icon i {
+    display: block;
+}
+
+.interact-btn .status-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: inherit;
+    min-height: 18px;
+    line-height: 1.4;
+}
+
+/* 激活状态：仅改变颜色，图标轻微放大 */
+.like-btn.active {
+    color: #f97583;
+}
+.like-btn.active .icon i {
+    transform: scale(1.1);
+}
+
+.coin-btn.active {
+    color: #4A90D9;
+}
+.coin-btn.active .icon i {
+    transform: scale(1.1);
+}
+
+.fav-btn.active {
+    color: #f7b83a;
+}
+.fav-btn.active .icon i {
+    transform: scale(1.1);
+}
+
+/* 每日上限标记（仅用于 JS 判断，无视觉变化） */
+.coin-btn.coin-limit {
+    /* 无样式，只作为标记 */
+}
+
+.share-btn .status-text {
+    /* 与普通按钮一致 */
+}
+
+/* ===== 模态框样式 ===== */
+#favorites-modal .folder-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+#favorites-modal .folder-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+#favorites-modal .folder-item .folder-name {
+    font-weight: 500;
+    color: #e4e4ea;
+}
+#favorites-modal .folder-item .folder-actions {
+    display: flex;
+    gap: 8px;
+}
+#favorites-modal .folder-item .folder-actions button {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+#favorites-modal .folder-item .folder-actions .add-btn {
+    background: var(--role-color, #55d88b);
+    color: #fff;
+}
+#favorites-modal .folder-item .folder-actions .add-btn:hover {
+    filter: brightness(0.9);
+}
+#favorites-modal .folder-item .folder-actions .remove-btn {
+    background: #f97583;
+    color: #fff;
+}
+#favorites-modal .folder-item .folder-actions .remove-btn:hover {
+    filter: brightness(0.9);
+}
+#favorites-modal .folder-item .folder-actions .already-btn {
+    background: transparent;
+    border: 1px solid #2a2e3a;
+    color: #6a7a8a;
+    cursor: default;
+}
+#favorites-modal .modal-loading {
+    text-align: center;
+    color: #8a8a9e;
+    padding: 20px;
+}
+
+/* 移动端适配 */
+@media (max-width: 600px) {
+    .interaction-group {
+        gap: 12px;
+    }
+    .interact-btn {
+        padding: 6px 8px;
+        min-width: 44px;
+    }
+    .interact-btn .icon {
+        font-size: 24px;
+    }
+    .interact-btn .status-text {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 400px) {
+    .interact-btn .icon {
+        font-size: 20px;
+    }
+    .interact-btn .status-text {
+        font-size: 10px;
+    }
+}

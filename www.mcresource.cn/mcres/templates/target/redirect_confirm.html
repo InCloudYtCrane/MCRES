@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}即将跳转 - MCRES 方块工坊{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/target/redirect_confirm.css" />
+{% endblock %}
+
+{# 跳转/拦截页不展示导航栏与页脚 #}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="card">
+        <div class="icon-wrapper">
+            <i class="fas fa-external-link-alt"></i>
+        </div>
+        <h1>即将离开 MCRES</h1>
+        <p class="subtitle">您正在跳转至外部链接</p>
+
+        <div class="domain-box">
+            <div class="domain-label">目标域名</div>
+            <div class="domain-name">{{ domain }}</div>
+            <div class="url-preview">{{ url }}</div>
+        </div>
+
+        <div class="btn-group">
+            <a href="{{ url }}" class="btn btn-primary" rel="noopener noreferrer">
+                <i class="fas fa-arrow-right"></i> 继续跳转
+            </a>
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-chevron-left"></i> 返回首页
+            </a>
+        </div>
+
+        <div class="footer-hint">
+            <i class="fas fa-shield-alt"></i>
+            <span>我们无法控制外部网站的内容，请谨慎访问</span>
+        </div>
+    </div>
+{% endblock %}

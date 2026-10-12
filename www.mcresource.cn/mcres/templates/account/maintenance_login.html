@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}主管登录 · MCRES 维护入口{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/auth/maintenance_login.css" />
+{% endblock %}
+
+{# 维护登录页不展示导航栏与页脚 #}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="login-container">
+        <!-- ===== 品牌头部 ===== -->
+        <div class="brand-header">
+            <div class="shield-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h1>MC<span>RES</span></h1>
+            <div class="subtitle">工坊主管 · 维护入口</div>
+        </div>
+
+        <!-- ===== 登录卡片 ===== -->
+        <div class="login-card">
+            <!-- 状态徽章 -->
+            <div style="text-align: center;">
+                <div class="status-badge">
+                    <span class="dot"></span>
+                    系统维护中 · 仅限主管登录
+                </div>
+            </div>
+
+            <div class="lock-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+
+            <h2>主管身份验证</h2>
+            <p class="login-sub">
+                当前站点处于 <strong>维护模式</strong>，<br>
+                请输入您的工坊主管凭证以继续管理。
+            </p>
+
+            <!-- ===== 错误信息 ===== -->
+            {% if error %}
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <!-- ===== 登录表单 ===== -->
+            <form action="/login" method="post">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> 主管邮箱</label>
+                    <input type="email" name="email" placeholder="请输入您的邮箱"
+                           value="{{ email if email else '' }}" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> 密码</label>
+                    <input type="password" name="pwd" placeholder="请输入您的密码" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-shield-alt"></i> 验证码</label>
+                    <div class="captcha-row">
+                        <input type="text" name="captcha" placeholder="请输入验证码"
+                               value="{{ captcha if captcha else '' }}" required>
+                        <img src="/captcha" id="captchaImg" class="captcha-img" title="点击刷新验证码">
+                    </div>
+                    <div class="captcha-refresh">
+                        <a>
+                            <i class="fas fa-sync-alt"></i> 看不清？换一张
+                        </a>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> 进入管理后台
+                </button>
+            </form>
+
+            <!-- ===== 返回维护页面 ===== -->
+            <a href="/maintenance" class="back-link">
+                <i class="fas fa-arrow-left"></i> 返回维护公告页
+            </a>
+        </div>
+
+        <!-- ===== 页脚 ===== -->
+        <div class="footer-note">
+            ©2026 MCRES · 方块工坊 &nbsp;·&nbsp;
+            <a href="mailto:1399885823@qq.com">联系站长</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  window.MAINTENANCE_LOGIN = { hasError: {{ 'true' if error else 'false' }} };
+</script>
+<script src="/static/js/pages/auth/maintenance_login.js"></script>
+{% endblock %}

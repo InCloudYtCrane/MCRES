@@ -1,0 +1,91 @@
+/* mcres/static/css/pages/resource/detail-page.css
+   三个资源详情页（resourcepack / shaderpack / map）共用的页面级样式。
+   依赖 detail_common.css 里定义的 --primary-color 系列变量。 */
+
+/* ============================================================
+   PV 趋势图（左侧面板内）
+   ============================================================ */
+.pv-trend-section {
+  margin-top: 18px;
+  padding: 14px 0 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.pv-trend-section .section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #b0b8c2;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pv-trend-section .section-label .left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pv-trend-section .trend-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pv-trend-section .trend-controls select {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #1a1f26;
+  color: #e6edf3;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+.pv-trend-section .trend-controls select:focus {
+  border-color: var(--primary-color);
+}
+.pv-trend-section .chart-wrapper {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 10px;
+  padding: 8px 4px 4px 4px;
+  position: relative;
+}
+.pv-trend-section .chart-wrapper canvas {
+  width: 100% !important;
+  height: 150px !important;
+}
+.pv-trend-section .avg-label {
+  text-align: right;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 2px 8px 0 0;
+  letter-spacing: 0.3px;
+}
+.pv-trend-section .avg-label i {
+  font-size: 10px;
+  margin-right: 4px;
+}
+.pv-trend-section .empty-hint {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.25);
+  padding: 20px 0;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .pv-trend-section .chart-wrapper canvas {
+    height: 120px !important;
+  }
+  .pv-trend-section .section-label {
+    font-size: 13px;
+  }
+  .pv-trend-section .trend-controls select {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+}
+@media (max-width: 400px) {
+  .pv-trend-section .chart-wrapper canvas {
+    height: 100px !important;
+  }
+}

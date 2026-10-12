@@ -1,0 +1,228 @@
+{% extends "base.html" %} {% block title %}光影包 · MCRES 方块工坊{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/common/list-common.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/list.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/list/shaderpacks.css" />
+{% endblock %} {% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="page-header">
+    <h1>
+      <i class="fas fa-sun"></i> 光影包
+      <span class="count">共 {{ total_count }} 个</span>
+    </h1>
+    <div class="actions">
+      <div class="sort-group">
+        <span class="sort-label">排序：</span>
+        <a
+          href="{{ url_for('index.shaderpacks_list', sort='latest', **sort_params) }}"
+          class="sort-btn {% if current_filters.sort == 'latest' or not current_filters.sort %}active{% endif %}"
+          >最新</a
+        >
+        <a
+          href="{{ url_for('index.shaderpacks_list', sort='hot', **sort_params) }}"
+          class="sort-btn {% if current_filters.sort == 'hot' %}active{% endif %}"
+          >热门</a
+        >
+        <a
+          href="{{ url_for('index.shaderpacks_list', sort='name', **sort_params) }}"
+          class="sort-btn {% if current_filters.sort == 'name' %}active{% endif %}"
+          >名称</a
+        >
+      </div>
+      <a
+        href="{{ url_for('new.shaderpack_new') }}"
+        class="btn btn-primary"
+        target="_blank"
+        ><i class="fas fa-plus"></i> 添加光影包</a
+      >
+    </div>
+  </div>
+  <div class="search-bar">
+    <form action="{{ url_for('sch.search') }}" method="get">
+      <input
+        type="text"
+        name="q"
+        placeholder="搜索光影包…"
+        value="{{ current_filters.q }}"
+      />
+      <input type="hidden" name="type" value="shaderpack" />
+      <button type="submit"><i class="fas fa-search"></i> 搜索</button>
+    </form>
+  </div>
+  <div class="two-col">
+    <aside class="filter-sidebar">
+      <div class="filter-title"><i class="fas fa-sliders-h"></i> 筛选</div>
+      <div class="filter-actions-top">
+        <button class="apply-btn" id="applyFilterBtn">
+          <i class="fas fa-check"></i> 应用筛选
+        </button>
+        <button class="reset-btn" id="resetFilterBtn">
+          <i class="fas fa-undo-alt"></i> 重置
+        </button>
+      </div>
+      <div class="filter-group">
+        <span class="label">风格</span>
+        {% for st in styles %}
+        <label class="filter-item">
+          <input
+            type="checkbox"
+            name="style"
+            value="{{ st }}"
+            {%
+            if
+            st
+            in
+            current_filters.style
+            %}checked{%
+            endif
+            %}
+          />
+          {{ st }}
+        </label>
+        {% endfor %}
+      </div>
+      <hr class="filter-divider" />
+      <div class="filter-group">
+        <span class="label">平台</span>
+        {% for plat in platforms %}
+        <label class="filter-item">
+          <input
+            type="checkbox"
+            name="platform"
+            value="{{ plat }}"
+            {%
+            if
+            plat
+            in
+            current_filters.platform
+            %}checked{%
+            endif
+            %}
+          />
+          {% if plat == 'java' %}JAVA版{% elif plat == 'bedrock' %}基岩版{% else
+          %}{{ plat }}{% endif %}
+        </label>
+        {% endfor %}
+      </div>
+      <hr class="filter-divider" />
+      <div class="filter-group">
+        <span class="label">MC 版本</span>
+        {% for ver in versions %}
+        <label class="filter-item">
+          <input
+            type="checkbox"
+            name="version"
+            value="{{ ver }}"
+            {%
+            if
+            ver
+            in
+            current_filters.version
+            %}checked{%
+            endif
+            %}
+          />
+          {{ ver }}
+        </label>
+        {% endfor %}
+      </div>
+      <hr class="filter-divider" />
+      <div class="filter-group">
+        <span class="label">状态</span>
+        {% for st in statuses %}
+        <label class="filter-item">
+          <input
+            type="checkbox"
+            name="status"
+            value="{{ st }}"
+            {%
+            if
+            st
+            in
+            current_filters.status
+            %}checked{%
+            endif
+            %}
+          />
+          {% if st == 'active' %}活跃{% elif st == 'semi' %}半弃坑{% elif st ==
+          'inactive' %}停更{% else %}未知{% endif %}
+        </label>
+        {% endfor %}
+      </div>
+    </aside>
+    <div>
+      <div class="resource-grid">
+        {% if resource_packs %} {% for pack in resource_packs %}
+        <a
+          href="{{ url_for('detail.shaderpacks', id=pack.id) }}"
+          class="resource-card"
+          target="_blank"
+        >
+          <div class="card-cover">
+            {% if pack.cover %}
+            <img
+              src="{{ pack.cover }}"
+              alt="{{ pack.main_name }}"
+              loading="lazy"
+            />
+            {% else %}
+            <div class="placeholder"><i class="fas fa-image"></i> 无封面</div>
+            {% endif %}
+          </div>
+          <div class="card-body">
+            <div class="name">{{ pack.main_name }}</div>
+            {% if pack.sub_name and pack.sub_name != pack.main_name %}
+            <div class="sub-name">{{ pack.sub_name }}</div>
+            {% endif %} {% if pack.summary %}
+            <div class="summary">{{ pack.summary }}</div>
+            {% endif %}
+            <div class="meta">
+              <span class="tag">{{ pack.style }}</span>
+              <span class="author">
+                <i class="fas fa-user"></i>
+                {{ pack.authors|join('、') if pack.authors else '未知' }}
+              </span>
+            </div>
+          </div>
+        </a>
+        {% endfor %} {% else %}
+        <div
+          style="
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+          "
+        >
+          <i
+            class="fas fa-box-open"
+            style="
+              font-size: 48px;
+              opacity: 0.3;
+              display: block;
+              margin-bottom: 12px;
+            "
+          ></i>
+          暂无光影包，<a
+            href="{{ url_for('new.shaderpack_new') }}"
+            style="color: var(--accent)"
+            >添加第一个</a
+          >
+        </div>
+        {% endif %}
+      </div>
+      {% if total_pages > 1 %}
+      <div
+        class="pagination"
+        data-total="{{ total_pages }}"
+        data-current="{{ page }}"
+      ></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/pages/common/list-common.js"></script>
+{% endblock %}

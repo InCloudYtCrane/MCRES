@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == 'edit' %}编辑资源包{% else %}发布资源包{% endif %} - MCRES（方块工坊）{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <link rel="stylesheet" href="/static/css/pages/resource/edit.css" />
+    <link rel="stylesheet" href="/static/css/pages/resource/edit-page.css" />
+    <link rel="stylesheet" href="/static/css/lib/editor/editor.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/edit/resourcepack_edit_new.css" />
+{% endblock %}
+
+{# 编辑页无 footer #}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="sidebar" style="display: flex; flex-direction: column; height: 100vh; position: sticky; overflow-y: auto;">
+        <h2>
+            {% if mode == 'edit' %}编辑资源包{% else %}发布资源包{% endif %}
+            <small>MCRES 方块工坊</small>
+        </h2>
+        <button class="tab-btn active" data-tab="basic"><i class="fas fa-clipboard-list"></i> 基本信息</button>
+        <button class="tab-btn" data-tab="compatibility"><i class="fas fa-cogs"></i> 兼容信息</button>
+        <button class="tab-btn" data-tab="author_download"><i class="fas fa-user"></i> 作者与下载</button>
+        <button class="tab-btn" data-tab="extra"><i class="fas fa-search"></i> 扩展信息</button>
+        <div style="flex: 1;"></div>
+        <div style="border-top: 1px solid #2b313b; padding-top: 12px; margin-top: 12px;">
+            <div style="font-size: 12px; color: #6b7480; font-weight: 500; margin-bottom: 6px; letter-spacing: 0.5px;">
+                <i class="fas fa-scroll"></i> 站内规则
+                <span style="font-weight: 400; font-size: 11px; color: #4d5663;">（点击查看）</span>
+            </div>
+            <div id="rulesSidebarList" style="display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow-y: auto;">
+            </div>
+        </div>
+        <div style="border-top: 1px solid #2b313b; padding-top: 16px; margin-top: 12px;">
+            {% if not can_skip_review %}
+            <div style="margin-bottom: 12px;">
+                <label for="messenger" style="display: block; font-size: 13px; color: #8a8a9e; margin-bottom: 4px;">
+                    <i class="fas fa-comment-dots"></i> 传话筒 <span style="color: #6b7480; font-weight: 400;">（给审核员的留言，可选）</span>
+                </label>
+                <input type="text" id="messenger" placeholder="想对审核员说的话…" value="{{ messenger if messenger else '' }}" style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #e4e4ea; border-radius: 4px; font-size: 14px;" />
+            </div>
+            {% endif %}
+            <div style="margin-bottom: 12px;">
+                <label for="changeSummary" style="display: block; font-size: 13px; color: #8a8a9e; margin-bottom: 4px;">改动说明 <span style="color: #6b7480; font-weight: 400;">（可选）</span></label>
+                <input type="text" id="changeSummary" placeholder="简要描述本次修改内容…" value="{{ change_summary if change_summary else '' }}" style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #e4e4ea; border-radius: 4px; font-size: 14px;" />
+            </div>
+            <button class="submit-btn" type="button" id="submitBtn" style="width: 100%;" {% if mode == 'edit' and lock %}disabled{% endif %}>
+                {% if mode == 'edit' %}更新资源包{% else %}提交资源包{% endif %}
+            </button>
+        </div>
+    </nav>
+
+    <div class="content">
+        {% if mode == 'edit' %}
+        <div style="background: rgba(85, 216, 139, 0.10); border: 1px solid #55d88b; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; color: #e6edf3; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-pencil-alt" style="font-size: 18px;"></i>
+            <span>您正在编辑：<strong style="color: #55d88b;">{{ resource.main_name if resource else '未命名资源包' }}</strong> (ID: {{ resource.id if resource else '—' }})</span>
+        </div>
+        {% endif %}
+
+        {% if reject_reason %}
+        <div class="reject-reason-box">
+            <i class="fas fa-undo-alt"></i>
+            <div class="reason-content">
+                <strong>本次退回原因：</strong> {{ reject_reason }}
+                <div style="font-size: 13px; color: #8b949e; margin-top: 4px;">请根据上述原因修改后重新提交。</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if can_skip_review %}
+        <div style="background: rgba(85, 216, 139, 0.12); border: 1px solid #55d88b; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; color: #e6edf3; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-star" style="font-size: 18px;"></i>
+            <span>
+                {% if mode == 'edit' %}
+                    {% if user_info.role >= 3 %}
+                        您的角色为 <strong style="color: #55d88b;">{{ role_names[user_info.role] }}</strong>，拥有免审核提交/编辑权限。
+                    {% elif user_info.role == 2 %}
+                        此资源包在您的 <strong style="color: #55d88b;">编辑管辖区</strong> 内，您可免审核直接编辑。
+                    {% endif %}
+                {% else %}
+                    您的角色为 <strong style="color: #55d88b;">{{ role_names[user_info.role] }}</strong>，拥有免审核提交/编辑权限。
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+
+        {% if mode == 'edit' and lock %}
+        <div class="lock-notice" style="background: rgba(255, 50, 50, 0.15); border: 1px solid #f97583; border-radius: 12px; padding: 14px 20px; margin-bottom: 24px; color: #f97583; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-lock" style="font-size: 18px;"></i>
+            <span>编辑已锁定：由 <strong>{{ lock_submitter }}</strong> 在 <strong>{{ lock_time }}</strong> 提交的编辑尚未审核，暂时无法修改。</span>
+        </div>
+        {% endif %}
+
+        <div id="publishForm" {% if mode == 'edit' and lock %}class="locked"{% endif %}>
+            <div class="lock-overlay"></div>
+
+            <input type="hidden" id="edit_resource_id" value="{{ resource.id if mode == 'edit' else '' }}" />
+            <input type="hidden" id="review_id" value="{{ resource.id if mode == 'new' and resource and resource.id else review_id or '' }}" />
+            <input type="hidden" id="mode" value="{{ mode }}" />
+
+            <!-- ===== 基本信息 Tab ===== -->
+            <div class="section active" id="basic">
+                <div class="section-header"><h3>基本信息</h3><span class="badge">必填</span></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>主要名称 <span class="required">*</span></label>
+                        <input type="text" id="main_name" placeholder="例：Faithful 32x" value="{{ resource.main_name if resource else '' }}" />
+                        <div class="desc">资源包的官方名称或通用译名。有汉化则填汉化名，否则填原名。</div>
+                        {% if mode == 'new' and not review_id %}
+                        <div id="mainNameDuplicateHint" class="duplicate-hint"></div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>次要名称 <span class="hint">(原名)</span></label>
+                        <input type="text" id="sub_name" placeholder="例：Faithful 32x" value="{{ resource.sub_name if resource else '' }}" />
+                        <div class="desc">有汉化则填原名，否则留空。</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>简写名称 <span class="hint">(缩写)</span></label>
+                    <input type="text" id="abbr" placeholder="例：F32x" value="{{ resource.abbr if resource else '' }}" />
+                    <div class="desc">资源包的通用简称/缩写，只能为字母、数字或符号。</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>资源包封面 <span class="required">*</span></label>
+                        <div class="upload-box" id="coverUpload">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-image" style="font-size: 32px;"></i>
+                                <div class="upload-text">点击上传封面</div>
+                                <div class="upload-hint">必须为 16:10 比例（如 1280×800），支持 JPG / PNG / WebP，不超过 10MB</div>
+                            </div>
+                            <img class="preview-img" id="coverPreview" src="{{ resource.cover if resource else '' }}" alt="封面预览" />
+                            <button class="delete-btn" id="coverDelete" type="button"><i class="fas fa-times"></i></button>
+                        </div>
+                        <input type="file" id="coverInput" accept="image/*" style="display: none" />
+                        <div class="desc">封面将显示在资源包列表和详情页头部。</div>
+                    </div>
+                    <div class="form-group">
+                        <label>一句话简介 <span class="required">*</span></label>
+                        <input type="text" id="summary" placeholder="用一句话概括这个资源包的作用…" value="{{ resource.summary if resource else '' }}" />
+                        <div class="desc">仅看名称与封面或许无法理解，请用一句话简要概括。</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>资源包分类 <span class="required">*</span></label>
+                    <div class="tag-box" id="categoryGroup">
+                        {% for cat in categories %}
+                        <label>
+                            <input type="radio" name="category" value="{{ cat }}" {% if resource and resource.category == cat %}checked{% endif %} />
+                            {{ cat }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="desc">请选择最贴合此资源包风格的唯一分类。</div>
+                </div>
+                <div class="form-group">
+                    <label>B站视频链接</label>
+                    <input type="url" id="bilibili_video"
+                           placeholder="https://www.bilibili.com/video/BV1o4KC6NEWE"
+                           value="{{ resource.bilibili_video if resource else '' }}" />
+                    <div class="desc">
+                        请严格按照格式输入，例如 <code>https://www.bilibili.com/video/BV1o4KC6NEWE</code>，
+                        不要携带任何参数（如 <code>?share_source=...</code>）。
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>资源截图 <span class="required">*</span> <span class="hint">(2~12 张)</span></label>
+                    <div class="upload-box" id="screenshotUpload">
+                        <div class="upload-placeholder">
+                            <i class="fas fa-camera" style="font-size: 32px;"></i>
+                            <div class="upload-text">点击或拖拽上传截图</div>
+                            <div class="upload-hint">必须为 16:10 比例（如 1920×1200），支持 JPG / PNG / WebP，不超过 10MB</div>
+                        </div>
+                        <div style="display: none; width: 100%" id="screenshotPreviewArea"></div>
+                        <button class="delete-btn" id="screenshotClear" type="button" style="display: none !important"><i class="fas fa-times"></i></button>
+                    </div>
+                    <input type="file" id="screenshotInput" accept="image/*" multiple style="display: none" />
+                    <div class="desc">上传资源包在游戏内的实际效果截图，帮助玩家直观了解资源包风格与质量。</div>
+                    <div class="screenshot-list" id="screenshotList"></div>
+                </div>
+                <div class="form-group">
+                    <label>资源介绍 <span class="required">*</span></label>
+                    <div id="resourceEditor"></div>
+                    <div class="desc">详细描述资源包的内容、特色、适用场景等。支持标题、对齐、引用、代码等丰富排版。</div>
+                </div>
+            </div>
+
+            <!-- ===== 兼容信息 Tab ===== -->
+            <div class="section" id="compatibility">
+                <div class="section-header"><h3>兼容信息</h3><span class="badge">必填</span></div>
+                <div class="form-group">
+                    <label>支持平台 <span class="required">*</span></label>
+                    <div class="tag-box">
+                        <label><input type="checkbox" name="platforms" value="java" {% if resource and 'java' in resource.platforms %}checked{% endif %} /> JAVA版</label>
+                        <label><input type="checkbox" name="platforms" value="bedrock" {% if resource and 'bedrock' in resource.platforms %}checked{% endif %} /> 基岩版</label>
+                    </div>
+                    <div class="desc">此资源包所支持的 Minecraft 平台。</div>
+                </div>
+                <div class="form-group">
+                    <label>支持 MC 版本 <span class="required">*</span> <span class="hint">(可多选)</span></label>
+                    <div class="version-grid">
+                        {% for ver in versions %}
+                        <label>
+                            <input type="checkbox" name="versions" value="{{ ver }}" {% if resource and ver in resource.versions %}checked{% endif %} />
+                            {{ ver }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="desc">只能选择作者声称支持的版本。</div>
+                </div>
+                <div class="form-group">
+                    <label>支持特性</label>
+                    <div class="tag-box">
+                        <label><input type="checkbox" name="features" value="pbr" {% if resource and 'pbr' in resource.features %}checked{% endif %} /> PBR (物理材质)</label>
+                        <label><input type="checkbox" name="features" value="emissive" {% if resource and 'emissive' in resource.features %}checked{% endif %} /> 发光贴图</label>
+                        <label><input type="checkbox" name="features" value="random" {% if resource and 'random' in resource.features %}checked{% endif %} /> 随机纹理</label>
+                        <label><input type="checkbox" name="features" value="animated" {% if resource and 'animated' in resource.features %}checked{% endif %} /> 动画纹理</label>
+                        <label><input type="checkbox" name="features" value="ctm" {% if resource and 'ctm' in resource.features %}checked{% endif %} /> CTM (连接纹理)</label>
+                        <label><input type="checkbox" name="features" value="custom_model" {% if resource and 'custom_model' in resource.features %}checked{% endif %} /> 自定义模型</label>
+                        <label><input type="checkbox" name="features" value="custom_sound" {% if resource and 'custom_sound' in resource.features %}checked{% endif %} /> 自定义音效</label>
+                        <label><input type="checkbox" name="features" value="optifine" {% if resource and 'optifine' in resource.features %}checked{% endif %} /> OptiFine 特性</label>
+                    </div>
+                    <div class="desc">资源包所支持的进阶渲染特性，可多选。</div>
+                </div>
+            </div>
+
+            <!-- ===== 作者与下载 Tab ===== -->
+            <div class="section" id="author_download">
+                <div class="section-header"><h3>作者与下载</h3><span class="badge">必填</span></div>
+                <div class="form-group">
+                    <label>作者 <span class="required">*</span> <span class="hint">(可添加多位)</span></label>
+                    <div id="authorList"></div>
+                    <button class="add-btn primary" type="button" id="addAuthorBtn"><i class="fas fa-plus"></i> 添加作者</button>
+                    <div class="desc">
+                        资源包的主要作者或创作者。如有多个合作者，请逐一添加。可以使用形如 #id=[id] 来指向站内个人主页，如填写 #id={{ user_info.id }} 即指向您。
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>官方状态</label>
+                    <select id="status">
+                        <option value="active" {% if resource and resource.status == 'active' %}selected{% endif %}>活跃</option>
+                        <option value="semi" {% if resource and resource.status == 'semi' %}selected{% endif %}>半弃坑</option>
+                        <option value="inactive" {% if resource and resource.status == 'inactive' %}selected{% endif %}>停更</option>
+                        <option value="unknown" {% if resource and resource.status == 'unknown' %}selected{% endif %}>不确定</option>
+                    </select>
+                    <div class="desc">活跃：状态正常，保持更新。半弃坑：超过6个月未发布更新。停更：超过1年未发布更新或明确表示弃坑。</div>
+                </div>
+                <div class="form-group">
+                    <label>下载链接 <span class="required">*</span></label>
+                    <div id="downloadList"></div>
+                    <button class="add-btn primary" type="button" id="addDownloadLinkBtn"><i class="fas fa-plus"></i> 新增下载链接</button>
+                    <div class="desc">添加资源包的下载渠道，至少提供一个有效的下载链接。</div>
+                </div>
+            </div>
+
+            <!-- ===== 扩展信息 Tab ===== -->
+            <div class="section" id="extra">
+                <div class="section-header"><h3>扩展信息</h3></div>
+                <div class="form-group">
+                    <label>搜索辅助关键词</label>
+                    <input type="text" id="keywords" placeholder="例：Faithful 32x 原版高清 纹理包" value="{{ resource.keywords if resource else '' }}" />
+                    <div class="desc">用于为搜索追加的辅助关键词，例如资源包别名、外号、分词。禁止滥用，不清楚用法请留空。</div>
+                </div>
+                <div class="form-group">
+                    <label>授权协议</label>
+                    <input type="text" id="license" placeholder="例：CC BY-NC-SA 4.0" value="{{ resource.license if resource else '' }}" />
+                    <div class="desc">资源包所遵循的授权许可协议，如 Creative Commons 等。</div>
+                </div>
+                <div class="form-group">
+                    <label>快捷 MC百科 ID</label>
+                    <input type="text" id="mcmod_id" placeholder="例：1234" value="{{ resource.mcmod_id if resource else '' }}" />
+                    <div class="desc">若该资源包为模组设计，可填写 MC百科 中对应条目的数字 ID，便于快速跳转。</div>
+                    {% if mode == 'new' and not review_id %}
+                    <div id="mcmodIdDuplicateHint" class="duplicate-hint"></div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label>CurseForge ID</label>
+                    <input type="text" id="curseforge_id" placeholder="例：123456" value="{{ resource.curseforge_id if resource else '' }}" />
+                    <div class="desc">若该资源在 CurseForge 上有对应项目，请填写其数字 ID。</div>
+                    {% if mode == 'new' and not review_id %}
+                    <div id="curseforgeIdDuplicateHint" class="duplicate-hint"></div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Modrinth ID</label>
+                    <input type="text" id="modrinth_id" placeholder="例：abc123" value="{{ resource.modrinth_id if resource else '' }}" />
+                    <div class="desc">若该资源在 Modrinth 上有对应项目，请填写其项目 ID。</div>
+                    {% if mode == 'new' and not review_id %}
+                    <div id="modrinthIdDuplicateHint" class="duplicate-hint"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 裁剪模态框 ===== -->
+<div id="cropModal">
+    <div class="modal-box">
+        <div class="modal-header"><h3><i class="fas fa-cut"></i> 裁剪为 16:10</h3><button id="closeCropBtn" type="button"><i class="fas fa-times"></i></button></div>
+        <div class="modal-body"><img id="cropImage" src="" alt="裁剪预览" /></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="cancelCropBtn" type="button">取消</button>
+            <button class="btn-confirm" id="confirmCropBtn" type="button">确认裁剪</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 提交模态框 ===== -->
+<div id="submitModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10001;align-items:center;justify-content:center;">
+    <div class="modal-box">
+        <h3 id="submitModalTitle">确认提交</h3>
+        <div class="body-text" id="submitModalBody">确定要提交吗？</div>
+        <div class="progress-area" id="submitModalProgress">
+            进度：<span class="progress-text" id="submitProgressText">准备...</span>
+        </div>
+        <div class="btn-group">
+            <button class="btn-cancel" id="submitModalCancel">取消</button>
+            <button class="btn-confirm" id="submitModalConfirm">确定</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+    window._existingScreenshots = {{ resource.screenshots | tojson | safe if resource else [] }};
+    window._authors = window._authors;
+    window._downloadLinks = window._downloadLinks;
+    window._description = {{ resource.description | tojson | safe if resource else '' }};
+    window._canSkipReview = {{ can_skip_review|tojson }};
+    window._userRole = {{ (user_info.role if user_info and user_info.role is defined else 0) | int }};
+    window._mode = '{{ mode }}';
+    window._reviewId = '{{ review_id if review_id else '' }}';
+    window._resourceType = 'resourcepack';
+    window._resourceId = {% if mode == 'edit' %}{{ resource.id if resource else 'null' }}{% else %}null{% endif %};
+</script>
+<script src="/static/js/pages/resource/edit.js"></script>
+<script src="/static/js/pages/resource/edit-page.js"></script>
+<script src="/static/js/lib/editor/editor-utils.js"></script>
+<script src="/static/js/lib/editor/editor-toolbar.js"></script>
+<script src="/static/js/lib/editor/editor-panels.js"></script>
+<script src="/static/js/lib/editor/table.js"></script>
+<script src="/static/js/lib/editor/editor.js"></script>
+
+<script src="/static/js/pages/resource/edit/resourcepack_edit_new.js"></script>
+{% endblock %}

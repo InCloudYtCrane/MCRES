@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% block title %}勉励工坊 · MCRES 方块工坊{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/index/support.css" />
+{% endblock %}
+
+{% block bg_layer %}
+<div class="sup-bg-layer"></div>
+{% endblock %}
+
+{% block content %}
+<div class="sup-wrap">
+
+    <!-- ============================================================
+         Hero：紧凑横条
+         ============================================================ -->
+    <div class="sup-hero">
+        <div class="sup-hero-left">
+            <div class="sup-hero-icon">
+                <img src="https://img.mcresource.cn/icon/logo/logo_afdian.png" alt="爱发电">
+            </div>
+            <div class="sup-hero-text">
+                <h1>勉励工坊</h1>
+                <p>为工坊运维贡献力量</p>
+            </div>
+        </div>
+        <div class="sup-hero-right">
+            <a href="https://afdian.com/a/mcres" target="_blank" rel="noopener" class="sup-btn">
+                <i class="fas fa-bolt"></i> 前往爱发电
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         三栏信息卡：本月收支 / 收款去向 / 勉励方式
+         ============================================================ -->
+    <div class="sup-grid-3">
+
+        <!-- 本月收支 -->
+        <div class="sup-card sup-month">
+            <div class="sup-card-title sup-month-title">
+                <span class="sup-month-title-left">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ current_month }} 收支
+                </span>
+                <select class="sup-month-picker" id="supMonthPicker" aria-label="选择月份">
+                    {% for m in available_months %}
+                    <option value="{{ m }}"{% if m == current_month %} selected{% endif %}>{{ m }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="sup-month-row">
+                <span class="k">收入</span>
+                <span class="v income">¥{{ "%.2f"|format(income) }}</span>
+            </div>
+            <div class="sup-month-row">
+                <span class="k">支出</span>
+                <span class="v expense">¥{{ "%.2f"|format(expense) }}</span>
+            </div>
+            <div class="sup-month-row">
+                <span class="k">结余</span>
+                <span class="v balance{% if balance < 0 %} negative{% endif %}">
+                    ¥{{ "%.2f"|format(balance) }}
+                </span>
+            </div>
+            <div class="sup-month-note">
+                {% if balance >= 0 %}
+                    <i class="fas fa-check-circle"></i>结余转入运营储备金
+                {% else %}
+                    <i class="fas fa-info-circle"></i>缺口由运营储备金补足
+                {% endif %}
+            </div>
+            <div class="sup-month-date">
+                更新于 {{ update_date }}
+                {% if current_month != now_month %}
+                    · <a href="?month={{ now_month }}" class="sup-month-back">回到本月</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 收款去向 -->
+        <div class="sup-card">
+            <div class="sup-card-title">
+                <i class="fas fa-chart-pie"></i>
+                收款去向
+                <a href="https://tea.mcresource.cn/topic/15" target="_blank" class="badge">查看详情</a>
+            </div>
+            {% if allocations %}
+            <div class="sup-alloc-list compact">
+                {% for a in allocations %}
+                <div class="sup-alloc-row">
+                    <span class="label" title="{{ a.label }}">
+                        <span class="icon">{{ a.icon }}</span>{{ a.label }}
+                    </span>
+                    <span class="bar">
+                        <span class="bar-fill" style="width: {{ a.percent }}%;"></span>
+                    </span>
+                    <span class="amount">{{ a.percent }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="sup-empty-sm">{{ current_month }} 暂无支出记录</div>
+            {% endif %}
+        </div>
+
+        <!-- 勉励方式 -->
+        <div class="sup-card">
+            <div class="sup-card-title">
+                <i class="fas fa-hand-holding-heart"></i>
+                怎么勉励
+            </div>
+            <div class="sup-steps">
+                <div class="sup-step">
+                    <div class="num">01</div>
+                    <div class="t">一次性</div>
+                    <div class="d">任意金额</div>
+                </div>
+                <div class="sup-step">
+                    <div class="num">02</div>
+                    <div class="t">月度</div>
+                    <div class="d">按月支持</div>
+                </div>
+                <div class="sup-step">
+                    <div class="num">03</div>
+                    <div class="t">匿名</div>
+                    <div class="d">留空即可</div>
+                </div>
+            </div>
+            <div class="sup-step-tip">
+                <i class="fas fa-info-circle"></i>
+                所有勉励全额用于硬性成本，绝不私用
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+         收入明细
+         ============================================================ -->
+    <div class="sup-card sup-table-card" id="income">
+        <div class="sup-card-title">
+            <i class="fas fa-receipt"></i>
+            {{ current_month }} 收入明细
+            {% if income_total %}
+            <span class="badge">共 {{ income_total }} 笔</span>
+            {% endif %}
+        </div>
+
+        {% if income_rows %}
+        <div class="sup-list-wrap">
+            <table class="sup-table">
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">时间</th>
+                        <th style="width: 160px;">昵称</th>
+                        <th style="width: 110px;">金额</th>
+                        <th>留言</th>
+                        <th style="width: 220px;">回复</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in income_rows %}
+                    <tr>
+                        <td class="muted">
+                            {% if r.paid_at %}
+                                {{ r.paid_at.strftime('%Y-%m-%d %H:%M') if r.paid_at.strftime else r.paid_at }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td class="nickname">{{ r.nickname or '爱心人士' }}</td>
+                        <td class="amount">¥{{ "%.2f"|format(r.total_amount) }}</td>
+                        <td class="remark">
+                            {% if r.display_remark %}
+                                {{ r.display_remark }}
+                            {% else %}
+                                <span class="muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="remark">
+                            {% if r.reply %}
+                                {{ r.reply }}
+                            {% else %}
+                                <span class="muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if income_total_pages > 1 %}
+        <div class="sup-pager">
+            {% if income_page > 1 %}
+                <a href="?month={{ current_month }}&income_page={{ income_page - 1 }}&expense_page={{ expense_page }}#income">‹</a>
+            {% else %}
+                <span class="disabled">‹</span>
+            {% endif %}
+
+            {% set start_p = [1, income_page - 2]|max %}
+            {% set end_p = [income_total_pages, income_page + 2]|min %}
+
+            {% if start_p > 1 %}
+                <a href="?month={{ current_month }}&income_page=1&expense_page={{ expense_page }}#income">1</a>
+                {% if start_p > 2 %}<span class="info">…</span>{% endif %}
+            {% endif %}
+
+            {% for p in range(start_p, end_p + 1) %}
+                {% if p == income_page %}
+                    <span class="active">{{ p }}</span>
+                {% else %}
+                    <a href="?month={{ current_month }}&income_page={{ p }}&expense_page={{ expense_page }}#income">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if end_p < income_total_pages %}
+                {% if end_p < income_total_pages - 1 %}<span class="info">…</span>{% endif %}
+                <a href="?month={{ current_month }}&income_page={{ income_total_pages }}&expense_page={{ expense_page }}#income">{{ income_total_pages }}</a>
+            {% endif %}
+
+            {% if income_page < income_total_pages %}
+                <a href="?month={{ current_month }}&income_page={{ income_page + 1 }}&expense_page={{ expense_page }}#income">›</a>
+            {% else %}
+                <span class="disabled">›</span>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="sup-empty">
+            <i class="fas fa-inbox"></i>
+            {{ current_month }} 没有收入记录
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ============================================================
+         支出明细
+         ============================================================ -->
+    <div class="sup-card sup-table-card" id="expense">
+        <div class="sup-card-title">
+            <i class="fas fa-file-invoice-dollar"></i>
+            {{ current_month }} 支出明细
+            {% if expense_total %}
+            <span class="badge">共 {{ expense_total }} 笔</span>
+            {% endif %}
+        </div>
+
+        {% if expense_rows %}
+        <div class="sup-list-wrap">
+            <table class="sup-table">
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">时间</th>
+                        <th style="width: 130px;">操作者</th>
+                        <th style="width: 200px;">去向</th>
+                        <th style="width: 120px;">金额</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in expense_rows %}
+                    <tr>
+                        <td class="muted">
+                            {% if r.created_at %}
+                                {{ r.created_at.strftime('%Y-%m-%d') if r.created_at.strftime else r.created_at }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ r.operator or '—' }}</td>
+                        <td>{{ r.item_name or '—' }}</td>
+                        <td class="amount out">¥{{ "%.2f"|format(r.amount) }}</td>
+                        <td class="remark">
+                            {% if r.note %}{{ r.note }}{% else %}<span class="muted">—</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if expense_total_pages > 1 %}
+        <div class="sup-pager">
+            {% if expense_page > 1 %}
+                <a href="?month={{ current_month }}&income_page={{ income_page }}&expense_page={{ expense_page - 1 }}#expense">‹</a>
+            {% else %}
+                <span class="disabled">‹</span>
+            {% endif %}
+
+            {% set start_p = [1, expense_page - 2]|max %}
+            {% set end_p = [expense_total_pages, expense_page + 2]|min %}
+
+            {% if start_p > 1 %}
+                <a href="?month={{ current_month }}&income_page={{ income_page }}&expense_page=1#expense">1</a>
+                {% if start_p > 2 %}<span class="info">…</span>{% endif %}
+            {% endif %}
+
+            {% for p in range(start_p, end_p + 1) %}
+                {% if p == expense_page %}
+                    <span class="active">{{ p }}</span>
+                {% else %}
+                    <a href="?month={{ current_month }}&income_page={{ income_page }}&expense_page={{ p }}#expense">{{ p }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if end_p < expense_total_pages %}
+                {% if end_p < expense_total_pages - 1 %}<span class="info">…</span>{% endif %}
+                <a href="?month={{ current_month }}&income_page={{ income_page }}&expense_page={{ expense_total_pages }}#expense">{{ expense_total_pages }}</a>
+            {% endif %}
+
+            {% if expense_page < expense_total_pages %}
+                <a href="?month={{ current_month }}&income_page={{ income_page }}&expense_page={{ expense_page + 1 }}#expense">›</a>
+            {% else %}
+                <span class="disabled">›</span>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="sup-empty">
+            <i class="fas fa-inbox"></i>
+            {{ current_month }} 没有支出记录
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ============================================================
+         底部说明：为什么 + 荣誉头衔（两栏并排）
+         ============================================================ -->
+    <div class="sup-grid-2">
+
+        <div class="sup-card sup-info">
+            <div class="sup-card-title">
+                <i class="fas fa-info-circle"></i>
+                为什么需要勉励
+            </div>
+            <p>「方块工坊」是一个<strong>非营利</strong>性质的 Minecraft 知识共享与社区站点，由个人发起、志愿者开发组共同维护。</p>
+            <p>所有内容<strong>永久免费</strong>，不设付费墙，不卖教程，不锁存档。但维持运转需要真金白银：服务器、域名、CDN 流量、SSL 证书、安全防护。这些成本每月固定发生，不因访问量小而消失。</p>
+            <p>所以开了这个入口，接受<em>自愿勉励</em>。感谢每一份支持。</p>
+        </div>
+
+        <div class="sup-card sup-info">
+            <div class="sup-card-title">
+                <i class="fas fa-medal"></i>
+                关于荣誉头衔
+            </div>
+            <p>勉励后，如果你愿意，可以按以下格式留言：</p>
+            <div class="sup-code">
+                <span class="gray">#</span>你的站内ID<br>
+                <span class="gray">*</span>想说的话（可选）
+            </div>
+            <p class="sup-note">
+                使用<span class="gray">#</span>来作为系统识别站内ID的前缀，<span class="gray">*</span>作为系统识别留言内容的前缀<br>
+                如需匿名：留空或写「匿名」<br>
+                该头衔<strong>仅代表感谢</strong>，不含任何特权 · 所有内容对所有人依然完全免费
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_script %}
+<script src="/static/js/pages/index/support.js"></script>
+{% endblock %}

@@ -1,0 +1,555 @@
+{% extends "base.html" %}
+{% block title %}方块工坊 - Minecraft资源包·光影包·地图收录平台 | MCRES{% endblock %}
+
+{% block extra_head %}
+<meta
+  name="description"
+  content="方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图的资源资料，每日更新，支持分类筛选与热度排行。"
+/>
+<meta
+  name="keywords"
+  content="我的世界, Minecraft, 资源包, 光影包, 地图, 方块工坊, MCRES, 中文收录, 资源下载"
+/>
+<link rel="canonical" href="{{ url_for('index.index', _external=True) }}" />
+<meta name="robots" content="index, follow" />
+<meta
+  property="og:title"
+  content="方块工坊 - Minecraft资源包·光影包·地图收录平台 | MCRES"
+/>
+<meta
+  property="og:description"
+  content="方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图的资源资料，每日更新。"
+/>
+<meta property="og:type" content="website" />
+<meta
+  property="og:url"
+  content="{{ url_for('index.index', _external=True) }}"
+/>
+<meta
+  property="og:image"
+  content="https://img.mcresource.cn/icon/logo/logo.png"
+/>
+<meta property="og:site_name" content="方块工坊" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:title"
+  content="方块工坊 - Minecraft资源包·光影包·地图收录平台 | MCRES"
+/>
+<meta
+  name="twitter:description"
+  content="方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图资源资料。"
+/>
+<meta
+  name="twitter:image"
+  content="https://img.mcresource.cn/icon/logo/logo.png"
+/>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "方块工坊",
+    "alternateName": "MCRES",
+    "url": "{{ url_for('index.index', _external=True) }}",
+    "description": "方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图资源资料，每日更新，支持分类筛选与热度排行。",
+    "inLanguage": "zh-CN",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ url_for('index.index', _external=True) }}search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+</script>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "方块工坊",
+    "alternateName": "MCRES",
+    "url": "{{ url_for('index.index', _external=True) }}",
+    "logo": "https://img.mcresource.cn/icon/logo/logo.png",
+    "description": "我的世界中文资源收录平台",
+    "sameAs": ["https://pd.qq.com/g/mcresource"]
+  }
+</script>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/index/index.css') }}"
+/>
+<link rel="stylesheet" href="/static/css/pages/index/index.css" />
+{% endblock %}
+
+{% block body_class %}index-page{% endblock %}
+
+{% block navbar %}{% include "components/navbar.html" %}{% endblock %}
+
+{% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %}
+
+{# 首页的 footer 在 .container 内部自定义，覆盖 base 的默认 footer #}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="top-banner">
+  <div class="banner-inner">
+    <div class="banner-left" style="flex: 1">
+      <div class="random-saying-wrap">
+        <div class="random-saying">
+          <i class="fas fa-quote-left"></i>
+          <span>{{ random_saying }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="banner-right">
+      <div class="weather-widget" id="weatherWidget" hidden>
+        <i class="fas fa-cloud weather-icon" id="weatherIcon"></i>
+        <span class="weather-temp" id="weatherTemp">--°C</span>
+        <span class="weather-desc" id="weatherDesc"></span>
+        <span class="weather-city" id="weatherCity"></span>
+      </div>
+      <span class="banner-sep">|</span>
+      <div class="local-time" id="localTime"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <a href="https://sel.mcresource.cn" target="_blank">方块选料</a>
+      <span class="sep">|</span>
+      <a href="https://tea.mcresource.cn" target="_blank">方块茶室</a>
+      <span class="sep">|</span>
+      <a href="/development" target="_blank">更新日志</a>
+      <span class="sep">|</span>
+      <a href="/support" target="_blank">勉励工坊</a>
+      <span class="sep">|</span>
+      <a href="/about" target="_blank">关于工坊</a>
+      <span class="sep">|</span>
+      <a href="/rule/acceptance_criteria" target="_blank">站内规则</a>
+    </div>
+    <div class="toolbar-center">
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="搜索资源、用户..."
+          id="searchInput"
+          data-search-suggest
+          data-suggest-new-window="true"
+        />
+        <button id="searchSubmitBtn">
+          <i class="fas fa-search"></i> 搜索
+        </button>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <div class="add-links">
+        <a
+          href="/review?type=resourcepack&limit=50&status=pending,passed,rejected,withdrawn"
+          target="_blank"
+          ><i class="fas fa-clipboard-list fa-fw"></i>审核进度</a
+        >
+        <a href="/resourcepack/new" target="_blank"
+          ><i class="fas fa-plus-circle fa-fw"></i>资源包</a
+        >
+        <a href="/shaderpack/new" target="_blank"
+          ><i class="fas fa-plus-circle fa-fw"></i>光影包</a
+        >
+        <a href="/map/new" target="_blank"
+          ><i class="fas fa-plus-circle fa-fw"></i>地图</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 三列布局 ========== -->
+  <div class="three-col">
+    <!-- 左侧：热门 -->
+    <div class="col-card">
+      <div class="col-header">
+        <span><i class="fas fa-fire fa-fw"></i> 热门</span>
+        <span class="sub">近期高热度</span>
+      </div>
+      <div class="card-grid-2x2">
+        {% if hot_resources %} {% for item in hot_resources %}
+        <a
+          href="{{ item.detail_url|default('#') }}"
+          target="_blank"
+          class="resource-card"
+        >
+          <div class="card-cover">
+            {% if item.cover_url %}
+            <img
+              src="{{ item.cover_url }}"
+              alt="{{ item.name }}"
+              loading="lazy"
+            />
+            {% else %}
+            <div class="placeholder">
+              <i class="fas fa-question-circle icon"></i><span>无</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="card-info">
+            <div class="name">{{ item.name|default('未命名') }}</div>
+            <div class="meta">
+              <span class="tag">{{ item.tag|default('其他') }}</span>
+              <span class="views"
+                ><i class="fas fa-eye fa-fw"></i> {{
+                item.views_display|default('0') }}</span
+              >
+            </div>
+          </div>
+        </a>
+        {% endfor %} {% else %}
+        <div class="empty-placeholder" style="grid-column: 1/-1">
+          暂无热门资源
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 中间：轮播 -->
+    <div class="carousel-wrapper">
+      <div class="carousel-container" id="carouselContainer">
+        <div class="carousel-slide-wrapper" id="carouselSlideWrapper">
+          {% if posters %} {% for p in posters %}
+          <div
+            class="carousel-slide{% if loop.first %} active{% endif %}"
+            data-url="{{ p.link_url|default('#') }}"
+          >
+            {% if p.cover_url %}
+            <img src="{{ p.cover_url }}" alt="{{ p.title }}" loading="lazy" />
+            {% else %}
+            <div class="placeholder">
+              <i class="fas fa-image icon"></i>
+              <span>暂无海报</span>
+            </div>
+            {% endif %}
+            <div class="carousel-overlay">
+              <div class="tag">
+                <i class="fas fa-star fa-fw"></i> {{ p.tag|default('推荐') }}
+              </div>
+              <div class="title">{{ p.title|default('未命名') }}</div>
+              <div class="desc">{{ p.desc|default('') }}</div>
+              <div class="meta">{{ p.meta|default('') }}</div>
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <div class="carousel-slide active" data-url="#">
+            <div class="placeholder">
+              <i class="fas fa-image icon"></i>
+              <span>暂无推荐</span>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <button class="carousel-arrow left" id="carouselPrev">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-arrow right" id="carouselNext">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      <div class="carousel-dots" id="carouselDots">
+        {% if posters %} {% for p in posters %}
+        <button
+          class="dot{% if loop.first %} active{% endif %}"
+          data-index="{{ loop.index0 }}"
+        ></button>
+        {% endfor %} {% endif %}
+      </div>
+    </div>
+
+    <!-- 右侧：最新 -->
+    <div class="col-card">
+      <div class="col-header">
+        <span><i class="fas fa-bolt fa-fw"></i> 最新</span>
+        <span class="sub">刚收录的</span>
+      </div>
+      <div class="card-grid-2x2">
+        {% if latest_resources %} {% for item in latest_resources %}
+        <a
+          href="{{ item.detail_url|default('#') }}"
+          target="_blank"
+          class="resource-card"
+        >
+          <div class="card-cover">
+            {% if item.cover_url %}
+            <img
+              src="{{ item.cover_url }}"
+              alt="{{ item.name }}"
+              loading="lazy"
+            />
+            {% else %}
+            <div class="placeholder">
+              <i class="fas fa-question-circle icon"></i><span>无</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="card-info">
+            <div class="name">{{ item.name|default('未命名') }}</div>
+            <div class="meta">
+              <span class="tag">{{ item.tag|default('其他') }}</span>
+              <span class="views"
+                ><i class="fas fa-eye fa-fw"></i> {{
+                item.views_display|default('0') }}</span
+              >
+            </div>
+          </div>
+        </a>
+        {% endfor %} {% else %}
+        <div class="empty-placeholder" style="grid-column: 1/-1">
+          暂无最新资源
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 底部：公告 + 动态 ========== -->
+  <div class="activity-grid">
+    <div class="activity-section">
+      <div class="section-header">
+        <i class="fas fa-thumbtack fa-fw"></i> 公告
+      </div>
+      <ul class="activity-list">
+        {% if announcements %} {% for ann in announcements | reverse %}
+        <li>
+          <span class="highlight">{{ ann.title|default('公告') }}</span>
+          <span>{% if ann.content %}— {{ ann.content }}{% endif %}</span>
+          <span class="time">{{ ann.time|default('') }}</span>
+        </li>
+        {% endfor %} {% else %}
+        <li class="empty-placeholder">暂无公告</li>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="activity-section">
+      <div class="section-header">
+        <i class="fas fa-bullhorn fa-fw"></i> 动态
+      </div>
+      <div class="feed-scroll-container">
+        <ul class="feed-scroll-list">
+          {% if activities %} {% for act in activities %}
+          <li>
+            <span class="highlight">
+              <a href="/profile/{{ act.user_id }}" target="_blank"
+                >{{ act.user|default('用户') }}</a
+              >
+            </span>
+            <span
+              >{{ act.action|default('') }}{% if act.target %} {{ act.target
+              }}{% endif %}</span
+            >
+            <span class="time">{{ act.time }}({{ act.time|timesince }})</span>
+          </li>
+          {% endfor %} {% else %}
+          <li class="empty-placeholder" style="border-bottom: none">
+            暂无动态
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 资源分类展示区块 ========== -->
+  {% if resource_packs %}
+  <div class="section-block" id="section-resourcepack">
+    <div class="section-header-block">
+      <i class="fas fa-box fa-fw"></i> 资源包
+      <a href="/resourcepacks" target="_blank" class="more-link">更多 →</a>
+    </div>
+    {% for category, items in resource_packs.items() %}
+    <div class="category-title" id="cat-rp-{{ loop.index0 }}">
+      {{ category }}
+    </div>
+    <div class="card-grid-5col">
+      {% for item in items %}
+      <a
+        href="{{ item.detail_url|default('#') }}"
+        target="_blank"
+        class="resource-card"
+      >
+        <div class="card-cover">
+          {% if item.cover_url %}
+          <img
+            src="{{ item.cover_url }}"
+            alt="{{ item.name }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div class="placeholder">
+            <i class="fas fa-question-circle icon"></i>
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-info">
+          <div class="name">{{ item.name|default('未命名') }}</div>
+          <div class="meta">
+            <span class="tag">{{ item.tag|default('其他') }}</span>
+            <span class="views"
+              ><i class="fas fa-eye fa-fw"></i> {{
+              item.views_display|default('0') }}</span
+            >
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} {% if shader_packs %}
+  <div class="section-block" id="section-shaderpack">
+    <div class="section-header-block">
+      <i class="fas fa-palette fa-fw"></i> 光影包
+      <a href="/shaderpacks" target="_blank" class="more-link">更多 →</a>
+    </div>
+    {% for style, items in shader_packs.items() %}
+    <div class="category-title" id="cat-sp-{{ loop.index0 }}">{{ style }}</div>
+    <div class="card-grid-5col">
+      {% for item in items %}
+      <a
+        href="{{ item.detail_url|default('#') }}"
+        target="_blank"
+        class="resource-card"
+      >
+        <div class="card-cover">
+          {% if item.cover_url %}
+          <img
+            src="{{ item.cover_url }}"
+            alt="{{ item.name }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div class="placeholder">
+            <i class="fas fa-question-circle icon"></i>
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-info">
+          <div class="name">{{ item.name|default('未命名') }}</div>
+          <div class="meta">
+            <span class="tag">{{ item.tag|default('其他') }}</span>
+            <span class="views"
+              ><i class="fas fa-eye fa-fw"></i> {{ item.views|default('0')
+              }}</span
+            >
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %} {% if maps %}
+  <div class="section-block" id="section-map">
+    <div class="section-header-block">
+      <i class="fas fa-map fa-fw"></i> 地图
+      <a href="/maps" target="_blank" class="more-link">更多 →</a>
+    </div>
+    {% for mtype, items in maps.items() %}
+    <div class="category-title" id="cat-map-{{ loop.index0 }}">{{ mtype }}</div>
+    <div class="card-grid-5col">
+      {% for item in items %}
+      <a
+        href="{{ item.detail_url|default('#') }}"
+        target="_blank"
+        class="resource-card"
+      >
+        <div class="card-cover">
+          {% if item.cover_url %}
+          <img
+            src="{{ item.cover_url }}"
+            alt="{{ item.name }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div class="placeholder">
+            <i class="fas fa-question-circle icon"></i>
+          </div>
+          {% endif %}
+        </div>
+        <div class="card-info">
+          <div class="name">{{ item.name|default('未命名') }}</div>
+          <div class="meta">
+            <span class="tag">{{ item.tag|default('其他') }}</span>
+            <span class="views"
+              ><i class="fas fa-eye fa-fw"></i> {{ item.views|default('0')
+              }}</span
+            >
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="footer">{% include 'components/footer.html' %}</div>
+</div>
+
+<nav class="side-nav side-nav-left" id="sideNavLeft">
+  <a
+    href="#section-resourcepack"
+    data-target="section-resourcepack"
+    class="active"
+    ><i class="fas fa-box fa-fw icon"></i> 资源包</a
+  >
+  <a href="#section-shaderpack" data-target="section-shaderpack"
+    ><i class="fas fa-palette fa-fw icon"></i> 光影包</a
+  >
+  <a href="#section-map" data-target="section-map"
+    ><i class="fas fa-map fa-fw icon"></i> 地图</a
+  >
+</nav>
+<nav class="side-nav side-nav-right" id="sideNavRight"></nav>
+<button class="back-to-top" id="backToTop" title="回到顶部">
+  <i class="fas fa-arrow-up"></i>
+</button>
+<button class="hamburger-btn-fixed" id="hamburgerBtn" aria-label="导航菜单">
+  <i class="fas fa-bars"></i>
+</button>
+<div class="hamburger-overlay" id="hamburgerOverlay"></div>
+<div class="hamburger-panel" id="hamburgerPanel">
+  <div class="hamburger-header">
+    <span>导航菜单</span>
+    <button class="hamburger-close" id="hamburgerClose">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="hamburger-body">
+    <div class="hamburger-section">
+      <div class="hamburger-section-title">
+        <i class="fas fa-folder-open"></i> 资源分类
+      </div>
+      <ul class="hamburger-nav-list" id="hamburgerLeftNav"></ul>
+    </div>
+    <div class="hamburger-section">
+      <div class="hamburger-section-title">
+        <i class="fas fa-tags"></i> 子分类
+      </div>
+      <ul class="hamburger-nav-list" id="hamburgerRightNav"></ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+{# ===== 搜索补全组件 ===== #}
+{% include 'components/search_suggest.html' %}
+{# ===== 首页交互脚本 ===== #}
+<script src="{{ url_for('static', filename='js/pages/index/index.js') }}"></script>
+{# ===== 后端注入的 IP 属地（供天气组件使用）===== #}
+<script>
+  window.USER_CITY = {{ user_city | tojson }};
+</script>
+{# ===== 天气小组件 ===== #}
+<script src="{{ url_for('static', filename='js/pages/index/weather.js') }}"></script>
+{% endblock %}

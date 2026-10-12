@@ -1,0 +1,94 @@
+{# ============================================================
+   三连组件（点赞、添砖、收藏、分享）
+   自动引入独立样式和脚本
+   使用：{% include 'components/interaction.html' %}
+   ============================================================ #}
+
+{# 引入 CSS #}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/interaction.css') }}">
+
+{# 自动识别资源变量 #}
+{% if resource is defined %}
+    {% set _data = resource %}
+    {% set _type = 'resourcepack' %}
+{% elif shader is defined %}
+    {% set _data = shader %}
+    {% set _type = 'shaderpack' %}
+{% elif map is defined %}
+    {% set _data = map %}
+    {% set _type = 'map' %}
+{% else %}
+    {% set _data = { 'id': 0, 'interaction': { 'likes_count': 0, 'coins_count': 0, 'favorites_count': 0, 'user_liked': false, 'user_coined': false, 'user_favorited': false, 'coins_remaining': 10 } } %}
+    {% set _type = 'unknown' %}
+{% endif %}
+
+<div class="interaction-bar" data-resource-type="{{ _type }}" data-resource-id="{{ _data.id }}">
+    <div class="interaction-group">
+        <!-- 点赞 -->
+        <button class="interact-btn like-btn {% if _data.interaction.user_liked %}active{% endif %}" data-action="like" title="点赞">
+            <span class="icon"><i class="fas fa-heart"></i></span>
+            <span class="status-text" id="like-status">
+                {% if _data.interaction.likes_count > 0 %}
+                    {{ _data.interaction.likes_count }}
+                {% else %}
+                    点赞
+                {% endif %}
+            </span>
+        </button>
+        <!-- 添砖 -->
+        <button class="interact-btn coin-btn {% if _data.interaction.user_coined %}active{% endif %} {% if _data.interaction.coins_remaining <= 0 %}coin-limit{% endif %}" data-action="coin" title="添砖加瓦（每日上限10次，单资源最多2次）">
+            <span class="icon"><i class="fas fa-cubes"></i></span>
+            <span class="status-text" id="coin-status">
+                {% if _data.interaction.coins_count > 0 %}
+                    {{ _data.interaction.coins_count }}
+                {% else %}
+                    添砖
+                {% endif %}
+            </span>
+        </button>
+        <!-- 收藏（点击打开模态框） -->
+        <button class="interact-btn fav-btn {% if _data.interaction.user_favorited %}active{% endif %}" id="fav-btn-open-modal" title="收藏">
+            <span class="icon"><i class="fas fa-star"></i></span>
+            <span class="status-text" id="fav-status">
+                {% if _data.interaction.favorites_count > 0 %}
+                    {{ _data.interaction.favorites_count }}
+                {% else %}
+                    收藏
+                {% endif %}
+            </span>
+        </button>
+        <!-- ===== 分享下拉菜单（点击切换） ===== -->
+        <div class="share-dropdown" style="display:inline-block; position:relative;">
+            <button class="interact-btn share-btn" data-share-toggle title="分享此页面">
+                <span class="icon"><i class="fas fa-share-alt"></i></span>
+                <span class="status-text">分享</span>
+            </button>
+            <div class="share-dropdown-menu" id="shareDropdownMenu" style="display:none; position:absolute; top:calc(100% + 6px); right:0; background:#1d2229; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:6px 0; min-width:150px; box-shadow:0 8px 30px rgba(0,0,0,0.6); z-index:100;">
+                <a href="#" data-share-action="copy" style="display:flex; align-items:center; gap:10px; padding:8px 18px; color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px; transition:background 0.15s; white-space:nowrap;">
+                    <i class="fas fa-link" style="width:18px; text-align:center; color:rgba(255,255,255,0.3);"></i> 复制链接
+                </a>
+                <a href="#" data-share-action="poster" style="display:flex; align-items:center; gap:10px; padding:8px 18px; color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px; transition:background 0.15s; white-space:nowrap;">
+                    <i class="fas fa-image" style="width:18px; text-align:center; color:rgba(255,255,255,0.3);"></i> 生成海报
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 收藏夹选择模态框 ===== -->
+<div id="favorites-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10002; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+    <div style="background:#1a1e26; border:1px solid #2a2e3a; border-radius:12px; padding:24px; max-width:480px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+        <h3 style="color:#e4e4ea; margin-bottom:16px; font-weight:600; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-star" style="color:var(--role-color, #55d88b);"></i> 选择收藏夹
+        </h3>
+        <div id="favorites-modal-list" style="display:flex; flex-direction:column; gap:8px;">
+            <div style="text-align:center; color:#8a8a9e; padding:20px;">加载中...</div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+            <button id="favorites-modal-close" style="padding:6px 20px; background:transparent; border:1px solid #2a2e3a; border-radius:6px; color:#8a8a9e; cursor:pointer; font-size:14px;">关闭</button>
+        </div>
+    </div>
+</div>
+
+{# 引入 JavaScript #}
+<script src="{{ url_for('static', filename='js/components/interaction.js') }}"></script>

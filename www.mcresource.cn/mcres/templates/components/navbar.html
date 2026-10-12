@@ -1,0 +1,402 @@
+{# ============================================================ 主站导航栏 ·
+MCRES Navbar v2 ------------------------------------------------------------ ·
+类名全部 mn- 前缀，不与外部样式冲突 · 高度固定：桌面 64 / 平板 56 / 手机 52 ·
+主色由 --mn-accent 控制 · 退出模拟改为 GET 跳转（后端需支持 GET）
+------------------------------------------------------------ 注意： 本组件不再给
+<body>
+  加 padding-top。 各页面需自行处理被固定导航栏遮挡的问题 （例如用容器
+  padding、margin，或自己的布局壳）。
+  ============================================================ #}
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+  <link rel="stylesheet" href="/static/css/components/navbar.css" />
+
+  <nav
+    class="mn-navbar {% if is_impersonating %}mn-impersonating{% endif %}"
+    id="mnNavbar"
+  >
+    <div class="mn-navbar-inner">
+      <a href="/" class="mn-brand">
+        <img src="https://img.mcresource.cn/icon/logo/logo.png" alt="工坊" />
+        <span class="mn-brand-text">
+          <span class="mn-t-mc">方块</span><span class="mn-t-hl">工坊</span>
+        </span>
+      </a>
+
+      <ul class="mn-main">
+        <li class="mn-link-group">
+          <a href="https://www.mcresource.cn" class="mn-link mn-current">
+            主站 <i class="fas fa-chevron-down mn-caret"></i>
+          </a>
+          <div class="mn-dropdown">
+            <a
+              href="https://www.mcresource.cn/resourcepacks"
+              class="mn-dropdown-item"
+            >
+              <i class="fas fa-box"></i> 资源包
+            </a>
+            <a
+              href="https://www.mcresource.cn/shaderpacks"
+              class="mn-dropdown-item"
+            >
+              <i class="fas fa-palette"></i> 光影包
+            </a>
+            <a href="https://www.mcresource.cn/maps" class="mn-dropdown-item">
+              <i class="fas fa-map"></i> 地图
+            </a>
+            <div class="mn-menu-divider"></div>
+            <a
+              href="https://www.mcresource.cn/message"
+              class="mn-dropdown-item"
+            >
+              <i class="fas fa-envelope"></i> 消息中心
+            </a>
+          </div>
+        </li>
+        <li class="mn-link-group">
+          <a href="https://sel.mcresource.cn" class="mn-link">
+            选料 <i class="fas fa-chevron-down mn-caret"></i>
+          </a>
+          <div class="mn-dropdown">
+            <a href="https://sel.mcresource.cn/submit" class="mn-dropdown-item">
+              <i class="fas fa-upload"></i> 投稿
+            </a>
+            <a href="https://sel.mcresource.cn/review" class="mn-dropdown-item">
+              <i class="fas fa-pen-fancy"></i> 测评
+            </a>
+            <a href="https://sel.mcresource.cn/method" class="mn-dropdown-item">
+              <i class="fas fa-circle-info"></i> 说明
+            </a>
+          </div>
+        </li>
+        <li class="mn-link-group">
+          <a href="https://tea.mcresource.cn" class="mn-link">
+            茶室 <i class="fas fa-chevron-down mn-caret"></i>
+          </a>
+          <div class="mn-dropdown">
+            <a href="https://tea.mcresource.cn/" class="mn-dropdown-item">
+              <i class="fas fa-house"></i> 首页
+            </a>
+            <a href="https://tea.mcresource.cn/search" class="mn-dropdown-item">
+              <i class="fas fa-search"></i> 搜索
+            </a>
+            <a
+              href="https://tea.mcresource.cn/topic/new"
+              class="mn-dropdown-item"
+            >
+              <i class="fas fa-hashtag"></i> 新话题
+            </a>
+            <a
+              href="https://tea.mcresource.cn/post/new"
+              class="mn-dropdown-item"
+            >
+              <i class="fas fa-pen"></i> 发帖
+            </a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="mn-search">
+        <form class="mn-search-form" action="/search" method="get">
+          <input
+            type="text"
+            name="q"
+            class="mn-search-input"
+            placeholder="搜索资源..."
+            aria-label="搜索"
+            autocomplete="off"
+          />
+          <button type="submit" class="mn-search-btn" aria-label="提交">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+
+      <button class="mn-hamburger" id="mnHamburger" aria-label="菜单">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="mn-actions">
+        {% if user_info %}
+        <a
+          href="https://www.mcresource.cn/message"
+          class="mn-msg-btn"
+          title="消息中心"
+          target="_blank"
+          rel="noopener"
+        >
+          <i class="fas fa-envelope"></i>
+          {% if user_info.message_unread_total and
+          user_info.message_unread_total > 0 %}
+          <span class="mn-msg-badge">
+            {% if user_info.message_unread_total < 100 %} {{
+            user_info.message_unread_total }} {% else %}99+{% endif %}
+          </span>
+          {% endif %}
+        </a>
+
+        <div class="mn-user" id="mnUser">
+          <a
+            href="https://www.mcresource.cn/profile/{{ user_info.id }}"
+            class="mn-user-btn"
+          >
+            <span class="mn-user-avatar">
+              {% if user_info.avatar %}
+              <img src="{{ user_info.avatar }}" alt="" />
+              {% else %} {{ (user_info.nickname or '?')[0] }} {% endif %}
+            </span>
+            <span class="mn-user-name">{{ user_info.nickname }}</span>
+          </a>
+
+          <div class="mn-menu">
+            <div class="mn-menu-header">
+              <div class="mn-mh-name">{{ user_info.nickname }}</div>
+              <div class="mn-mh-uid">UID: {{ user_info.id }}</div>
+            </div>
+
+            {% if user_info.role and user_info.role >= 2 %}
+            <a
+              href="https://admin.mcresource.cn/"
+              class="mn-menu-item"
+              target="_blank"
+              rel="noopener"
+            >
+              <i class="fas fa-shield-halved"></i> 管理中心
+            </a>
+            <div class="mn-menu-divider"></div>
+            {% endif %}
+
+            <a
+              href="https://www.mcresource.cn/profile/{{ user_info.id }}"
+              class="mn-menu-item"
+            >
+              <i class="fas fa-user"></i> 我的主页
+            </a>
+            <a
+              href="https://www.mcresource.cn/profile/{{ user_info.id }}?tab=favorites"
+              class="mn-menu-item"
+            >
+              <i class="fas fa-bookmark"></i> 我的收藏
+            </a>
+            <a
+              href="https://www.mcresource.cn/profile/{{ user_info.id }}?tab=achievements"
+              class="mn-menu-item"
+            >
+              <i class="fas fa-trophy"></i> 我的成就
+            </a>
+
+            <div class="mn-menu-divider"></div>
+
+            <a
+              href="https://www.mcresource.cn/profile/settings"
+              class="mn-menu-item"
+            >
+              <i class="fas fa-cog"></i> 账号设置
+            </a>
+
+            {% if is_impersonating %}
+            <div class="mn-menu-divider"></div>
+            <a
+              href="https://admin.mcresource.cn/4_us/stop_impersonate?next=https://www.mcresource.cn/"
+              class="mn-menu-item mn-menu-warn"
+            >
+              <i class="fas fa-right-from-bracket"></i> 退出模拟
+            </a>
+            {% else %}
+            <a
+              href="https://www.mcresource.cn/logout"
+              class="mn-menu-item mn-menu-danger"
+            >
+              <i class="fas fa-right-from-bracket"></i> 退出登录
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% else %}
+        <div class="mn-auth">
+          <a
+            href="https://www.mcresource.cn/login"
+            class="mn-btn-qq"
+            title="QQ一键登录"
+          >
+            <i class="fab fa-qq"></i><span>QQ登录</span>
+          </a>
+          <a
+            href="https://www.mcresource.cn/login"
+            class="mn-btn-github"
+            title="GitHub一键登录"
+          >
+            <i class="fab fa-github"></i><span>GitHub</span>
+          </a>
+          <a href="https://www.mcresource.cn/login" class="mn-btn-login">
+            <i class="fas fa-key"></i> 邮箱登录
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <div class="mn-drawer-overlay" id="mnDrawerOverlay"></div>
+
+  <aside class="mn-drawer" id="mnDrawer">
+    <div class="mn-drawer-head">
+      <span>导航菜单</span>
+      <button class="mn-drawer-close" id="mnDrawerClose" aria-label="关闭">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="mn-drawer-body">
+      {% if user_info %}
+      <div class="mn-drawer-user">
+        <span class="mn-avatar-lg">
+          {% if user_info.avatar %}
+          <img src="{{ user_info.avatar }}" alt="" />
+          {% else %} {{ (user_info.nickname or '?')[0] }} {% endif %}
+        </span>
+        <div class="mn-u-info">
+          <div class="mn-u-nick">{{ user_info.nickname }}</div>
+          <div class="mn-u-uid">UID: {{ user_info.id }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="mn-drawer-section">
+        <div class="mn-drawer-label">模块</div>
+        <a href="https://www.mcresource.cn" class="mn-drawer-link mn-current">
+          <i class="fas fa-globe"></i> 主站
+        </a>
+        <div class="mn-drawer-sub">
+          <a
+            href="https://www.mcresource.cn/resourcepacks"
+            class="mn-drawer-link"
+          >
+            <i class="fas fa-box"></i> 资源包
+          </a>
+          <a
+            href="https://www.mcresource.cn/shaderpacks"
+            class="mn-drawer-link"
+          >
+            <i class="fas fa-palette"></i> 光影包
+          </a>
+          <a href="https://www.mcresource.cn/maps" class="mn-drawer-link">
+            <i class="fas fa-map"></i> 地图
+          </a>
+        </div>
+
+        <a href="https://sel.mcresource.cn" class="mn-drawer-link">
+          <i class="fas fa-cube"></i> 选料
+        </a>
+        <div class="mn-drawer-sub">
+          <a href="https://sel.mcresource.cn/submit" class="mn-drawer-link">
+            <i class="fas fa-upload"></i> 投稿
+          </a>
+          <a href="https://sel.mcresource.cn/review" class="mn-drawer-link">
+            <i class="fas fa-pen-fancy"></i> 测评
+          </a>
+          <a href="https://sel.mcresource.cn/method" class="mn-drawer-link">
+            <i class="fas fa-circle-info"></i> 说明
+          </a>
+        </div>
+
+        <a href="https://tea.mcresource.cn" class="mn-drawer-link">
+          <i class="fas fa-comments"></i> 茶室
+        </a>
+        <div class="mn-drawer-sub">
+          <a href="https://tea.mcresource.cn/" class="mn-drawer-link">
+            <i class="fas fa-house"></i> 首页
+          </a>
+          <a href="https://tea.mcresource.cn/search" class="mn-drawer-link">
+            <i class="fas fa-search"></i> 搜索
+          </a>
+          <a href="https://tea.mcresource.cn/post/new" class="mn-drawer-link">
+            <i class="fas fa-pen"></i> 发帖
+          </a>
+        </div>
+      </div>
+
+      {% if user_info %}
+      <div class="mn-drawer-section">
+        <div class="mn-drawer-label">我的账户</div>
+        <a
+          href="https://www.mcresource.cn/profile/{{ user_info.id }}"
+          class="mn-drawer-link"
+        >
+          <i class="fas fa-user"></i> 我的主页
+        </a>
+        <a href="https://www.mcresource.cn/message" class="mn-drawer-link">
+          <i class="fas fa-envelope"></i> 消息中心
+        </a>
+        <a
+          href="https://www.mcresource.cn/profile/settings"
+          class="mn-drawer-link"
+        >
+          <i class="fas fa-cog"></i> 账号设置
+        </a>
+      </div>
+
+      {% if user_info.role and user_info.role >= 2 %}
+      <div class="mn-drawer-section">
+        <div class="mn-drawer-label">管理</div>
+        <a
+          href="https://admin.mcresource.cn/"
+          class="mn-drawer-link"
+          target="_blank"
+          rel="noopener"
+        >
+          <i class="fas fa-shield-halved"></i> 管理中心
+        </a>
+      </div>
+      {% endif %}
+
+      <div class="mn-drawer-section">
+        {% if is_impersonating %}
+        <a
+          href="https://admin.mcresource.cn/4_us/stop_impersonate?next=https://www.mcresource.cn/"
+          class="mn-drawer-link mn-menu-warn"
+        >
+          <i class="fas fa-right-from-bracket"></i> 退出模拟
+        </a>
+        {% else %}
+        <a
+          href="https://www.mcresource.cn/logout"
+          class="mn-drawer-link mn-menu-danger"
+        >
+          <i class="fas fa-right-from-bracket"></i> 退出登录
+        </a>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="mn-drawer-section">
+        <div class="mn-drawer-label">登录</div>
+        <a href="https://www.mcresource.cn/login/qq" class="mn-drawer-link">
+          <i class="fab fa-qq"></i> QQ一键登录
+        </a>
+        <a href="https://www.mcresource.cn/login/github" class="mn-drawer-link">
+          <i class="fab fa-github"></i> GitHub一键登录
+        </a>
+        <a href="https://www.mcresource.cn/login" class="mn-drawer-link">
+          <i class="fas fa-key"></i> 邮箱密码登录
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </aside>
+
+  {% if is_impersonating %}
+  <div class="mn-imp-banner">
+    <i class="fas fa-user-secret"></i>
+    <span>当前处于模拟登录状态</span>
+    <a
+      href="https://admin.mcresource.cn/4_us/stop_impersonate?next=https://www.mcresource.cn/"
+    >
+      退出模拟
+    </a>
+  </div>
+  {% endif %}
+
+<script src="/static/js/components/navbar.js"></script>

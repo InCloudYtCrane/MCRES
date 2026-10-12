@@ -1,0 +1,137 @@
+<h2>账号设置</h2>
+<div class="subtitle">管理您的个人信息与安全</div>
+
+<!-- 头像 -->
+<div class="form-group">
+    <label>头像</label>
+    <div class="avatar-upload">
+        <div class="current-avatar">
+            <img src="{{ avatar_url }}" alt="当前头像" id="previewAvatar">
+            <div class="avatar-overlay"><i class="fas fa-camera fa-2x"></i></div>
+        </div>
+        <div class="upload-controls">
+            <div class="file-input-wrapper">
+                <button type="button" class="btn btn-secondary">选择新头像</button>
+                <input type="file" id="avatarFileInput" accept="image/*" />
+            </div>
+            <span class="hint">支持 JPG、PNG、WebP，最大 5MB</span>
+            <span class="field-status" id="avatarStatus"></span>
+        </div>
+    </div>
+</div>
+
+<!-- 邮箱（只读） -->
+<div class="form-group">
+    <label for="emailInput">邮箱</label>
+    <input type="text" id="emailInput" class="form-control" value="{{ email }}" disabled />
+    <span class="hint">邮箱地址不可更改</span>
+</div>
+
+<!-- 昵称 -->
+<div class="form-group">
+    <label for="nicknameInput">昵称</label>
+    <input type="text" id="nicknameInput" class="form-control" value="{{ nickname }}" placeholder="输入你的昵称" maxlength="20" />
+    <span class="field-status" id="nicknameInputStatus"></span>
+    <span class="hint">2–20 个字符，可包含中文、英文、数字、下划线</span>
+</div>
+
+<!-- 个性签名 -->
+<div class="form-group">
+    <label for="signatureInput">个性签名</label>
+    <textarea id="signatureInput" class="form-control" rows="3" placeholder="写一句属于你的签名吧" maxlength="80">{{ signature }}</textarea>
+    <span class="field-status" id="signatureInputStatus"></span>
+    <span class="hint" id="signatureHint">0 / 80 字符</span>
+</div>
+
+<!-- ===== 修改密码 ===== -->
+{% if is_qq_user %}
+<!-- QQ 登录用户：显示提示 -->
+<div style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px;">
+    <div style="display: flex; align-items: center; gap: 12px; color: #8a929a;">
+        <i class="fas fa-info-circle" style="color: #5dade2;"></i>
+        <span>您通过 QQ 登录，不必修改密码，可直接使用一键登录。</span>
+    </div>
+</div>
+{% elif is_github_user %}
+<!-- GitHub 登录用户：显示提示 -->
+<div style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px;">
+    <div style="display: flex; align-items: center; gap: 12px; color: #8a929a;">
+        <i class="fab fa-github" style="color: #e8ecf0; font-size: 18px;"></i>
+        <span>您通过 GitHub 登录，不必修改密码，可直接使用一键登录。</span>
+    </div>
+</div>
+{% else %}
+<!-- 普通邮箱用户：显示修改密码按钮 -->
+<div style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h3 style="font-size: 18px; font-weight: 600; color: #e8ecf0; margin-bottom: 4px;">修改密码</h3>
+            <p style="color: #8a929a; font-size: 14px;">定期更换密码可以提高账号安全性</p>
+        </div>
+        <a href="{{ url_for('profile.pwd_page') }}" class="pwd-link-btn">
+            <i class="fas fa-key"></i> 前往修改密码
+            <i class="fas fa-chevron-right" style="font-size: 12px;"></i>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- ===== 头衔佩戴 ===== -->
+<div style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h3 style="font-size: 18px; font-weight: 600; color: #e8ecf0; margin-bottom: 4px;">
+                <i class="fas fa-medal" style="color: #55d88b; margin-right: 8px;"></i>我的头衔
+            </h3>
+            <p style="color: #8a929a; font-size: 14px;">选择要佩戴的头衔，将显示在你的个人主页头像上</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+            <select id="titleSelect" class="form-control" style="width: auto; flex: 1; min-width: 180px; max-width: 360px;">
+                <option value="-1">不佩戴</option>
+            </select>
+            <button class="btn btn-primary" id="saveTitleBtn" style="white-space: nowrap;">
+                <i class="fas fa-check"></i> 佩戴
+            </button>
+        </div>
+        <span class="field-status" id="titleStatus"></span>
+        <span class="hint" id="titlePreviewHint" style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+            当前佩戴：
+            <span id="currentTitlePreview" style="font-weight: 600; font-size: 15px; color: #8a929a;">无</span>
+        </span>
+    </div>
+</div>
+
+<!-- ===== 登录设备管理 ===== -->
+<div style="margin-top: 32px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h3 style="font-size: 18px; font-weight: 600; color: #e8ecf0; margin-bottom: 4px;">
+                <i class="fas fa-shield-alt" style="color: #55d88b; margin-right: 8px;"></i>登录设备管理
+            </h3>
+            <p style="color: #8a929a; font-size: 14px;">管理你在其它设备上的登录状态，可随时远程退出</p>
+        </div>
+        <button class="btn btn-secondary" id="refreshSessionsBtn" style="white-space: nowrap;">
+            <i class="fas fa-sync-alt"></i> 刷新
+        </button>
+    </div>
+
+    <!-- 允许多设备登录开关 -->
+    <div class="toggle-wrapper" style="border-bottom: none;">
+        <div class="toggle-label">
+            <span class="title">允许多设备登录</span>
+            <span class="desc">关闭后，在新设备登录会自动退出其它所有设备</span>
+        </div>
+        <div class="toggle-switch {% if privacy_settings.allow_multi_device %}active{% endif %}"
+             data-setting="allow_multi_device" id="multiDeviceToggle"></div>
+    </div>
+
+    <!-- 设备列表 -->
+    <div id="deviceList" style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="text-align:center; color:#6a7a8a; padding:20px; font-size:14px;">
+            <i class="fas fa-spinner fa-spin"></i> 加载中…
+        </div>
+    </div>
+</div>

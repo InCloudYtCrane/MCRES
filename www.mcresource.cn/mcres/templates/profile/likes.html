@@ -1,0 +1,16 @@
+<!-- profile/likes.html -->
+<div class="card">
+    <div class="area-section-title">
+        <i class="fas fa-heart" style="color: var(--role-color);"></i>
+        {% if is_me %}我赞过的资源{% else %}TA赞过的资源{% endif %}
+        <span class="badge" id="likes-count">0</span>
+    </div>
+    <div id="likes-list" class="resource-grid">
+        <div class="empty-state">
+            <i class="fas fa-heart" style="color: var(--role-color); opacity:0.3;"></i>
+            <p>{% if is_me %}还没有赞过的资源，快去发现吧！{% else %}TA还没有赞过的资源{% endif %}</p>
+        </div>
+    </div>
+</div>
+
+<!-- 嵌入后端数据 -->

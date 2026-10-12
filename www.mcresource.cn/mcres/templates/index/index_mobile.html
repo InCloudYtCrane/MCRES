@@ -1,0 +1,286 @@
+{% extends "base.html" %} {% block title %}方块工坊 -
+Minecraft资源包·光影包·地图收录平台 | MCRES{% endblock %} {% block extra_head %}
+<meta
+  name="description"
+  content="方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图的资源资料，每日更新，支持分类筛选与热度排行。"
+/>
+<meta
+  name="keywords"
+  content="我的世界, Minecraft, 资源包, 光影包, 地图, 方块工坊, MCRES, 中文收录, 资源下载"
+/>
+<link rel="canonical" href="{{ url_for('index.index', _external=True) }}" />
+<meta name="robots" content="index, follow" />
+<meta
+  property="og:title"
+  content="方块工坊 - Minecraft资源包·光影包·地图收录平台 | MCRES"
+/>
+<meta
+  property="og:description"
+  content="方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图的资源资料，每日更新。"
+/>
+<meta property="og:type" content="website" />
+<meta
+  property="og:url"
+  content="{{ url_for('index.index', _external=True) }}"
+/>
+<meta
+  property="og:image"
+  content="https://img.mcresource.cn/icon/logo/logo.png"
+/>
+<meta property="og:site_name" content="方块工坊" />
+<meta property="og:locale" content="zh_CN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta
+  name="twitter:title"
+  content="方块工坊 - Minecraft资源包·光影包·地图收录平台 | MCRES"
+/>
+<meta
+  name="twitter:description"
+  content="方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图资源资料。"
+/>
+<meta
+  name="twitter:image"
+  content="https://img.mcresource.cn/icon/logo/logo.png"
+/>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "方块工坊",
+    "alternateName": "MCRES",
+    "url": "{{ url_for('index.index', _external=True) }}",
+    "description": "方块工坊（MCRES）是专业的中文 Minecraft 资源收录平台，提供海量资源包、光影包、地图资源资料，每日更新，支持分类筛选与热度排行。",
+    "inLanguage": "zh-CN",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "{{ url_for('index.index', _external=True) }}search?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+</script>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "方块工坊",
+    "alternateName": "MCRES",
+    "url": "{{ url_for('index.index', _external=True) }}",
+    "logo": "https://img.mcresource.cn/icon/logo/logo.png",
+    "description": "我的世界中文资源收录平台",
+    "sameAs": ["https://pd.qq.com/g/mcresource"]
+  }
+</script>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/pages/index/index_mobile.css') }}"
+/>
+{% endblock %} {% block footer %}
+<div class="footer-wrapper">{% include 'components/footer.html' %}</div>
+{% endblock %} {% block content %}
+<div class="mobile-main">
+  <!-- 1. 海报轮播（16:10，左右顶边） -->
+  <div class="carousel-wrapper">
+    <div class="carousel-container" id="posterCarousel">
+      <div class="carousel-track" id="posterTrack">
+        {% if posters %} {% for p in posters %}
+        <div class="carousel-slide" data-url="{{ p.link_url|default('#') }}">
+          {% if p.cover_url %}
+          <img src="{{ p.cover_url }}" alt="{{ p.title }}" loading="lazy" />
+          {% else %}
+          <div class="placeholder"><i class="fas fa-image"></i></div>
+          {% endif %}
+          <div class="carousel-overlay">
+            <div class="tag">{{ p.tag|default('推荐') }}</div>
+            <div class="title">{{ p.title|default('') }}</div>
+            <div class="desc">{{ p.desc|default('') }}</div>
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <div class="carousel-slide">
+          <div class="placeholder">
+            <i class="fas fa-image"></i><span>暂无海报</span>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <button class="carousel-arrow left" data-dir="prev">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-arrow right" data-dir="next">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+      <div class="carousel-dots" id="posterDots"></div>
+    </div>
+  </div>
+
+  <!-- 2. 公告轮播（最新在前） -->
+  <div class="announcement-carousel-wrapper">
+    <div class="announcement-carousel" id="announceCarousel">
+      <div class="announce-track" id="announceTrack">
+        {% if announcements %} {% for ann in announcements | reverse %}
+        <div class="announce-slide">
+          <i class="fas fa-bullhorn"></i>
+          <span class="announce-title">{{ ann.title|default('公告') }}</span>
+          <span class="announce-content">{{ ann.content|default('') }}</span>
+          {% if ann.time %}
+          <span class="announce-time">{{ ann.time }}</span>
+          {% endif %}
+        </div>
+        {% endfor %} {% else %}
+        <div class="announce-slide">暂无公告</div>
+        {% endif %}
+      </div>
+      <div class="announce-dots" id="announceDots"></div>
+    </div>
+  </div>
+
+  <!-- 3. 四个操作按钮（田字格，无边框，十字隔开） -->
+  <div class="quick-actions">
+    <a href="/review?type=resourcepack" class="action-btn">
+      <i class="fas fa-clipboard-list"></i><span>审核进度</span>
+    </a>
+    <a href="/resourcepack/new" class="action-btn">
+      <i class="fas fa-plus-circle"></i><span>添加资源包</span>
+    </a>
+    <a href="/shaderpack/new" class="action-btn">
+      <i class="fas fa-plus-circle"></i><span>添加光影包</span>
+    </a>
+    <a href="/map/new" class="action-btn">
+      <i class="fas fa-plus-circle"></i><span>添加地图</span>
+    </a>
+  </div>
+
+  <!-- 4. 热门资源（列表风格） -->
+  <div class="resource-section">
+    <div class="section-header">
+      <span><i class="fas fa-fire"></i> 热门</span>
+      <span class="sub">近期高热度</span>
+    </div>
+    <div class="resource-list">
+      {% if hot_resources %} {% for item in hot_resources %}
+      <a href="{{ item.detail_url|default('#') }}" class="list-item">
+        <div class="list-cover">
+          {% if item.cover_url %}
+          <img
+            src="{{ item.cover_url }}"
+            alt="{{ item.name }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div class="placeholder-icon"><i class="fas fa-cube"></i></div>
+          {% endif %}
+        </div>
+        <div class="list-info">
+          <div class="list-name">{{ item.name|default('未命名') }}</div>
+          <div class="list-summary">{{ item.summary|default('') }}</div>
+          <div class="list-meta">
+            <span class="tag">{{ item.tag|default('其他') }}</span>
+          </div>
+        </div>
+        <div class="list-views">{{ item.views_display|default('0') }}</div>
+      </a>
+      {% endfor %} {% else %}
+      <div class="empty">暂无热门资源</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 5. 最新资源（同样列表风格） -->
+  <div class="resource-section">
+    <div class="section-header">
+      <span><i class="fas fa-bolt"></i> 最新</span>
+      <span class="sub">刚收录的</span>
+    </div>
+    <div class="resource-list">
+      {% if latest_resources %} {% for item in latest_resources %}
+      <a href="{{ item.detail_url|default('#') }}" class="list-item">
+        <div class="list-cover">
+          {% if item.cover_url %}
+          <img
+            src="{{ item.cover_url }}"
+            alt="{{ item.name }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div class="placeholder-icon"><i class="fas fa-cube"></i></div>
+          {% endif %}
+        </div>
+        <div class="list-info">
+          <div class="list-name">{{ item.name|default('未命名') }}</div>
+          <div class="list-summary">{{ item.summary|default('') }}</div>
+          <div class="list-meta">
+            <span class="tag">{{ item.tag|default('其他') }}</span>
+          </div>
+        </div>
+        <div class="list-views">{{ item.views_display|default('0') }}</div>
+      </a>
+      {% endfor %} {% else %}
+      <div class="empty">暂无最新资源</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 6. 三大类展示（混合排列，每个大类最多5个，小分类合并） -->
+  {% macro render_category_block(category_key, category_label, items_dict,
+  more_url) %} {% if items_dict %} {% set flat_items = [] %} {% for subcat,
+  sublist in items_dict.items() %} {% for item in sublist %} {% if
+  flat_items|length < 5 %} {% set _ = flat_items.append(item) %} {% endif %} {%
+  endfor %} {% endfor %} {% if flat_items|length > 0 %}
+  <div class="category-block">
+    <div class="category-header">
+      <span
+        ><i
+          class="fas fa-{{ {'resourcepack':'box','shaderpack':'palette','map':'map'}[category_key] }}"
+        ></i>
+        {{ category_label }}</span
+      >
+      <a href="{{ more_url }}" class="more-link">查看更多 →</a>
+    </div>
+    <div class="resource-list">
+      {% for item in flat_items %}
+      <a href="{{ item.detail_url|default('#') }}" class="list-item">
+        <div class="list-cover">
+          {% if item.cover_url %}
+          <img
+            src="{{ item.cover_url }}"
+            alt="{{ item.name }}"
+            loading="lazy"
+          />
+          {% else %}
+          <div class="placeholder-icon"><i class="fas fa-cube"></i></div>
+          {% endif %}
+        </div>
+        <div class="list-info">
+          <div class="list-name">{{ item.name|default('未命名') }}</div>
+          <div class="list-summary">{{ item.summary|default('') }}</div>
+          <div class="list-meta">
+            <span class="tag">{{ item.tag|default('其他') }}</span>
+          </div>
+        </div>
+        <div class="list-views">{{ item.views_display|default('0') }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %} {% endif %} {% endmacro %} {{
+  render_category_block('resourcepack', '资源包', resource_packs,
+  '/resourcepacks') }} {{ render_category_block('shaderpack', '光影包',
+  shader_packs, '/shaderpacks') }} {{ render_category_block('map', '地图', maps,
+  '/maps') }}
+
+  <!-- 7. 快捷链接（原横幅下方的6个链接，放在页脚之前） -->
+  <div class="quick-links">
+    <a href="/">工坊主页</a>
+    <a href="https://sel.mcresource.cn" target="_blank">工坊选料</a>
+    <a href="https://tea.mcresource.cn" target="_blank">工坊茶室</a>
+    <a href="/development">更新日志</a>
+    <a href="/about">关于工坊</a>
+  </div>
+</div>
+{% endblock %} {% block extra_script %} {% include
+'components/search_suggest.html' %}
+<script src="{{ url_for('static', filename='js/pages/index/index_mobile.js') }}"></script>
+{% endblock %}

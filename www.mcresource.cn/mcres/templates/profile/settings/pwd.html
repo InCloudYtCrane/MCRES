@@ -1,0 +1,123 @@
+{% extends "base.html" %} {% block title %}修改密码 · 方块工坊{% endblock %} {%
+block extra_head %}
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="/static/css/pages/profile/settings/pwd.css" />
+{% endblock %} {# 本页无 navbar / footer #} {% block navbar %}{% endblock %} {%
+block footer %}{% endblock %} {% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="pwd-card">
+    <a href="{{ url_for('profile.settings') }}" class="back-link">
+      <i class="fas fa-arrow-left"></i> 返回设置
+    </a>
+
+    <h1>修改密码</h1>
+    <div class="subtitle">先验证当前密码，再设置新密码</div>
+
+    <!-- ===== 步骤1：验证当前密码 ===== -->
+    <div class="step active" id="step1">
+      <div class="form-group">
+        <label for="currentPassword">当前密码</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            id="currentPassword"
+            class="form-control"
+            placeholder="请输入当前密码"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            data-target="currentPassword"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="error-msg" id="verifyError"></div>
+      </div>
+      <button class="btn btn-primary" id="verifyBtn">
+        <i class="fas fa-check"></i> 下一步
+      </button>
+    </div>
+
+    <!-- ===== 步骤2：设置新密码 ===== -->
+    <div class="step" id="step2">
+      <div class="form-group">
+        <label for="newPassword">新密码</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            id="newPassword"
+            class="form-control"
+            placeholder="请输入新密码"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            data-target="newPassword"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="password-strength" id="strengthBars">
+          <div class="bar" data-index="0"></div>
+          <div class="bar" data-index="1"></div>
+          <div class="bar" data-index="2"></div>
+        </div>
+        <div class="strength-label" id="strengthLabel">请输入新密码</div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">确认新密码</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            id="confirmPassword"
+            class="form-control"
+            placeholder="请再次输入新密码"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            data-target="confirmPassword"
+          >
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="error-msg" id="resetError"></div>
+        <div class="success-msg" id="resetSuccess"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="backBtn">
+          <i class="fas fa-arrow-left"></i> 返回
+        </button>
+        <button class="btn btn-primary" id="resetBtn">
+          <i class="fas fa-save"></i> 确认重置
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+
+<script>
+  window.PWD_FLASH = [
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      { category: {{ category|tojson }}, message: {{ message|tojson }} },
+      {% endfor %}
+      {% endwith %}
+  ];
+</script>
+<script src="/static/js/pages/profile/settings/pwd.js"></script>
+{% endblock %}

@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+{% block title %}MCRES 方块工坊 · 消息{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/messages.css" />
+{% endblock %}
+
+{% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %}
+
+{% block footer %}
+<div class="footer">{% include 'components/footer.html' %}</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="top-bar-placeholder">
+    <div class="page-title">
+      <i class="fas fa-comment"></i> 消息中心
+      <span class="sub">与工坊成员互动</span>
+    </div>
+    <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> 返回首页</a>
+  </div>
+
+  {# ========== 关闭通知提示条 ========== #}
+  {% if disabled_notifications %}
+  <div class="notification-tip">
+    <i class="fas fa-bell-slash"></i>
+    <span>你已关闭以下板块的消息提醒：</span>
+    {% for d in disabled_notifications %}
+    <span class="tip-tag">{{ d.label }}</span>
+    {% endfor %}
+    <a href="/profile/settings" class="tip-action">
+      <i class="fas fa-cog"></i> 去设置
+    </a>
+  </div>
+  {% endif %}
+
+  <div class="category-nav" id="categoryNav">
+    <div class="cat-item active" data-tab="replies">
+      <i class="fas fa-comment icon"></i> 回复与表态
+      <span class="badge {% if unread_counts.reply > 0 %}badge-unread{% else %}badge-read{% endif %}">{{ unread_counts.reply }}</span>
+    </div>
+    <div class="cat-item" data-tab="system">
+      <i class="fas fa-bullhorn icon"></i> 系统消息
+      <span class="badge {% if unread_counts.system > 0 %}badge-unread{% else %}badge-read{% endif %}">{{ unread_counts.system }}</span>
+    </div>
+    <div class="cat-item" data-tab="guestbook">
+      <i class="fas fa-envelope icon"></i> 留言板
+      <span class="badge {% if unread_counts.board > 0 %}badge-unread{% else %}badge-read{% endif %}">{{ unread_counts.board }}</span>
+    </div>
+    <div class="cat-item" data-tab="tea">
+      <i class="fas fa-mug-hot icon"></i> 茶室
+      <span class="badge {% if unread_counts.tea > 0 %}badge-unread{% else %}badge-read{% endif %}">{{ unread_counts.tea }}</span>
+    </div>
+  </div>
+
+  <div class="message-list-card">
+    <div class="list-header">
+      <div class="title" id="listTitle">
+        回复与@
+        <span class="count">· {{ reply_pagination.total }} 条</span>
+      </div>
+    </div>
+    <div id="messageContent">
+
+      {# ---------- 回复与表态 ---------- #}
+      <div class="tab-panel"
+           data-tab="replies"
+           data-tab-title="回复与@"
+           data-tab-count="{{ reply_pagination.total }}">
+        <div class="message-list" data-list="replies">
+          {% if replies %}
+            {% for item in replies %}
+            <div class="message-item message-item-{{ item.action_type }}">
+              <div class="avatar-wrapper">
+                <a href="{{ item.content.profile_url }}"
+                   class="avatar-link"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  <div class="avatar">
+                    {% if item.content.avatar %}
+                      <img src="{{ item.content.avatar }}" alt="avatar" />
+                    {% else %}
+                      {{ item.content.nickname[0]|upper }}
+                    {% endif %}
+                  </div>
+                </a>
+                {% if item.is_unread %}
+                  <span class="unread-dot"></span>
+                {% endif %}
+              </div>
+              <div class="body">
+                <div class="top">
+                  <a href="{{ item.content.profile_url }}"
+                     class="username-link"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    <span class="username">
+                      {{ item.content.nickname }}
+                      {# ========== 【改动点】标签根据类型区分 ========== #}
+                      <span class="tag tag-{{ item.action_type }}">
+                        {% if item.action_type == 'reaction' %}
+                          <i class="fas fa-heart"></i>
+                        {% else %}
+                          <i class="fas fa-reply"></i>
+                        {% endif %}
+                        {{ item.action_label }}
+                      </span>
+                    </span>
+                  </a>
+                  <span class="time">{{ item.content.created_at }}({{ item.content.created_at | timesince }})</span>
+                  <a href="{{ item.target_url }}"
+                     class="view-link"
+                     target="_blank"
+                     rel="noopener noreferrer">查看</a>
+                </div>
+
+                <div class="content">
+                  {# ========== 【改动点】内容按类型渲染 ========== #}
+                  {% if item.action_type == 'reaction' %}
+                    {# --- 表态 --- #}
+                    <span class="highlight">表示</span>
+                    <span class="reaction-text">
+                      {% if item.reaction_emoji %}{{ item.reaction_emoji }}{% endif %}
+                      {{ item.reaction_label }}
+                    </span>
+                    {% if item.parent_content %}
+                      <span class="quote">
+                        <span class="parent-author">你的评论：</span>
+                        {{ item.parent_content }}
+                      </span>
+                    {% endif %}
+                  {% else %}
+                    {# --- 回复 --- #}
+                    <span class="highlight">TA 说：</span>
+                    <span>{{ item.content.content }}</span>
+                    {% if item.parent_content %}
+                      <span class="quote">
+                        <span class="parent-author">@{{ item.parent_nickname }} 的评论：</span>
+                        {{ item.parent_content }}
+                      </span>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <div class="icon"><i class="fas fa-comment"></i></div>
+              <div class="desc">暂时没有回复或 @ 你的消息</div>
+            </div>
+          {% endif %}
+        </div>
+        <div class="load-more-sentinel"
+             data-sentinel="replies"
+             {% if not reply_pagination.has_next %}hidden{% endif %}></div>
+      </div>
+
+      {# ---------- 系统消息 ---------- #}
+      <div class="tab-panel hidden"
+           data-tab="system"
+           data-tab-title="系统消息"
+           data-tab-count="{{ system_pagination.total }}">
+        <div class="message-list" data-list="system">
+          {% if system_messages %}
+            {% for msg in system_messages %}
+            <div class="message-item">
+              <div class="avatar-wrapper">
+                {% if msg.profile_url %}
+                  <a href="{{ msg.profile_url }}"
+                     class="avatar-link"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    <div class="avatar">
+                      {% if msg.sender_avatar %}
+                        <img src="{{ msg.sender_avatar }}" alt="avatar" />
+                      {% else %}
+                        {{ msg.sender_nick[0]|upper }}
+                      {% endif %}
+                    </div>
+                  </a>
+                {% else %}
+                  <div class="avatar">
+                    {% if msg.sender_avatar %}
+                      <img src="{{ msg.sender_avatar }}" alt="avatar" />
+                    {% else %}
+                      {{ msg.sender_nick[0]|upper }}
+                    {% endif %}
+                  </div>
+                {% endif %}
+                {% if msg.is_unread %}
+                  <span class="unread-dot"></span>
+                {% endif %}
+              </div>
+              <div class="body">
+                <div class="top">
+                  {% if msg.profile_url %}
+                    <a href="{{ msg.profile_url }}"
+                       class="username-link"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                      <span class="username">{{ msg.sender_nick }}</span>
+                    </a>
+                  {% else %}
+                    <span class="username">{{ msg.sender_nick }}</span>
+                  {% endif %}
+                  <span class="time">{{ msg.time }}({{ msg.time | timesince }})</span>
+                </div>
+                <div class="content">
+                  {% if msg.status_tag %}
+                    {% for part in msg.content_parts %}
+                      {% if part == '#已通过#' or part == '#已退回#' %}
+                        <span class="status-badge status-{{ msg.status_color }}">{{ msg.status_tag }}</span>
+                      {% else %}
+                        {{ part }}
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    {{ msg.content }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <div class="icon"><i class="fas fa-bullhorn"></i></div>
+              <div class="desc">暂无系统消息</div>
+            </div>
+          {% endif %}
+        </div>
+        <div class="load-more-sentinel"
+             data-sentinel="system"
+             {% if not system_pagination.has_next %}hidden{% endif %}></div>
+      </div>
+
+      {# ---------- 留言板 ---------- #}
+      <div class="tab-panel hidden"
+           data-tab="guestbook"
+           data-tab-title="留言板"
+           data-tab-count="{{ board_pagination.total }}">
+        <div class="message-list" data-list="guestbook">
+          {% if guestbook_messages %}
+            {% for item in guestbook_messages %}
+            <div class="message-item">
+              <div class="avatar-wrapper">
+                <a href="{{ item.content.profile_url }}"
+                   class="avatar-link"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  <div class="avatar">
+                    {% if item.content.avatar %}
+                      <img src="{{ item.content.avatar }}" alt="avatar" />
+                    {% else %}
+                      {{ item.content.nickname[0]|upper }}
+                    {% endif %}
+                  </div>
+                </a>
+                {% if item.is_unread %}
+                  <span class="unread-dot"></span>
+                {% endif %}
+              </div>
+              <div class="body">
+                <div class="top">
+                  <a href="{{ item.content.profile_url }}"
+                     class="username-link"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    <span class="username">{{ item.content.nickname }}</span>
+                  </a>
+                  <span class="time">{{ item.content.created_at }}({{ item.content.created_at | timesince }})</span>
+                  <a href="{{ item.target_url }}"
+                     class="view-link"
+                     target="_blank"
+                     rel="noopener noreferrer">查看</a>
+                </div>
+                <div class="content">{{ item.content.content }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <div class="icon"><i class="fas fa-envelope"></i></div>
+              <div class="desc">还没有留言</div>
+            </div>
+          {% endif %}
+        </div>
+        <div class="load-more-sentinel"
+             data-sentinel="guestbook"
+             {% if not board_pagination.has_next %}hidden{% endif %}></div>
+      </div>
+
+      {# ---------- 茶室消息 ---------- #}
+      <div class="tab-panel hidden"
+           data-tab="tea"
+           data-tab-title="茶室消息"
+           data-tab-count="{{ tea_pagination.total }}">
+        <div class="message-list" data-list="tea">
+          {% if tea_messages %}
+            {% for msg in tea_messages %}
+            <div class="message-item">
+              <div class="avatar-wrapper">
+                {% if msg.user_id %}
+                  <a href="/profile/{{ msg.user_id }}"
+                     class="avatar-link"
+                     target="_blank"
+                     rel="noopener noreferrer">
+                    <div class="avatar">
+                      {% if msg.avatar %}
+                        <img src="{{ msg.avatar }}" alt="avatar" />
+                      {% else %}
+                        {{ msg.nickname[0]|upper }}
+                      {% endif %}
+                    </div>
+                  </a>
+                {% else %}
+                  <div class="avatar">
+                    <i class="fas fa-mug-hot" style="font-size: 18px; color: #e8a437"></i>
+                  </div>
+                {% endif %}
+                {% if msg.is_unread %}
+                  <span class="unread-dot"></span>
+                {% endif %}
+              </div>
+              <div class="body">
+                <div class="top">
+                  <span class="username">
+                    <span class="tea-type-badge tea-type-{{ msg.type }}">
+                      {% if msg.type == 'reply' %}<i class="fas fa-reply"></i>
+                      {% elif msg.type == 'like' %}<i class="fas fa-thumbs-up"></i>
+                      {% elif msg.type == 'punish' %}<i class="fas fa-gavel"></i>
+                      {% elif msg.type == 'manager' %}<i class="fas fa-shield-halved"></i>
+                      {% elif msg.type == 'topic' %}<i class="fas fa-fire"></i>
+                      {% endif %}
+                    </span>
+                    {{ msg.nickname }}
+                  </span>
+                  <span class="time">{{ msg.time }}({{ msg.time | timesince }})</span>
+                  {% if msg.url and msg.url != '#' %}
+                    <a href="{{ msg.url }}"
+                       class="view-link"
+                       target="_blank"
+                       rel="noopener noreferrer">去茶室</a>
+                  {% endif %}
+                </div>
+                <div class="content">
+                  {% if msg.topic %}
+                    <span class="tea-topic-chip">#{{ msg.topic }}</span>
+                  {% endif %}
+                  <span>{{ msg.content }}</span>
+                  {% if msg.type in ('reply', 'like', 'topic') %}
+                    <div class="tea-msg-title">
+                      <i class="fas fa-file-lines"></i>
+                      《{{ msg.title }}》
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <div class="icon"><i class="fas fa-mug-hot"></i></div>
+              <div class="desc">暂无茶室消息</div>
+            </div>
+          {% endif %}
+        </div>
+        <div class="load-more-sentinel"
+             data-sentinel="tea"
+             {% if not tea_pagination.has_next %}hidden{% endif %}></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+{# ===== 分页状态注入（供外部 JS 读取） ===== #}
+<script>
+  window.MESSAGES_PAGER = {
+      replies:   {{ reply_pagination.total_pages }},
+      system:    {{ system_pagination.total_pages }},
+      guestbook: {{ board_pagination.total_pages }},
+      tea:       {{ tea_pagination.total_pages }}
+  };
+</script>
+<script src="/static/js/pages/messages.js"></script>
+{% endblock %}

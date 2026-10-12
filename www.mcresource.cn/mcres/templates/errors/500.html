@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block title %}500 Internal Server Error |
+服务器内部错误{% endblock %} {% block extra_head %}
+<link rel="stylesheet" href="/static/css/components/error-page.css" />
+<meta name="robots" content="noindex, nofollow" />
+{% endblock %} {# 错误页不含 navbar 和 footer #} {% block navbar %}{% endblock
+%} {% block footer %}{% endblock %} {% block bg_layer %}
+<div class="bg-layer"></div>
+{% endblock %} {% block content %}
+<div class="container">
+  <div class="error-card">
+    <img
+      src="https://img.mcresource.cn/icon/logo/logo.png"
+      alt="MCRES Logo"
+      class="error-logo"
+    />
+    <div class="error-code">500</div>
+    <h1 class="error-title">服务器内部错误</h1>
+    <p class="error-desc">
+      书印错了...<br />
+      印刷机卡了纸，正在抢修
+    </p>
+  </div>
+</div>
+{% endblock %}

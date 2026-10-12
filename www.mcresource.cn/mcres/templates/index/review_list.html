@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}审核列表 - MCRES{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<link rel="stylesheet" href="/static/css/pages/index/review_list.css" />
+{% endblock %}
+
+{# 用 data-type 属性驱动 CSS 主题 #}
+{% block body_attrs %}data-type="{{ type }}"{% endblock %}
+
+{% block footer %}
+<footer>
+    {% include "components/footer.html" %}
+</footer>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section">
+        <div class="section-title">{{ type_label }}审核列表</div>
+    </div>
+
+    <!-- 统计面板 -->
+    <div class="stats-panel">
+        <div class="stats-item">
+            <span class="label"><i class="fas fa-clock"></i> 待审</span>
+            <span class="number pending">{{ stats.pending }}</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+            <span class="label"><i class="fas fa-check-circle"></i> 已通过</span>
+            <span class="number passed">{{ stats.passed }}</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+            <span class="label"><i class="fas fa-times-circle"></i> 已退回</span>
+            <span class="number rejected">{{ stats.rejected }}</span>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-item">
+            <span class="label"><i class="fas fa-undo-alt"></i> 已撤回</span>
+            <span class="number withdrawn">{{ stats.withdrawn }}</span>
+        </div>
+        <div style="margin-left:auto; font-size:13px; color:#7f8994;">
+            共 {{ pagination.total_items if pagination else audit_list|length }} 条记录
+        </div>
+    </div>
+
+    <!-- 类型切换 -->
+    <div class="section" style="margin-bottom: 20px;">
+        <div class="type-tabs">
+            <a href="/review?type=resourcepack&mode={{ filter.mode }}&limit={{ filter.limit }}&status={{ filter.status }}&uid={{ filter.uid if filter.uid else '' }}&resource_name={{ filter.resource_name }}&resource_id={{ filter.resource_id }}&operation_type={{ filter.operation_type }}&sort={{ filter.sort }}&start_date={{ filter.start_date }}&end_date={{ filter.end_date }}" class="type-tab {% if type == 'resourcepack' %}active{% endif %}">
+                <i class="fas fa-box"></i> 资源包
+                <span class="badge-pending">{{ pending_count.resourcepack if pending_count else 0 }}</span>
+            </a>
+            <a href="/review?type=shaderpack&mode={{ filter.mode }}&limit={{ filter.limit }}&status={{ filter.status }}&uid={{ filter.uid if filter.uid else '' }}&resource_name={{ filter.resource_name }}&resource_id={{ filter.resource_id }}&operation_type={{ filter.operation_type }}&sort={{ filter.sort }}&start_date={{ filter.start_date }}&end_date={{ filter.end_date }}" class="type-tab {% if type == 'shaderpack' %}active{% endif %}">
+                <i class="fas fa-star"></i> 光影包
+                <span class="badge-pending">{{ pending_count.shaderpack if pending_count else 0 }}</span>
+            </a>
+            <a href="/review?type=map&mode={{ filter.mode }}&limit={{ filter.limit }}&status={{ filter.status }}&uid={{ filter.uid if filter.uid else '' }}&resource_name={{ filter.resource_name }}&resource_id={{ filter.resource_id }}&operation_type={{ filter.operation_type }}&sort={{ filter.sort }}&start_date={{ filter.start_date }}&end_date={{ filter.end_date }}" class="type-tab {% if type == 'map' %}active{% endif %}">
+                <i class="fas fa-map"></i> 地图
+                <span class="badge-pending">{{ pending_count.map if pending_count else 0 }}</span>
+            </a>
+            <div class="total-pending">
+                <i class="fas fa-clipboard-list"></i> 总待审 <strong>{{ (pending_count.resourcepack if pending_count else 0) + (pending_count.shaderpack if pending_count else 0) + (pending_count.map if pending_count else 0) }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 筛选栏（含模式切换） -->
+    <div class="filter-bar">
+        <!-- 模式切换 -->
+        <div class="filter-group mode-switch">
+            <label><input type="radio" name="filterMode" value="count" {% if filter.mode == 'count' %}checked{% endif %}> 按条数</label>
+            <label><input type="radio" name="filterMode" value="date" {% if filter.mode == 'date' %}checked{% endif %}> 按日期</label>
+        </div>
+
+        <!-- 条数模式控件 -->
+        <div class="filter-group" id="countModeGroup">
+            <label for="limitSelect">显示最近</label>
+            <select id="limitSelect">
+                <option value="50" {% if filter.limit == 50 %}selected{% endif %}>50条</option>
+                <option value="100" {% if filter.limit == 100 %}selected{% endif %}>100条</option>
+                <option value="200" {% if filter.limit == 200 %}selected{% endif %}>200条</option>
+                <option value="500" {% if filter.limit == 500 %}selected{% endif %}>500条</option>
+                <option value="1000" {% if filter.limit == 1000 %}selected{% endif %}>1000条</option>
+            </select>
+        </div>
+
+        <!-- 日期模式控件 -->
+        <div class="filter-group hidden" id="dateModeGroup">
+            <label for="startDateInput">开始</label>
+            <input type="date" id="startDateInput" value="{{ filter.start_date or '' }}">
+            <label for="endDateInput">结束</label>
+            <input type="date" id="endDateInput" value="{{ filter.end_date or '' }}">
+        </div>
+
+        <!-- 通用筛选 -->
+        <div class="filter-group">
+            <label>状态</label>
+            <label><input type="checkbox" class="status-cb" value="pending" {% if 'pending' in filter.status.split(',') %}checked{% endif %}> 待审</label>
+            <label><input type="checkbox" class="status-cb" value="passed" {% if 'passed' in filter.status.split(',') %}checked{% endif %}> 已通过</label>
+            <label><input type="checkbox" class="status-cb" value="rejected" {% if 'rejected' in filter.status.split(',') %}checked{% endif %}> 已退回</label>
+            <label><input type="checkbox" class="status-cb" value="withdrawn" {% if 'withdrawn' in filter.status.split(',') %}checked{% endif %}> 已撤回</label>
+        </div>
+        <div class="filter-group">
+            <label for="uidInput">用户ID</label>
+            <input type="number" id="uidInput" value="{{ filter.uid if filter.uid else '' }}" placeholder="用户ID" style="width:120px;">
+        </div>
+        <div class="filter-group">
+            <label for="resourceNameInput">资源名称</label>
+            <input type="text" id="resourceNameInput" value="{{ filter.resource_name or '' }}" placeholder="搜索名称" style="width:150px;">
+        </div>
+        <div class="filter-group">
+            <label for="resourceIdInput">资源ID</label>
+            <input type="number" id="resourceIdInput" value="{{ filter.resource_id if filter.resource_id else '' }}" placeholder="ID" style="width:90px;">
+        </div>
+        <div class="filter-group">
+            <label for="operationTypeSelect">操作</label>
+            <select id="operationTypeSelect">
+                <option value="all" {% if filter.operation_type == 'all' %}selected{% endif %}>全部</option>
+                <option value="add" {% if filter.operation_type == 'add' %}selected{% endif %}>新增</option>
+                <option value="edit" {% if filter.operation_type == 'edit' %}selected{% endif %}>编辑</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="sortSelect">排序</label>
+            <select id="sortSelect">
+                <option value="time_desc" {% if filter.sort == 'time_desc' %}selected{% endif %}>最新优先</option>
+                <option value="time_asc" {% if filter.sort == 'time_asc' %}selected{% endif %}>最早优先</option>
+                <option value="status" {% if filter.sort == 'status' %}selected{% endif %}>按状态</option>
+            </select>
+        </div>
+        <div class="filter-group" style="margin-left: auto;">
+            <button id="applyFilterBtn" class="btn btn-improve">应用筛选</button>
+            <button id="resetFilterBtn" class="btn btn-outline">重置</button>
+        </div>
+    </div>
+
+    <!-- 列表 -->
+    <div class="section">
+        <div class="card">
+            <div class="table-wrap">
+                <table>
+                    <colgroup>
+                        <col class="col-order">
+                        <col class="col-submitter">
+                        <col class="col-name">
+                        <col class="col-op">
+                        <col class="col-time">
+                        <col class="col-status">
+                        <col class="col-review">
+                        <col class="col-expand">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>提交者</th>
+                            <th>资源名称</th>
+                            <th>操作</th>
+                            <th>提交时间</th>
+                            <th>状态</th>
+                            <th>审核信息</th>
+                            <th style="text-align:center;"><i class="fas fa-chevron-down"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in audit_list %}
+                        <tr id="row-{{ item.id }}">
+                            <td>
+                                {% if item.status == 'pending' and item.queue_order %}
+                                    <span class="queue-order">{{ item.queue_order }}</span>
+                                {% else %}
+                                    <span style="color:#5a6672;">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="/profile/{{ item.submitter_id }}" class="user-link" target="_blank">{{ item.submitter }}</a>
+                            </td>
+                            <td>
+                                <span class="resource-name">{{ item.resource_name }}</span>
+                                {% if item.is_preset %}
+                                    <span style="font-size:11px; color:#7f8994; margin-left:4px;">(预设)</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.operation == '添加了' %}添加
+                                {% elif item.operation == '编辑了' %}编辑
+                                {% else %}{{ item.operation }}{% endif %}
+                            </td>
+                            <td>{{ item.submit_time }}<br><span style="font-size:11px; color:#5a6672;">{{ item.submit_time | timesince }}</span></td>
+                            <td>
+                                <span class="status
+                                    {% if item.status == 'pending' %}status-pending
+                                    {% elif item.status == 'passed' %}status-passed
+                                    {% elif item.status == 'rejected' %}status-rejected
+                                    {% elif item.status == 'withdrawn' %}status-withdrawn
+                                    {% endif %}">
+                                    {% if item.status == 'pending' %}待审核
+                                    {% elif item.status == 'passed' %}已通过
+                                    {% elif item.status == 'rejected' %}已退回
+                                    {% elif item.status == 'withdrawn' %}已撤回
+                                    {% else %}{{ item.status }}{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="review-meta">
+                                    {% if item.note %}
+                                    <span class="tooltip">
+                                        <i class="fas fa-paperclip"></i> 查看附言
+                                        <span class="tip-bubble">{{ item.note }}</span>
+                                    </span>
+                                    {% else %}
+                                    <span class="no-note">暂无附言</span>
+                                    {% endif %}
+
+                                    {% if item.reviewer and item.reviewer_id != item.submitter_id %}
+                                    <div class="reviewer">
+                                        审核员：<a href="/profile/{{ item.reviewer_id }}" class="user-link" target="_blank">{{ item.reviewer }}</a>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if item.reviewer and item.reviewer_id != item.submitter_id and item.latest_review %}
+                                    <div class="reviewer" style="color:#7f8994;">
+                                        最后审核：<span style="color:var(--primary-light);">
+                                            <span class='tooltip'>
+                                                {{ item.latest_review | timesince }}
+                                                <span class="tip-bubble">{{ item.latest_review }}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="action-buttons">
+                                        {% if user_info and user_info.id == item.submitter_id and item.status == 'pending' %}
+                                            <a href="{% if item.is_preset %}/shaderpack/{{ item.shaderpack_id }}/preset/new?id={{ item.id }}{% else %}/{{ type }}/new?id={{ item.id }}{% endif %}" 
+                                               class="btn btn-reedit btn-sm" target="_blank">
+                                                <i class="fas fa-edit"></i> 再编辑
+                                            </a>
+                                            <button class="btn btn-outline btn-sm recall-btn" 
+                                                    style="color:#f87171; border-color:#f87171;"
+                                                    data-table="{% if item.is_preset %}shaderpack_preset_review{% else %}{{ type }}_review{% endif %}"
+                                                    data-id="{{ item.id }}" target="_blank">
+                                                <i class="fas fa-undo-alt"></i> 撤回
+                                            </button>
+                                        {% endif %}
+
+                                        {% if user_info and user_info.id == item.submitter_id and item.status == 'withdrawn' %}
+                                            <a href="{% if item.is_preset %}/shaderpack/{{ item.shaderpack_id }}/preset/new?id={{ item.id }}{% else %}/{{ type }}/new?id={{ item.id }}{% endif %}" 
+                                               class="btn btn-improve btn-sm" target="_blank">
+                                                <i class="fas fa-redo-alt"></i> 重新提交
+                                            </a>
+                                        {% endif %}
+
+                                        {% if user_info and user_info.id == item.submitter_id and item.status == 'rejected' %}
+                                            <a href="{% if item.is_preset %}/shaderpack/{{ item.shaderpack_id }}/preset/new?id={{ item.id }}{% else %}/{{ type }}/new?id={{ item.id }}{% endif %}" 
+                                               class="btn btn-improve btn-sm" target="_blank">
+                                                <i class="fas fa-pencil-alt"></i> 完善
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align:center; vertical-align:middle;">
+                                <button class="expand-btn" data-target="#timeline-{{ item.id }}">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- 时间线展开行 -->
+                        <tr class="timeline-row" id="timeline-{{ item.id }}">
+                            <td colspan="8">
+                                <div class="timeline-container">
+                                    {% if item.review_history %}
+                                        {% for entry in item.review_history %}
+                                        <div class="timeline-entry status-{{ entry.action }}">
+                                            <span class="tl-action {{ entry.action }}">
+                                                {% if entry.action == 'pending' %}提交待审
+                                                {% elif entry.action == 'passed' %}审核通过
+                                                {% elif entry.action == 'rejected' %}审核退回
+                                                {% elif entry.action == 'withdrawn' %}用户撤回
+                                                {% else %}{{ entry.action }}{% endif %}
+                                            </span>
+                                            <span class="tl-user">
+                                                by <a href="/profile/{{ entry.user }}">{{ entry.user_nick }}</a>
+                                            </span>
+                                            <span class="tl-time">{{ entry.time }}</span>
+                                            <span class="tl-note">
+                                                {% if entry.note %}
+                                                    {{ entry.note }}
+                                                {% else %}
+                                                    <span class="empty">无附言</span>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div style="color:#5a6672; padding:8px 0;">暂无审核历史</div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" style="text-align:center; padding:40px 0; color:#7f8994;">
+                                <i class="fas fa-inbox" style="display:block; font-size:32px; margin-bottom:8px; opacity:0.3;"></i>
+                                暂无匹配的审核记录
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- 分页栏 -->
+            {% if pagination and pagination.total_pages > 1 %}
+            <div class="pagination-bar">
+                <button class="page-btn" id="prevPageBtn" {% if pagination.page <= 1 %}disabled{% endif %}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="page-info">第 {{ pagination.page }} / {{ pagination.total_pages }} 页</span>
+                <button class="page-btn" id="nextPageBtn" {% if pagination.page >= pagination.total_pages %}disabled{% endif %}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="jump-area">
+                    <span class="label">跳转</span>
+                    <input type="number" id="jumpPageInput" min="1" max="{{ pagination.total_pages }}" value="{{ pagination.page }}" />
+                    <button class="page-btn" id="jumpPageBtn" style="padding:4px 10px;">GO</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+
+<script>
+  window.REVIEW_LIST = {
+      type: {{ type|tojson }},
+      page: {{ (pagination.page if pagination else 1)|tojson }},
+      totalPages: {{ (pagination.total_pages if pagination else 1)|tojson }}
+  };
+</script>
+<script src="/static/js/pages/index/review_list.js"></script>
+{% endblock %}

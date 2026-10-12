@@ -1,0 +1,436 @@
+{% extends "base.html" %} {% block title %}{% if preset_id %}编辑预设{% elif
+review_id %}完善预设{% else %}发布预设{% endif %} - {{ shaderpack.main_name }} -
+MCRES（方块工坊）{% endblock %} {% block extra_head %}
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<link rel="stylesheet" href="/static/css/pages/resource/edit.css" />
+<link rel="stylesheet" href="/static/css/lib/editor/editor.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/edit/children/shaderpack_preset_new.css" />
+{% endblock %} {# 编辑页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="container">
+  <nav
+    class="sidebar"
+    style="
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      overflow-y: auto;
+    "
+  >
+    <a href="/shaderpack/{{ shaderpack.id }}" class="back-link">
+      <i class="fas fa-arrow-left"></i> 返回光影包
+    </a>
+    <h2>
+      {% if preset_id %}编辑预设{% elif review_id %}完善预设{% else %}发布预设{%
+      endif %}
+      <small>为 {{ shaderpack.main_name }} 添加</small>
+    </h2>
+    <button class="tab-btn active" data-tab="basic">
+      <i class="fas fa-clipboard-list"></i> 基本信息
+    </button>
+    <button class="tab-btn" data-tab="config">
+      <i class="fas fa-code"></i> 配置详情
+    </button>
+    <div style="flex: 1"></div>
+    <div
+      style="border-top: 1px solid #2b313b; padding-top: 12px; margin-top: 12px"
+    >
+      <div
+        style="
+          font-size: 12px;
+          color: #6b7480;
+          font-weight: 500;
+          margin-bottom: 6px;
+          letter-spacing: 0.5px;
+        "
+      >
+        <i class="fas fa-scroll"></i> 站内规则
+        <span style="font-weight: 400; font-size: 11px; color: #4d5663"
+          >（点击查看）</span
+        >
+      </div>
+      <div
+        id="rulesSidebarList"
+        style="
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          max-height: 180px;
+          overflow-y: auto;
+        "
+      ></div>
+    </div>
+    <div
+      style="border-top: 1px solid #2b313b; padding-top: 16px; margin-top: 12px"
+    >
+      {% if not can_skip_review %}
+      <div style="margin-bottom: 12px">
+        <label
+          for="messenger"
+          style="
+            display: block;
+            font-size: 13px;
+            color: #8a8a9e;
+            margin-bottom: 4px;
+          "
+        >
+          <i class="fas fa-comment-dots"></i> 传话筒
+          <span style="color: #6b7480; font-weight: 400"
+            >（给审核员的留言，可选）</span
+          >
+        </label>
+        <input
+          type="text"
+          id="messenger"
+          placeholder="想对审核员说的话…"
+          value="{{ messenger if messenger else '' }}"
+          style="
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e4e4ea;
+            border-radius: 4px;
+            font-size: 14px;
+          "
+        />
+      </div>
+      {% endif %}
+      <div style="margin-bottom: 12px">
+        <label
+          for="changeSummary"
+          style="
+            display: block;
+            font-size: 13px;
+            color: #8a8a9e;
+            margin-bottom: 4px;
+          "
+          >改动说明
+          <span style="color: #6b7480; font-weight: 400">（可选）</span></label
+        >
+        <input
+          type="text"
+          id="changeSummary"
+          placeholder="简要描述本次预设…"
+          value="{{ change_summary if change_summary else '' }}"
+          style="
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #e4e4ea;
+            border-radius: 4px;
+            font-size: 14px;
+          "
+        />
+      </div>
+      <button
+        class="submit-btn"
+        type="button"
+        id="submitBtn"
+        style="width: 100%"
+        {%
+        if
+        lock
+        %}disabled{%
+        endif
+        %}
+      >
+        {% if preset_id %}更新预设{% else %}发布预设{% endif %}
+      </button>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div
+      style="
+        background: rgba(245, 166, 35, 0.1);
+        border: 1px solid #f5a623;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        color: #e6edf3;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      "
+    >
+      <i class="fas fa-pencil-alt" style="font-size: 18px"></i>
+      <span
+        >您正在为
+        <strong style="color: #f5a623">{{ shaderpack.main_name }}</strong> {% if
+        preset_id %}编辑预设{% elif review_id %}完善预设{% else %}投稿预设配置{%
+        endif %}</span
+      >
+      {% if preset_id or review_id %}
+      <span class="badge-edit-mode"><i class="fas fa-edit"></i> 编辑模式</span>
+      {% endif %}
+    </div>
+
+    {% if reject_reason %}
+    <div class="reject-reason-box">
+      <i class="fas fa-undo-alt"></i>
+      <div class="reason-content">
+        <strong>本次退回原因：</strong> {{ reject_reason }}
+        <div style="font-size: 13px; color: #8b949e; margin-top: 4px">
+          请根据上述原因修改后重新提交。
+        </div>
+      </div>
+    </div>
+    {% endif %} {% if lock %}
+    <div class="lock-notice">
+      <i class="fas fa-lock"></i>
+      <span
+        >编辑已锁定：由 <strong>{{ lock_submitter }}</strong> 在
+        <strong>{{ lock_time }}</strong>
+        提交的编辑尚未审核，暂时无法修改。</span
+      >
+    </div>
+    {% endif %} {% if can_skip_review %}
+    <div
+      style="
+        background: rgba(85, 216, 139, 0.12);
+        border: 1px solid #55d88b;
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        color: #e6edf3;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      "
+    >
+      <i class="fas fa-star" style="font-size: 18px; color: #55d88b"></i>
+      <span
+        >您拥有免审核权限，提交后将
+        <strong style="color: #55d88b">直接发布</strong
+        >，无需等待管理员审核。</span
+      >
+    </div>
+    {% else %}
+    <div
+      style="
+        background: rgba(255, 200, 0, 0.08);
+        border: 1px solid rgba(255, 200, 0, 0.3);
+        border-radius: 12px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        color: #e6edf3;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      "
+    >
+      <i class="fas fa-clock" style="font-size: 18px; color: #f0c040"></i>
+      <span>提交后需等待管理员审核，审核通过后才会公开显示。</span>
+    </div>
+    {% endif %}
+
+    <div id="presetForm" {% if lock %}class="locked" {% endif %}>
+      <div class="lock-overlay"></div>
+      <input type="hidden" id="shaderpack_id" value="{{ shaderpack.id }}" />
+      {% if review_id %}
+      <input type="hidden" id="review_id" value="{{ review_id }}" />
+      {% endif %} {% if preset_id %}
+      <input type="hidden" id="preset_id" value="{{ preset_id }}" />
+      {% endif %}
+
+      <div class="section active" id="basic">
+        <div class="section-header">
+          <h3>基本信息</h3>
+          <span class="badge">必填</span>
+        </div>
+        <div class="form-group">
+          <label>预设名称 <span class="required">*</span></label>
+          <input
+            type="text"
+            id="preset_name"
+            placeholder="例：极致画质、低配优化、写实风格…"
+            value="{{ resource.name if resource else '' }}"
+          />
+          <div class="preset-name-hint">
+            给这个预设起一个简短明确的名称，方便玩家识别。
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label
+            >预设截图 <span class="required">*</span>
+            <span class="hint">(1~6 张)</span></label
+          >
+          <div class="upload-box" id="screenshotUpload">
+            <div class="upload-placeholder">
+              <i class="fas fa-camera" style="font-size: 32px"></i>
+              <div class="upload-text">点击或拖拽上传截图</div>
+              <div class="upload-hint">
+                推荐 16:10 比例，支持 JPG / PNG / WebP，不超过 10MB
+              </div>
+            </div>
+            <div
+              id="screenshotPreviewArea"
+              class="screenshot-preview-area"
+              style="display: none"
+            ></div>
+            <button class="delete-btn" id="screenshotClear" type="button">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <input
+            type="file"
+            id="screenshotInput"
+            accept="image/*"
+            multiple
+            style="display: none"
+          />
+          <div class="desc">
+            上传此预设下光影包的实际效果截图，帮助玩家了解预设风格。
+          </div>
+          <div class="screenshot-list" id="screenshotList"></div>
+        </div>
+
+        <div class="form-group">
+          <label>光影包版本 <span class="required">*</span></label>
+          <input
+            type="text"
+            id="shader_version"
+            placeholder="例：v2.1.0"
+            value="{{ resource.shader_version if resource else '' }}"
+          />
+          <div class="desc">
+            此预设适用的光影包版本号，请填写作者发布的版本号。
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>游戏版本 <span class="required">*</span></label>
+          <input
+            type="text"
+            id="mc_version"
+            placeholder="例：1.20.4"
+            value="{{ resource.mc_version if resource else '' }}"
+          />
+          <div class="desc">
+            此预设所基于的 Minecraft 版本，请填写实际测试的版本。
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>预设介绍</label>
+          <div id="presetEditor"></div>
+          <div class="desc">
+            详细描述此预设的特点、适用场景、性能表现等，支持丰富排版。
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="config">
+        <div class="section-header">
+          <h3>配置文件代码</h3>
+          <span class="badge">必填</span>
+        </div>
+        <div class="form-group">
+          <label>配置文件内容 <span class="required">*</span></label>
+          <textarea
+            id="config_code"
+            class="code-editor"
+            placeholder="在此粘贴或编写光影包的配置文件内容……"
+          >
+{{ resource.config_code if resource else '' }}</textarea
+          >
+          <div class="desc">
+            请提供完整的配置文件代码，通常为 .conf、.txt
+            或光影包设置文件的内容。
+          </div>
+        </div>
+        <div class="form-group">
+          <label>配置说明 <span class="hint">（可选）</span></label>
+          <textarea
+            id="config_notes"
+            placeholder="简要说明配置中的关键参数或注意事项…"
+            style="min-height: 80px"
+          >
+{{ resource.config_notes if resource else '' }}</textarea
+          >
+          <div class="desc">
+            可以补充一些关于配置的说明，例如修改了哪些参数、推荐设置等。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 裁剪模态框 -->
+<div id="cropModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3><i class="fas fa-cut"></i> 裁剪为 16:10</h3>
+      <button id="closeCropBtn" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body"><img id="cropImage" src="" alt="裁剪预览" /></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="cancelCropBtn" type="button">取消</button>
+      <button class="btn-confirm" id="confirmCropBtn" type="button">
+        确认裁剪
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 提交模态框 -->
+<div
+  id="submitModal"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
+  "
+>
+  <div class="modal-box">
+    <h3 id="submitModalTitle">确认提交</h3>
+    <div class="body-text" id="submitModalBody">确定要提交吗？</div>
+    <div class="progress-area" id="submitModalProgress">
+      进度：<span class="progress-text" id="submitProgressText">准备...</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn-cancel" id="submitModalCancel">取消</button>
+      <button class="btn-confirm" id="submitModalConfirm">确定</button>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/lib/editor/editor-utils.js"></script>
+<script src="/static/js/lib/editor/editor-toolbar.js"></script>
+<script src="/static/js/lib/editor/editor-panels.js"></script>
+<script src="/static/js/lib/editor/table.js"></script>
+<script src="/static/js/lib/editor/editor.js"></script>
+
+
+<script>
+  window.PRESET_FORM = {
+      resource: {{ resource | default(none) | tojson | safe }},
+      reviewId: {{ review_id | default(none) | tojson | safe }},
+      presetId: {{ preset_id | default(none) | tojson | safe }},
+      shaderpackId: {{ shaderpack.id | tojson | safe }},
+      canSkipReview: {{ can_skip_review | default(false) | tojson | safe }},
+      changeSummary: {{ change_summary | default('', true) | tojson | safe }},
+      messenger: {{ messenger | default('', true) | tojson | safe }}
+  };
+</script>
+<script src="/static/js/pages/resource/edit/children/shaderpack_preset_new.js"></script>
+{% endblock %}

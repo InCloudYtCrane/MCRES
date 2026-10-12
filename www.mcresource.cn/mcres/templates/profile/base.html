@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}{{ user.nickname }}的主页 · 方块工坊{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/static/css/pages/profile/base.css" />
+<link rel="stylesheet" href="/static/css/pages/profile/achievements.css" />
+{# 用户组主题色由后端注入，保留内联 #}
+<style>
+    :root {
+        --role-color: {{ role_color }};
+        --role-color-15: {{ role_color }}26;
+        --role-color-22: {{ role_color }}22;
+        --role-color-30: {{ role_color }}30;
+        --role-color-33: {{ role_color }}33;
+        --role-color-40: {{ role_color }}40;
+        --role-color-44: {{ role_color }}44;
+        --role-color-55: {{ role_color }}55;
+        --role-color-60: {{ role_color }}60;
+    }
+</style>
+{% endblock %}
+
+{% block footer %}
+<div class="footer">{% include "components/footer.html" %}</div>
+{% endblock %}
+
+{% block content %}
+<div class="profile-layout">
+
+        <!-- ===== 左侧菜单栏 ===== -->
+        <aside class="profile-sidebar">
+
+            <!-- 头像 & 昵称 & 齿轮（右上角） -->
+            <div class="sidebar-avatar">
+                {% if is_me %}
+                <a href="/profile/settings" class="sidebar-gear" title="设置">
+                    <i class="fas fa-cog"></i>
+                </a>
+                {% endif %}
+
+                <!-- 头像包装器（徽章 + 在线角标） -->
+                <div class="avatar-wrapper">
+                    <img src="{{ user.avatar }}" alt="{{ user.nickname }}的头像" />
+
+                    {# 在线状态角标 #}
+                    {% if online_status %}
+                    <span class="online-dot online-dot-{{ online_status.status }}"
+                          style="--dot-color: {{ online_status.color }};"
+                          title="{{ online_status.label }}"></span>
+                    {% endif %}
+
+                    {% if selected_title %}
+                    <span class="user-title-badge {% if selected_title.text|length > 4 %}scroll{% endif %}"
+                          style="background-color: {{ selected_title.color }};">
+                        <span class="title-text">{{ selected_title.text }}</span>
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="sidebar-avatar-name">{{ user.nickname }}</div>
+
+                {# ============================================================
+                   用户组：管理中心同款「标签 + 值」多行形式
+                   ============================================================ #}
+                <div class="sidebar-role-tags">
+                    <div class="sidebar-role-tag sidebar-role-tag-main"
+                         style="--main-role-color: {{ role_color }};">
+                        <span class="sidebar-role-label">主站用户组</span>
+                        <span class="sidebar-role-value">{{ role_name }}</span>
+                    </div>
+
+                    <div class="sidebar-role-tag sidebar-role-tag-sel {% if not user.sel_role or user.sel_role < 1 %}is-inactive{% endif %}">
+                        <span class="sidebar-role-label">选料用户组</span>
+                        <span class="sidebar-role-value">
+                            {% if user.sel_role and user.sel_role >= 1 %}
+                                {{ sel_role_name }}
+                            {% else %}
+                                未分配
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="sidebar-role-tag sidebar-role-tag-tea {% if not user.tea_role or user.tea_role < 1 %}is-inactive{% endif %}">
+                        <span class="sidebar-role-label">茶室用户组</span>
+                        <span class="sidebar-role-value">
+                            {% if user.tea_role and user.tea_role >= 1 %}
+                                {% set tea_map = {1: '茶客', 2: '茶友', 3: '茶博士', 4: '馆主'} %}
+                                {{ tea_role_name if tea_role_name is defined and tea_role_name else tea_map.get(user.tea_role, '茶客') }}
+                            {% else %}
+                                未入座
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                {# ===== 转到茶室主页 ===== #}
+                <a href="https://tea.mcresource.cn/profile/{{ user.id }}"
+                   class="sidebar-tea-link" target="_blank" rel="noopener">
+                    <i class="fas fa-mug-hot"></i>
+                    <span>转到茶室主页</span>
+                </a>
+
+                {% if user.signature %}
+                <div class="sidebar-avatar-signature">“{{ user.signature }}”</div>
+                {% endif %}
+            </div>
+
+            <div class="sidebar-meta">
+                <div class="sidebar-meta-item">
+                    <i class="fas fa-id-badge"></i>
+                    <span class="meta-label">ID</span>
+                    <span class="meta-value">#{{ user.id }}</span>
+                </div>
+                <div class="sidebar-meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="meta-label">入驻于</span>
+                    <span class="meta-value" title="{{ user.registration_time }}">{{ user.registration_time | timesince }}</span>
+                </div>
+                {% if online_status %}
+                <div class="sidebar-meta-item sidebar-meta-online">
+                    <i class="fas fa-circle" style="color: {{ online_status.color }}; font-size: 8px;"></i>
+                    <span class="meta-label">状态</span>
+                    <span class="meta-value" style="color: {{ online_status.color }};">
+                        {{ online_status.label }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- 四个统计数据 -->
+            <div class="sidebar-stats">
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-icon"><i class="fas fa-pen-fancy"></i></span>
+                    <span class="sidebar-stat-number">{{ user.edit_count }}</span>
+                    <span class="sidebar-stat-label">编辑</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-icon"><i class="fas fa-comment-dots"></i></span>
+                    <span class="sidebar-stat-number">{{ user.view_count }}</span>
+                    <span class="sidebar-stat-label">看法</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-icon"><i class="fas fa-shield-alt"></i></span>
+                    <span class="sidebar-stat-number" style="color:{% if user.reputation >= 80 %}var(--role-color){% elif user.reputation >= 60 %}#55d88b{% elif user.reputation >= 40 %}#5dade2{% elif user.reputation >= 20 %}#f39c12{% else %}#e74c3c{% endif %};">{{ user.reputation }}</span>
+                    <span class="sidebar-stat-label">信誉</span>
+                </div>
+                <div class="sidebar-stat">
+                    <span class="sidebar-stat-icon"><i class="fas fa-brick"></i></span>
+                    <span class="sidebar-stat-number" style="color:var(--role-color);">{{ user.brick|default(0)|round(1) }}</span>
+                    <span class="sidebar-stat-label">砖块</span>
+                </div>
+            </div>
+
+            <!-- 导航菜单 -->
+            <nav class="sidebar-nav">
+                <button class="sidebar-nav-btn active" data-tab="home">
+                    <i class="fas fa-home"></i>
+                    <span>{% if is_me %}我{% else %}TA{% endif %}的主页</span>
+                </button>
+                <button class="sidebar-nav-btn" data-tab="works">
+                    <i class="fas fa-folder-open"></i>
+                    <span>{% if is_me %}我的作品{% else %}TA的作品{% endif %}</span>
+                </button>
+                <button class="sidebar-nav-btn" data-tab="likes">
+                    <i class="fas fa-heart"></i>
+                    <span>{% if is_me %}我{% else %}TA{% endif %}赞过的</span>
+                </button>
+                {% if is_me or privacy_settings.show_favorites %}
+                <button class="sidebar-nav-btn" data-tab="favorites">
+                    <i class="fas fa-star"></i>
+                    <span>{% if is_me %}我{% else %}TA{% endif %}收藏的</span>
+                </button>
+                {% endif %}
+                <button class="sidebar-nav-btn" data-tab="calendar">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>贡献日历</span>
+                </button>
+                {% if is_me or privacy_settings.show_achievements %}
+                <button class="sidebar-nav-btn" data-tab="achievements">
+                    <i class="fas fa-trophy"></i>
+                    <span>{% if is_me %}我{% else %}TA{% endif %}的成就</span>
+                </button>
+                {% endif %}
+                {% if privacy_settings.board %}
+                <button class="sidebar-nav-btn" data-tab="board">
+                    <i class="fas fa-comments"></i>
+                    <span>留言板</span>
+                </button>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-footer">方块工坊 · v{{ vx }}</div>
+        </aside>
+
+        <!-- ===== 右侧主内容 ===== -->
+        <main class="profile-main">
+            <div class="main-content">
+                <!-- 主页 -->
+                <div id="tab-home" class="tab-panel active">
+                    {% include "profile/home.html" %}
+                </div>
+                <!-- 作品 -->
+                <div id="tab-works" class="tab-panel">
+                    {% include "profile/works.html" %}
+                </div>
+                <!-- 赞过的 -->
+                <div id="tab-likes" class="tab-panel">
+                    {% include "profile/likes.html" %}
+                </div>
+                <!-- 收藏 -->
+                {% if is_me or privacy_settings.show_favorites %}
+                <div id="tab-favorites" class="tab-panel">
+                    {% include "profile/favorites.html" %}
+                </div>
+                {% endif %}
+                <!-- 贡献日历 -->
+                <div id="tab-calendar" class="tab-panel">
+                    <div class="card">
+                        <div class="area-section-title">
+                            <i class="fas fa-calendar-alt" style="color: var(--role-color);"></i> 贡献日历
+                            <span class="badge">按月查看每日操作</span>
+                        </div>
+                        <div class="year-selector">
+                            <label for="yearSelect"><i class="fas fa-calendar"></i> 选择年份：</label>
+                            <select id="yearSelect"></select>
+                        </div>
+                        <div class="contribution-graph" id="contributionGraph">
+                            <div style="text-align:center; padding:20px; color:#6f6f84;">加载中...</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 成就 -->
+                {% if is_me or privacy_settings.show_achievements %}
+                <div id="tab-achievements" class="tab-panel">
+                    {% include "profile/achievements.html" %}
+                </div>
+                {% endif %}
+                <!-- 留言板 -->
+                {% if privacy_settings.board %}
+                <div id="tab-board" class="tab-panel">
+                    <div class="card">
+                        <div class="comment-section-title" style="display:flex; align-items:center; gap:12px; font-size:18px; font-weight:600; color:#e4e4ea; margin-bottom:6px;">
+                            <i class="fas fa-comments" style="color: var(--role-color);"></i> 留言板
+                        </div>
+                        {% include "components/comment.html" %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    
+
+{% endblock %}
+
+{% block extra_script %}
+<script>
+        var editDailyData = {{ edit_daily | tojson | safe }};
+        var roleColor = '{{ role_color }}';
+        var isMe = {{ is_me | tojson }};
+        var worksData = {{ works_data|tojson|safe }};
+        var likesData = {{ likes_data|tojson|safe }};
+        var favoritesData = {{ favorites_data|tojson|safe }};
+        var profileTotalPages = {{ total_pages|default(1) }};
+    </script>
+<script src="/static/js/pages/profile/base.js"></script>
+<script src="/static/js/pages/profile/home.js"></script>
+<script src="/static/js/pages/profile/works.js"></script>
+<script src="/static/js/pages/profile/likes.js"></script>
+<script src="/static/js/pages/profile/favorites.js"></script>
+<script src="/static/js/pages/profile/achievements.js"></script>
+{% endblock %}

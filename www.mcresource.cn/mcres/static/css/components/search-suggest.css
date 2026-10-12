@@ -1,0 +1,81 @@
+/* mcres/static/css/components/search-suggest.css */
+.search-suggest-wrapper {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+.search-suggest-wrapper .suggest-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #1a2028;
+    border: 1px solid #2a313b;
+    border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+    padding: 4px 0;
+}
+.search-suggest-wrapper .suggest-dropdown::-webkit-scrollbar {
+    width: 4px;
+}
+.search-suggest-wrapper .suggest-dropdown::-webkit-scrollbar-thumb {
+    background: #4a5a6a;
+    border-radius: 4px;
+}
+.search-suggest-wrapper .suggest-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #e8edf2;
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.search-suggest-wrapper .suggest-item:last-child {
+    border-bottom: none;
+}
+.search-suggest-wrapper .suggest-item:hover {
+    background: rgba(255,255,255,0.06);
+}
+.search-suggest-wrapper .suggest-item .label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.search-suggest-wrapper .suggest-item .label mark {
+    background: #f5a623;
+    color: #0b0f14;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 600;
+}
+.search-suggest-wrapper .suggest-empty {
+    padding: 12px 16px;
+    color: #6a7a8a;
+    font-size: 13px;
+    text-align: center;
+}
+.search-suggest-wrapper .suggest-history-header {
+    padding: 6px 16px;
+    font-size: 12px;
+    color: #6a7a8a;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.search-suggest-wrapper .suggest-history-header .clear-history {
+    cursor: pointer;
+    color: #6a7a8a;
+    font-size: 12px;
+    transition: color 0.2s;
+}
+.search-suggest-wrapper .suggest-history-header .clear-history:hover {
+    color: #ff6b6b;
+}

@@ -1,0 +1,244 @@
+<!-- ==================== 绑定茶室（置顶） ==================== -->
+{% if bound_tea_topics %}
+<div class="card">
+    <div class="area-section-title">
+        <i class="fas fa-mug-hot" style="color: var(--role-color);"></i>
+        {% if is_me %}我{% else %}TA{% endif %}的茶室
+        <span class="badge">共 {{ bound_tea_topics | length }} 个话题</span>
+    </div>
+
+    <div class="tea-bound-list">
+        {% for t in bound_tea_topics %}
+        <a class="tea-bound-item"
+           href="https://tea.mcresource.cn/topic/{{ t.slug }}"
+           target="_blank" rel="noopener">
+
+            <div class="tea-bound-icon">
+                {% if t.is_official %}📢{% else %}#{% endif %}
+            </div>
+
+            <div class="tea-bound-body">
+                <div class="tea-bound-title">
+                    <span class="tea-bound-hash">#</span>{{ t.name }}
+                    <span class="topic-level-badge topic-level-{{ t.level_visual.type }}">
+                        {{ t.level_visual.label }}
+                    </span>
+                </div>
+
+                {% if t.description %}
+                <div class="tea-bound-desc">{{ t.description }}</div>
+                {% endif %}
+
+                <div class="tea-bound-meta">
+                    <span><i class="fas fa-comment"></i> {{ t.post_count }} 帖</span>
+                    <span><i class="fas fa-users"></i> {{ t.follower_count }} 关注</span>
+                    {% if t.last_post_at %}
+                    <span><i class="fas fa-clock"></i> {{ t.last_post_at | timesince }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="tea-bound-arrow">
+                <i class="fas fa-arrow-up-right-from-square"></i>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- ==================== 管辖区 ==================== -->
+{% if user.role == 2 %}
+    {% set has_edit = edit_area.resourcepack.all or edit_area.resourcepack.detail or edit_area.shaderpack.all or edit_area.shaderpack.detail or edit_area.map.all or edit_area.map.detail %}
+    {% set has_review = review_area.resourcepack.all or review_area.resourcepack.detail or review_area.shaderpack.all or review_area.shaderpack.detail or review_area.map.all or review_area.map.detail %}
+    {% set has_file = file_area.resourcepack.all or file_area.resourcepack.detail or file_area.shaderpack.all or file_area.shaderpack.detail or file_area.map.all or file_area.map.detail %}
+    {% if has_edit or has_review or has_file %}
+        <div class="card">
+            <div class="area-section-title">
+                {% if is_me %}
+                    <i class="fas fa-map-marked-alt"></i> 我的管辖区
+                {% else %}
+                    <i class="fas fa-map-marked-alt"></i> TA的管辖区
+                {% endif %}
+                <span class="badge">编辑 · 审核 · 文件</span>
+            </div>
+            <div class="area-vertical">
+                {% set categories = [
+                    {'key': 'resourcepack', 'label': '资源包'},
+                    {'key': 'shaderpack', 'label': '光影包'},
+                    {'key': 'map', 'label': '地图'},
+                    {'key': 'shaderpack_preset', 'label': '光影包预设'}
+                ] %}
+                {% if has_edit %}
+                <div class="area-card">
+                    <div class="area-header"><i class="fas fa-pen"></i> 编辑管辖区</div>
+                    <table class="area-table">
+                        <thead><tr><th style="width:100px;">类别</th><th>管辖范围</th></tr></thead>
+                        <tbody>
+                            {% for cat in categories %}
+                                {% set info = edit_area.get(cat.key, {'all': False, 'detail': []}) %}
+                                {% if info.all == True or info.detail %}
+                                <tr>
+                                    <td class="cat-name">{{ cat.label }}</td>
+                                    <td>
+                                        <div class="resource-list">
+                                            {% if info.all == True %}
+                                                <span class="tag tag-all"><i class="fas fa-globe-americas" style="margin-right:6px;"></i>全域</span>
+                                            {% else %}
+                                                {% for id in info.detail %}
+                                                    {% set name = resource_names[cat.key].get(id, '未命名 #' ~ id) %}
+                                                    {% set url = '/' ~ cat.key ~ '/' ~ id %}
+                                                    <span class="tag"><a href="{{ url }}" target="_blank">{{ name }}</a></span>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                {% if has_review %}
+                <div class="area-card">
+                    <div class="area-header"><i class="fas fa-check-double"></i> 审核管辖区</div>
+                    <table class="area-table">
+                        <thead><tr><th style="width:100px;">类别</th><th>管辖范围</th></tr></thead>
+                        <tbody>
+                            {% for cat in categories %}
+                                {% set info = review_area.get(cat.key, {'all': False, 'detail': []}) %}
+                                {% if info.all == True or info.detail %}
+                                <tr>
+                                    <td class="cat-name">{{ cat.label }}</td>
+                                    <td>
+                                        <div class="resource-list">
+                                            {% if info.all == True %}
+                                                <span class="tag tag-all"><i class="fas fa-globe-americas" style="margin-right:6px;"></i>全域</span>
+                                            {% else %}
+                                                {% for id in info.detail %}
+                                                    {% set name = resource_names[cat.key].get(id, '未命名 #' ~ id) %}
+                                                    {% set url = '/' ~ cat.key ~ '/' ~ id %}
+                                                    <span class="tag"><a href="{{ url }}" target="_blank">{{ name }}</a></span>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                {% if has_file %}
+                <div class="area-card">
+                    <div class="area-header"><i class="fas fa-folder-open"></i> 文件管辖区</div>
+                    <table class="area-table">
+                        <thead><tr><th style="width:100px;">类别</th><th>管辖范围</th></tr></thead>
+                        <tbody>
+                            {% for cat in categories %}
+                                {% set info = file_area.get(cat.key, {'all': False, 'detail': []}) %}
+                                {% if info.all == True or info.detail %}
+                                <tr>
+                                    <td class="cat-name">{{ cat.label }}</td>
+                                    <td>
+                                        <div class="resource-list">
+                                            {% if info.all == True %}
+                                                <span class="tag tag-all"><i class="fas fa-globe-americas" style="margin-right:6px;"></i>全域</span>
+                                            {% else %}
+                                                {% for id in info.detail %}
+                                                    {% set name = resource_names[cat.key].get(id, '未命名 #' ~ id) %}
+                                                    {% set url = '/' ~ cat.key ~ '/' ~ id %}
+                                                    <span class="tag"><a href="{{ url }}" target="_blank">{{ name }}</a></span>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+
+<!-- ==================== 编辑动态 ==================== -->
+<div class="card">
+    <div class="area-section-title">
+        <i class="fas fa-pen-fancy" style="color: var(--role-color);"></i> 编辑动态
+        <span class="badge">共 {{ total_edit_history }} 条操作</span>
+    </div>
+    {% if edit_history %}
+        <div class="history-list">
+            {% for item in edit_history %}
+            <div class="history-item">
+                <div class="history-left">
+                    <span class="op-type">{{ item.operation_display }}</span>
+                    <span class="res-name">
+                        <a href="{{ item.url }}" target="_blank">{{ item.type_display }}「{{ item.resource_name }}」</a>
+                    </span>
+                </div>
+                <span class="history-time">{{ item.timestamp }}({{ item.timestamp | timesince }})</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ===== 分页控件（超过1页时显示） ===== -->
+        {% if total_pages > 1 %}
+        <div class="pagination-wrapper">
+            <div class="pagination">
+                {% if current_page > 1 %}
+                <a href="?page={{ current_page - 1 }}">&laquo; 上一页</a>
+                {% endif %}
+
+                {% set start_page = current_page - 2 %}
+                {% set end_page = current_page + 2 %}
+                {% if start_page < 1 %}{% set start_page = 1 %}{% endif %}
+                {% if end_page > total_pages %}{% set end_page = total_pages %}{% endif %}
+
+                {% if start_page > 1 %}
+                    <a href="?page=1">1</a>
+                    {% if start_page > 2 %}
+                        <span class="ellipsis">…</span>
+                    {% endif %}
+                {% endif %}
+
+                {% for p in range(start_page, end_page + 1) %}
+                    {% if p == current_page %}
+                        <span class="active">{{ p }}</span>
+                    {% else %}
+                        <a href="?page={{ p }}">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if end_page < total_pages %}
+                    {% if end_page < total_pages - 1 %}
+                        <span class="ellipsis">…</span>
+                    {% endif %}
+                    <a href="?page={{ total_pages }}">{{ total_pages }}</a>
+                {% endif %}
+
+                {% if current_page < total_pages %}
+                <a href="?page={{ current_page + 1 }}">下一页 &raquo;</a>
+                {% endif %}
+            </div>
+
+            <!-- 跳转输入框 -->
+            <div class="page-jump">
+                <span>跳转至</span>
+                <input type="number" id="page-input" min="1" max="{{ total_pages }}" value="{{ current_page }}">
+                <span>页</span>
+                <button type="button" id="page-jump-btn">跳转</button>
+            </div>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <div class="history-empty">暂无编辑记录</div>
+    {% endif %}
+</div>

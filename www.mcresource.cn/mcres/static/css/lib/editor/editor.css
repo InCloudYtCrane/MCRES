@@ -1,0 +1,251 @@
+/* ============================================================
+   McresEditor 深色主题
+   路径：mcres/static/css/lib/editor/editor.css
+   ============================================================ */
+
+:root {
+  --editor-bg: #11161c;
+  --editor-border: #2b313b;
+  --editor-text: #e6edf3;
+  --editor-primary: #55d88b;
+  --editor-primary-alpha: #55d88b55;
+  --editor-toolbar-bg: #0b0f14;
+}
+
+.editor-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--editor-border);
+  background: var(--editor-bg);
+}
+
+/* ===== 工具栏 ===== */
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  padding: 8px 12px;
+  background: var(--editor-toolbar-bg);
+  border-bottom: 1px solid var(--editor-border);
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.editor-toolbar .group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  border-right: 1px solid var(--editor-border);
+}
+.editor-toolbar .group:last-child {
+  border-right: none;
+}
+
+.editor-toolbar button,
+.editor-toolbar .tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #b0b8c2;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+  font-family: inherit;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+.editor-toolbar button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.editor-toolbar button.active {
+  background: var(--editor-primary-alpha);
+  border-color: var(--editor-primary);
+  color: var(--editor-primary);
+}
+.editor-toolbar select {
+  height: 30px;
+  padding: 0 22px 0 8px;
+  background: var(--editor-bg);
+  border: 1px solid var(--editor-border);
+  border-radius: 4px;
+  color: var(--editor-text);
+  font-size: 13px;
+  cursor: pointer;
+  appearance: auto;
+  min-width: 70px;
+}
+.editor-toolbar select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.editor-toolbar select:focus {
+  outline: none;
+  border-color: var(--editor-primary);
+}
+.editor-toolbar input[type="color"] {
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+  border: 1px solid var(--editor-border);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+.editor-toolbar input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.editor-toolbar input[type="color"]::-webkit-color-swatch {
+  border: 1px solid var(--editor-border);
+  border-radius: 3px;
+}
+
+/* ===== 内容区 ===== */
+.editor-content {
+  min-height: 280px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding: 18px 20px;
+  background: var(--editor-bg);
+  color: var(--editor-text);
+  font-size: 15px;
+  line-height: 1.8;
+  outline: none;
+  transition: box-shadow 0.2s;
+  position: relative;
+}
+.editor-content:focus {
+  box-shadow: 0 0 0 2px var(--editor-primary-alpha);
+}
+
+/* ===== H5 修复：用 .is-empty 类显示占位符 ===== */
+.editor-content.is-empty::before {
+  content: attr(data-placeholder);
+  color: #4d5663;
+  pointer-events: none;
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  right: 20px;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* ===== 排版 ===== */
+.editor-content blockquote {
+  margin: 8px 0;
+  padding: 8px 16px;
+  border-left: 4px solid var(--editor-primary);
+  background: rgba(85, 216, 139, 0.06);
+  border-radius: 0 4px 4px 0;
+  color: #c8d0da;
+}
+.editor-content ul,
+.editor-content ol {
+  padding-left: 28px;
+  margin: 8px 0;
+}
+.editor-content ul ul,
+.editor-content ol ol,
+.editor-content ul ol,
+.editor-content ol ul {
+  margin: 4px 0;
+}
+.editor-content li {
+  margin: 2px 0;
+}
+
+.editor-content table {
+  border-collapse: collapse;
+  margin: 10px 0;
+  width: 100%;
+}
+
+/* M8：新单元格居中 */
+.editor-content table td,
+.editor-content table th {
+  border: 1px solid #4d5663;
+  padding: 6px 12px;
+  min-width: 40px;
+  text-align: center;
+}
+.editor-content table th {
+  background: #2b313b;
+}
+
+.editor-content h1,
+.editor-content h2,
+.editor-content h3,
+.editor-content h4,
+.editor-content h5,
+.editor-content h6 {
+  margin: 16px 0 8px 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.editor-content h1 {
+  font-size: 2em;
+}
+.editor-content h2 {
+  font-size: 1.6em;
+}
+.editor-content h3 {
+  font-size: 1.35em;
+}
+.editor-content h4 {
+  font-size: 1.15em;
+}
+.editor-content h5 {
+  font-size: 1em;
+}
+.editor-content h6 {
+  font-size: 0.85em;
+  color: #8b949e;
+}
+
+.editor-content hr {
+  border: none;
+  border-top: 2px solid #2b313b;
+  margin: 16px 0;
+}
+.editor-content a {
+  color: var(--editor-primary);
+  text-decoration: underline;
+}
+.editor-content a:hover {
+  color: #6ae09c;
+}
+.editor-content p {
+  margin: 8px 0;
+}
+
+/* ===== 表格矩阵面板悬停格子 ===== */
+.mcres-table-matrix > div > div[data-row][data-col] {
+  user-select: none;
+}
+
+/* ===== 链接面板样式（补充 focus 效果） ===== */
+.mcres-link-panel input[type="url"]:focus {
+  border-color: var(--editor-primary, #55d88b) !important;
+  box-shadow: 0 0 0 2px var(--editor-primary-alpha, #55d88b55);
+}
+.mcres-link-panel button {
+  transition: background 0.2s;
+}
+.mcres-link-panel button:hover {
+  filter: brightness(1.1);
+}
+.mcres-link-panel button:active {
+  transform: scale(0.96);
+}

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}{{ user.nickname }}的个人主页 · 方块工坊{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/profile/mobile.css" />
+<link rel="stylesheet" href="/static/css/components/comment.css" />
+<script src="https://unpkg.com/html5-qrcode"></script>
+{% endblock %}
+
+{% block footer %}
+<div class="bottom-nav">{% include 'components/footer.html' %}</div>
+{% endblock %}
+
+{% block content %}
+<div class="mobile-main">
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          <img src="{{ user.avatar }}" alt="{{ user.nickname }}的头像" />
+        </div>
+        <div class="profile-info">
+          <div class="nickname-row">
+            <span class="nickname">{{ user.nickname }}</span>
+            <span
+              class="role-badge"
+              style="color: {{ role_color }}; border-color: {{ role_color }}33;"
+            >
+              {{ role_name }}
+            </span>
+
+            {# ★ 选料用户组（sel_role >= 1 时显示） #} {% if user.sel_role and
+            user.sel_role >= 1 %}
+            <span
+              class="role-badge sel-role-badge"
+              style="color: {{ sel_role_color }}; border-color: {{ sel_role_color }}33; background: {{ sel_role_color }}15;"
+            >
+              <i
+                class="fas fa-cube"
+                style="font-size: 10px; margin-right: 3px; opacity: 0.8"
+              ></i
+              >{{ sel_role_name }}
+            </span>
+            {% endif %} {% if is_me %}
+            <!-- 自己的主页才显示扫码和设置按钮 -->
+            <button
+              class="action-btn scan-btn"
+              id="scanBtn"
+              title="扫一扫快捷登录"
+            >
+              <img
+                src="https://img.mcresource.cn/icon/btn/qrcode-scan.png"
+                alt="扫一扫"
+              />
+            </button>
+            <a
+              href="/profile/settings"
+              class="action-btn settings-btn"
+              title="设置"
+            >
+              <i class="fas fa-cog"></i>
+            </a>
+            {% endif %}
+          </div>
+          {% if selected_title %}
+          <span
+            class="title-badge"
+            style="background-color: {{ selected_title.color }};"
+          >
+            {{ selected_title.text }}
+          </span>
+          {% endif %} {% if user.signature %}
+          <div class="signature">“{{ user.signature }}”</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" style="color: var(--role-color, #55d88b)">
+            <i
+              class="fas fa-pen-fancy"
+              style="color: var(--role-color, #55d88b)"
+            ></i>
+            {{ user.edit_count }}
+          </div>
+          <div class="stat-label">编辑</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: var(--role-color, #55d88b)">
+            <i
+              class="fas fa-comment-dots"
+              style="color: var(--role-color, #55d88b)"
+            ></i>
+            {{ user.view_count }}
+          </div>
+          <div class="stat-label">看法</div>
+        </div>
+        <div class="stat-card">
+          <div
+            class="stat-number"
+            style="color: {% if user.reputation >= 80 %}#55d88b{% elif user.reputation >= 60 %}#55d88b{% elif user.reputation >= 40 %}#5dade2{% elif user.reputation >= 20 %}#f39c12{% else %}#e74c3c{% endif %};"
+          >
+            <i class="fas fa-shield-alt"></i>
+            {{ user.reputation }}
+          </div>
+          <div class="stat-label">信誉</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="color: var(--role-color, #55d88b)">
+            <i
+              class="fas fa-brick"
+              style="color: var(--role-color, #55d88b)"
+            ></i>
+            {{ user.brick|default(0)|round(1) }}
+          </div>
+          <div class="stat-label">砖块</div>
+        </div>
+      </div>
+
+      {% if privacy_settings.board %}
+      <div class="comment-section-wrapper">
+        {% include "components/comment.html" %}
+      </div>
+      {% else %}
+      <div class="no-board-message">
+        <i class="fas fa-comment-slash"></i>
+        {% if is_me %}你已关闭留言板{% else %}TA已关闭留言板{% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ===== 手机端扫码确认页面 ===== -->
+    <div id="qr-confirm-page">
+      <div class="confirm-box">
+        <div class="confirm-avatar" id="confirmAvatar">
+          <img src="" alt="头像" />
+        </div>
+        <div class="confirm-title" id="confirmNickname">用户昵称</div>
+        <div class="confirm-sub">确认在电脑端登录此账号？</div>
+        <div class="confirm-device">
+          <i class="fas fa-desktop"></i> 正在请求登录电脑端
+        </div>
+        <button class="confirm-btn" id="confirmBtn">
+          确认登录 <span class="countdown" id="countdownNum">3</span>s
+        </button>
+        <button class="confirm-close" id="confirmClose">取消</button>
+        <div class="confirm-success" id="confirmSuccess">
+          <i class="fas fa-check-circle"></i> 登录成功，请返回电脑端
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+<script>
+  window.USER_INFO = {{ user_info | tojson | safe if user_info else 'null' }};
+  window.IS_LOGGED_IN = {{ (user_info is not none) | tojson }};
+  window.CURRENT_USER_ID = {{ user_info.id if user_info else 'null' }};
+  window._commentsPath = window.location.pathname;
+</script>
+<script src="/static/js/pages/profile/mobile.js"></script>
+{% endblock %}

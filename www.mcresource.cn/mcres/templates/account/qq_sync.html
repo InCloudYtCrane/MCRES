@@ -1,0 +1,104 @@
+{% extends "base.html" %} {% block title %}完善资料 - MCRES{% endblock %} {%
+block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/auth/sync.css" />
+{% endblock %} {# 本页不使用 navbar / footer #} {% block navbar %}{% endblock %}
+{% block footer %}{% endblock %} {% block content %}
+<form class="card" method="post" action="/login/qq/sync" id="syncForm">
+  <h2>🎉 欢迎来到 MCRES</h2>
+  <div class="sub">
+    <i class="fas fa-info-circle"></i>
+    检测到您是通过 QQ 首次登录，请选择需要同步到本地账号的资料。
+  </div>
+
+  <!-- 昵称 -->
+  <div class="item" id="itemNickname">
+    <div class="thumb"><i class="fas fa-user"></i></div>
+    <div class="body">
+      <div class="label">
+        昵称 {% if qq_nickname %}
+        <span class="badge">QQ 提供</span>
+        {% else %}
+        <span class="badge muted">QQ 未提供</span>
+        {% endif %}
+      </div>
+      {% if qq_nickname %}
+      <input
+        type="text"
+        name="nickname"
+        id="nicknameInput"
+        value="{{ qq_nickname }}"
+        maxlength="32"
+      />
+      {% else %}
+      <div class="value">QQ 未返回昵称，无法同步</div>
+      {% endif %}
+    </div>
+    {% if qq_nickname %}
+    <label class="switch">
+      <input
+        type="checkbox"
+        name="sync_nickname"
+        value="1"
+        id="syncNicknameCb"
+        checked
+      />
+      <span class="slider"></span>
+    </label>
+    {% endif %}
+  </div>
+
+  <!-- 头像 -->
+  <div class="item" id="itemAvatar">
+    <div class="thumb">
+      {% if qq_avatar %}
+      <img
+        src="{{ qq_avatar }}"
+        alt="QQ头像"
+      />
+      {% else %}
+      <i class="fas fa-user"></i>
+      {% endif %}
+    </div>
+    <div class="body">
+      <div class="label">
+        头像 {% if qq_avatar %}
+        <span class="badge">QQ 提供</span>
+        {% else %}
+        <span class="badge muted">QQ 未提供</span>
+        {% endif %}
+      </div>
+      <div class="value">同步后会裁剪为 200 × 200 并保存到本地</div>
+    </div>
+    {% if qq_avatar %}
+    <label class="switch">
+      <input
+        type="checkbox"
+        name="sync_avatar"
+        value="1"
+        id="syncAvatarCb"
+        checked
+      />
+      <span class="slider"></span>
+    </label>
+    {% endif %}
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-secondary" id="skipBtn">跳过</button>
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-check"></i> 应用选择
+    </button>
+  </div>
+
+  <div class="tip">昵称和头像可稍后在「个人设置」中随时修改</div>
+</form>
+
+<form
+  id="skipForm"
+  method="post"
+  action="/login/qq/sync/skip"
+  style="display: none"
+></form>
+{% endblock %} {% block extra_script %}
+<script src="/static/js/pages/auth/qq_sync.js"></script>
+{% endblock %}

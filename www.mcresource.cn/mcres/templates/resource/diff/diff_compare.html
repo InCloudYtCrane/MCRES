@@ -1,0 +1,200 @@
+{% extends "base.html" %} {% block title %}版本对比 · {{ resource_name }} ·
+MCRES{% endblock %} {% block extra_head %}
+<link rel="stylesheet" href="/static/css/pages/common/detail-common.css" />
+<link rel="stylesheet" href="/static/css/pages/resource/diff-compare.css" />
+<style>
+  :root {
+      --primary-color: {{ '#55d88b' if resource_type == 'resourcepack' else '#f5a623' if resource_type == 'shaderpack' else '#4A90D9' }};
+      --primary-bright: {{ '#6ae09c' if resource_type == 'resourcepack' else '#f7b83a' if resource_type == 'shaderpack' else '#5BA0E9' }};
+  }
+</style>
+{% endblock %} {# diff 页无 footer #} {% block footer %}{% endblock %} {% block
+content %}
+<div class="compare-container">
+  <div class="compare-header">
+    <h1>
+      <i class="fas fa-code-compare"></i> 版本对比
+      <small>{{ resource_name }} (ID: {{ resource_id }})</small>
+    </h1>
+    <a href="/{{ resource_type }}/{{ resource_id }}/diff" class="btn-back"
+      ><i class="fas fa-arrow-left"></i> 返回版本列表</a
+    >
+  </div>
+  {% macro render_value(val, type, resource_type) %} {% if val is none or val ==
+  '' %}
+  <span class="empty-hint">—</span>
+  {% elif type == 'image' %} {% if val is string and (val.startswith('http') or
+  val.startswith('/')) %}
+  <img src="{{ val }}" alt="图片" />
+  {% else %}
+  <span class="empty-hint">无效图片</span>
+  {% endif %} {% elif type == 'images' %} {% if val is sequence and val|length >
+  0 %}
+  <div class="screenshot-thumbs">
+    {% for src in val %}
+    <img src="{{ src }}" alt="截图" />
+    {% endfor %}
+  </div>
+  {% else %}
+  <span class="empty-hint">无截图</span>
+  {% endif %} {% elif type == 'html' %}
+  <div class="desc-html">{{ val|safe }}</div>
+  {% elif type == 'list' %} {% if val is sequence and val|length > 0 %} {% for
+  item in val %}
+  <span class="tag">{{ item }}</span>
+  {% endfor %} {% else %}
+  <span class="empty-hint">无</span>
+  {% endif %} {% elif type == 'status' %} {% set status_map = {'active': '活跃',
+  'semi': '半弃坑', 'inactive': '停更', 'unknown': '不确定'} %}
+  <span class="tag">{{ status_map.get(val, val or '未指定') }}</span>
+  {% elif type == 'performance' %} {% set perf_map = {'low': '<i
+    class="fas fa-turtle"
+  ></i>
+  低配', 'medium': '<i class="fas fa-bolt"></i> 中配', 'high': '<i
+    class="fas fa-rocket"
+  ></i>
+  高配', 'extreme': '<i class="fas fa-fire"></i> 极致'} %}
+  <span class="tag">{{ perf_map.get(val, val or '未指定')|safe }}</span>
+  {% elif type == 'player_count' %} {% set pc_map = {'single': '单人', 'multi':
+  '多人', 'both': '均可'} %}
+  <span class="tag">{{ pc_map.get(val, val or '未指定') }}</span>
+  {% elif type == 'links' %} {% if val is sequence and val|length > 0 %}
+  <div>
+    {% for link in val %}
+    <a href="{{ link.url }}" target="_blank" rel="noopener"
+      >{{ link.name or '链接' }}</a
+    >{% if not loop.last %}, {% endif %} {% endfor %}
+  </div>
+  {% else %}
+  <span class="empty-hint">无</span>
+  {% endif %} {% elif type == 'url' %} {% if val is string and
+  (val.startswith('http://') or val.startswith('https://')) %}
+  <a
+    href="{{ val }}"
+    target="_blank"
+    rel="noopener"
+    style="
+      color: var(--primary-color, #55d88b);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(85, 216, 139, 0.3);
+    "
+    >{{ val }}</a
+  >
+  {% else %}
+  <span class="empty-hint">{{ val or '—' }}</span>
+  {% endif %} {% else %} {{ val }} {% endif %} {% endmacro %} {% if version_a
+  and version_b %}
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <colgroup>
+        <col class="col-field" />
+        <col class="col-version" />
+        <col class="col-version" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>字段</th>
+          <th>
+            <div class="version-label">
+              版本 A <span class="badge badge-current">较新</span>
+            </div>
+            <div class="meta-info">
+              <span
+                ><i class="fas fa-calendar-alt"></i> {{ version_a.created_at
+                }}</span
+              >
+              <span
+                ><i class="fas fa-user"></i>
+                <a target="_blank" href="/profile/{{ version_a.created_by }}"
+                  >{{ version_a.creator_name }}</a
+                ></span
+              >
+            </div>
+            <div class="meta-info" style="color: #6b7480; font-style: italic">
+              <i class="fas fa-pencil-alt"></i> {{ version_a.change_summary }}
+            </div>
+          </th>
+          <th>
+            <div class="version-label">
+              版本 B <span class="badge badge-version">较旧</span>
+            </div>
+            <div class="meta-info">
+              <span
+                ><i class="fas fa-calendar-alt"></i> {{ version_b.created_at
+                }}</span
+              >
+              <span
+                ><i class="fas fa-user"></i>
+                <a target="_blank" href="/profile/{{ version_b.created_by }}"
+                  >{{ version_b.creator_name }}</a
+                ></span
+              >
+            </div>
+            <div class="meta-info" style="color: #6b7480; font-style: italic">
+              <i class="fas fa-pencil-alt"></i> {{ version_b.change_summary }}
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if resource_type == 'resourcepack' %} {% set fields = [ ('主要名称',
+        'main_name', 'text'), ('次要名称', 'sub_name', 'text'), ('简写', 'abbr',
+        'text'), ('一句话简介', 'summary', 'text'), ('分类', 'category',
+        'text'), ('封面', 'cover', 'image'), ('截图', 'screenshots', 'images'),
+        ('详细介绍', 'description', 'html'), ('支持平台', 'platforms', 'list'),
+        ('支持版本', 'versions', 'list'), ('支持特性', 'features', 'list'),
+        ('B站视频', 'bilibili_video', 'url'), ('作者', 'authors', 'list'),
+        ('官方状态', 'status', 'status'), ('下载链接', 'download_links',
+        'links'), ('搜索关键词', 'keywords', 'text'), ('授权协议', 'license',
+        'text'), ('MC百科 ID', 'mcmod_id', 'text'), ('CurseForge ID',
+        'curseforge_id', 'text'), ('Modrinth ID', 'modrinth_id', 'text') ] %} {%
+        elif resource_type == 'shaderpack' %} {% set fields = [ ('主要名称',
+        'main_name', 'text'), ('次要名称', 'sub_name', 'text'), ('简写', 'abbr',
+        'text'), ('一句话简介', 'summary', 'text'), ('风格', 'style', 'text'),
+        ('性能等级', 'performance', 'performance'), ('封面', 'cover', 'image'),
+        ('截图', 'screenshots', 'images'), ('详细介绍', 'description', 'html'),
+        ('支持平台', 'platforms', 'list'), ('支持版本', 'versions', 'list'),
+        ('光影引擎', 'engines', 'list'), ('支持特性', 'features', 'list'),
+        ('B站视频', 'bilibili_video', 'url'), ('作者', 'authors', 'list'),
+        ('官方状态', 'status', 'status'), ('下载链接', 'download_links',
+        'links'), ('搜索关键词', 'keywords', 'text'), ('授权协议', 'license',
+        'text'), ('MC百科 ID', 'mcmod_id', 'text'), ('CurseForge ID',
+        'curseforge_id', 'text'), ('Modrinth ID', 'modrinth_id', 'text') ] %} {%
+        elif resource_type == 'map' %} {% set fields = [ ('主要名称',
+        'main_name', 'text'), ('次要名称', 'sub_name', 'text'), ('简写', 'abbr',
+        'text'), ('一句话简介', 'summary', 'text'), ('地图类型', 'map_type',
+        'text'), ('适用玩家', 'player_count', 'player_count'), ('封面', 'cover',
+        'image'), ('截图', 'screenshots', 'images'), ('详细介绍', 'description',
+        'html'), ('支持平台', 'platforms', 'list'), ('支持版本', 'versions',
+        'list'), ('多人详情', 'multiplayer_details', 'text'), ('所需模组/插件',
+        'mods', 'list'), ('B站视频', 'bilibili_video', 'url'), ('作者',
+        'authors', 'list'), ('官方状态', 'status', 'status'), ('下载链接',
+        'download_links', 'links'), ('搜索关键词', 'keywords', 'text'),
+        ('授权协议', 'license', 'text'), ('MC百科 ID', 'mcmod_id', 'text'),
+        ('CurseForge ID', 'curseforge_id', 'text'), ('Modrinth ID',
+        'modrinth_id', 'text') ] %} {% else %} {% set fields = [] %} {% endif %}
+        {% for label, key, type in fields %} {% set val_a =
+        version_a.content.get(key) if version_a.content else none %} {% set
+        val_b = version_b.content.get(key) if version_b.content else none %} {%
+        set is_diff = (val_a|string != val_b|string) %}
+        <tr>
+          <td class="field-label">{{ label }}</td>
+          <td class="field-value-a {% if is_diff %}diff{% endif %}">
+            {{ render_value(val_a, type, resource_type) }}
+          </td>
+          <td class="field-value-b {% if is_diff %}diff{% endif %}">
+            {{ render_value(val_b, type, resource_type) }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-exclamation-triangle"></i>
+    版本数据加载失败，请确认选择的版本存在。
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

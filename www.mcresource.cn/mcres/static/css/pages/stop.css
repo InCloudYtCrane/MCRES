@@ -1,0 +1,209 @@
+/* mcres/static/css/pages/stop.css */
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1a1614;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 520px;
+            width: 100%;
+            background: #26201b;
+            border-radius: 16px;
+            padding: 40px 32px 32px;
+            border: 1px solid #3a322c;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        /* ===== 头部 ===== */
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #332b25;
+        }
+
+        .header .icon {
+            font-size: 40px;
+            color: #e8b85a;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #e8ddd0;
+            letter-spacing: 1px;
+        }
+
+        .header h1 span {
+            color: #e8b85a;
+        }
+
+        .header .badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 4px 18px;
+            background: #332b25;
+            border-radius: 20px;
+            color: #c4b5a8;
+            font-size: 13px;
+            font-weight: 450;
+        }
+
+        .header .badge i {
+            color: #e8b85a;
+            margin-right: 6px;
+        }
+
+        /* ===== 公告区域 ===== */
+        .announce-section {
+            margin-top: 20px;
+        }
+
+        .announce-section .label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #c4b5a8;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .announce-section .label i {
+            color: #e8b85a;
+            margin-right: 6px;
+        }
+
+        .announce-list {
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        /* 自定义滚动条 */
+        .announce-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .announce-list::-webkit-scrollbar-track {
+            background: #2a231e;
+            border-radius: 4px;
+        }
+        .announce-list::-webkit-scrollbar-thumb {
+            background: #4d4038;
+            border-radius: 4px;
+        }
+        .announce-list::-webkit-scrollbar-thumb:hover {
+            background: #6b5a4f;
+        }
+
+        .announce-item {
+            padding: 10px 14px;
+            background: #2d2520;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border-left: 3px solid #e8b85a;
+            font-size: 14px;
+            color: #d4c8bc;
+            line-height: 1.6;
+        }
+
+        .announce-item .title {
+            font-weight: 600;
+            color: #e8ddd0;
+        }
+
+        .announce-item .time {
+            font-size: 12px;
+            color: #8a7a6e;
+            margin-left: 8px;
+        }
+
+        .announce-empty {
+            color: #8a7a6e;
+            font-size: 14px;
+            text-align: center;
+            padding: 24px 0;
+        }
+
+        /* ===== 主管登录入口 ===== */
+        .login-prompt {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid #332b25;
+            text-align: center;
+        }
+
+        .login-prompt .text {
+            color: #8a7a6e;
+            font-size: 14px;
+        }
+
+        .login-prompt a {
+            color: #e8b85a;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .login-prompt a:hover {
+            color: #f5cc6a;
+            text-decoration: underline;
+        }
+
+        .login-prompt .text i {
+            margin-right: 6px;
+            color: #e8b85a;
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            margin-top: 24px;
+            padding-top: 14px;
+            border-top: 1px solid #2a231e;
+            text-align: center;
+            font-size: 12px;
+            color: #5a4e45;
+        }
+
+        .footer a {
+            color: #6b5f56;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #a08e80;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 480px) {
+            .card {
+                padding: 28px 18px 22px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .header .icon {
+                font-size: 32px;
+            }
+
+            .announce-item {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+
+            .announce-list {
+                max-height: 180px;
+            }
+        }

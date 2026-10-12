@@ -1,0 +1,309 @@
+/* mcres/static/css/pages/profile/settings/pwd.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: "Inter", sans-serif;
+    color: #e0e4e8;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .container {
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pwd-card {
+    background: rgba(28, 33, 40, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 40px 36px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .pwd-card .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #8a929a;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+  }
+  .pwd-card .back-link:hover {
+    color: #d0d8e0;
+  }
+
+  .pwd-card h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f0f4f8;
+    margin-bottom: 6px;
+  }
+  .pwd-card .subtitle {
+    color: #8a929a;
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #d0d8e0;
+    margin-bottom: 6px;
+  }
+  .form-group .hint {
+    font-size: 13px;
+    color: #6a7a8a;
+    margin-top: 4px;
+  }
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: #e8ecf0;
+    font-size: 15px;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+    outline: none;
+    font-family: inherit;
+  }
+  .form-control:focus {
+    border-color: #55d88b;
+    box-shadow: 0 0 0 3px rgba(85, 216, 139, 0.15);
+  }
+  .form-control.error {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+  }
+  .form-control::placeholder {
+    color: #5a6a7a;
+  }
+
+  .password-wrapper {
+    position: relative;
+  }
+  .password-wrapper .form-control {
+    padding-right: 44px;
+  }
+  .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6a7a8a;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    line-height: 1;
+  }
+  .toggle-password:hover {
+    color: #d0d8e0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      transform 0.15s,
+      opacity 0.2s;
+    font-family: inherit;
+    width: 100%;
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  .btn-primary {
+    background: #55d88b;
+    color: #111;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #4ac47d;
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #d0d8e0;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .btn-row .btn {
+    flex: 1;
+  }
+
+  .step {
+    display: none;
+  }
+  .step.active {
+    display: block;
+  }
+
+  .error-msg {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: rgba(231, 76, 60, 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(231, 76, 60, 0.15);
+    display: none;
+  }
+  .error-msg.show {
+    display: block;
+  }
+
+  .success-msg {
+    color: #55d88b;
+    font-size: 14px;
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: rgba(85, 216, 139, 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(85, 216, 139, 0.15);
+    display: none;
+  }
+  .success-msg.show {
+    display: block;
+  }
+
+  .password-strength {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .password-strength .bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: #2a2a3a;
+    transition: background 0.3s;
+  }
+  .password-strength .bar.weak {
+    background: #e74c3c;
+  }
+  .password-strength .bar.medium {
+    background: #f39c12;
+  }
+  .password-strength .bar.strong {
+    background: #55d88b;
+  }
+
+  .strength-label {
+    font-size: 13px;
+    margin-top: 4px;
+    transition: color 0.3s;
+  }
+  .strength-label.weak {
+    color: #e74c3c;
+  }
+  .strength-label.medium {
+    color: #f39c12;
+  }
+  .strength-label.strong {
+    color: #55d88b;
+  }
+
+  /* Toast */
+  .toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: rgba(28, 33, 40, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e8ecf0;
+    font-size: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: slideIn 0.3s ease;
+    min-width: 200px;
+    max-width: 400px;
+  }
+  .toast.success {
+    border-color: rgba(85, 216, 139, 0.3);
+  }
+  .toast.success i {
+    color: #55d88b;
+  }
+  .toast.error {
+    border-color: rgba(231, 76, 60, 0.3);
+  }
+  .toast.error i {
+    color: #e74c3c;
+  }
+  .toast i {
+    margin-right: 10px;
+  }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @media (max-width: 500px) {
+    .pwd-card {
+      padding: 24px 20px;
+    }
+    .btn-row {
+      flex-direction: column;
+    }
+    .toast-container {
+      right: 10px;
+      left: 10px;
+    }
+    .toast {
+      max-width: 100%;
+    }
+  }
